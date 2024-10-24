@@ -1,7 +1,13 @@
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './app';
+import { App } from './app.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-root.render(<App />);
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/',
+  cache: new InMemoryCache()
+});
+
+root.render(<App apollo={client} />);

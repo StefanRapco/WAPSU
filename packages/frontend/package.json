@@ -1,9 +1,11 @@
 {
   "name": "@app/frontend",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.10.8",
+    "@apollo/server": "4.11.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.16.4",
@@ -24,7 +26,8 @@
     "react-editor-js": "^2.1.0",
     "react-intersection-observer": "^9.13.0",
     "react-scripts": "5.0.1",
-    "yup": "^0.29.0"
+    "yup": "^0.29.0",
+    "graphql": "16.9.0"
   },
   "devDependencies": {
     "@types/ramda": "^0.30.0",

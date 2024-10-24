@@ -1,9 +1,11 @@
 {
     "name": "@app/api",
     "version": "0.0.0",
+    "type": "module",
     "private": true,
     "dependencies": {
       "@prisma/client": "^5.17.0",
+      "@apollo/server": "4.11.0",
       "date-fns": "^2.29.3",
       "html-to-text": "^9.0.5",
       "ramda": "^0.30.1"
