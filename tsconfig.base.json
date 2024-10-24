@@ -1,4 +1,5 @@
 {
+  "extends": "@deftomat/opinionated/configs/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
     // TODO: Remove DOM after they add "fetch" into "@types/node" (https://github.com/DefinitelyTyped/DefinitelyTyped/issues/60924)!
