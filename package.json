@@ -2,7 +2,6 @@
     "name": "bp",
     "private": true,
     "scripts": {
-      "start": "MODE=local everlution-node app.config.ts",
       "tsc": "tsc --build ./tsconfig.check.json -w",
       "checkup": "opinionated checkup"
     },
