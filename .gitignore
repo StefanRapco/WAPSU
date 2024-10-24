@@ -5,6 +5,8 @@
 !.vscode/launch.json
 !.vscode/tasks.json
 
+
+
 node_modules
 yarn-error.log
 __diff_output__
@@ -17,3 +19,4 @@ dist/
 .history
 
 packages/api/src/schema.types.ts
+packages/api/src/prisma.ts

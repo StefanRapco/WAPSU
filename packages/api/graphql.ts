@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { prisma } from './src/prisma';
 
 export const typeDefs = `#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
@@ -24,7 +25,9 @@ type User {
 
 const resolvers = {
   Query: {
-    userOne: () => {
+    userOne: async () => {
+      const x = await prisma.user.findFirst();
+      console.log(x);
       return { id: '2', firstName: '1', lastName: '1' } as any;
     }
   },
