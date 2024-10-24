@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    // TODO: Remove DOM after they add "fetch" into "@types/node" (https://github.com/DefinitelyTyped/DefinitelyTyped/issues/60924)!
+    "lib": ["ES2022", "DOM"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "sourceMap": false,
+    "declaration": false,
+    "declarationMap": false,
+    "target": "ES2022",
+    "isolatedModules": true,
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "paths": {
+      "@app/*": ["./packages/*"],
+      "@components/*": ["./packages/frontend/src/components/*"]
+    }
+  },
+  "exclude": ["**/.git/", "**/node_modules/", "**/cdk.out/"]
+}

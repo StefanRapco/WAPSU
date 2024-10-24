@@ -1,0 +1,23 @@
+{
+    "name": "bp",
+    "private": true,
+    "scripts": {
+      "start": "MODE=local everlution-node app.config.ts",
+      "tsc": "tsc --build ./tsconfig.check.json -w"
+    },
+    "devDependencies": {
+      "@types/node": "^20.14.11",
+      "prettier": "^3.3.3",
+      "prettier-plugin-prisma": "^5.0.0",
+      "prisma": "^5.17.0",
+      "typescript": "5.5.3"
+    },
+    "volta": {
+      "node": "20.13.1",
+      "yarn": "1.22.22"
+    },
+    "workspaces": [
+      "packages/*"
+    ]
+  }
+  
