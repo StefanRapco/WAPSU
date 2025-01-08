@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { User } from '@app/frontend/src/gql-generated/graphql';
 import { prisma } from './src/prisma';
 
 export const typeDefs = `#graphql
@@ -25,15 +26,14 @@ type User {
 
 const resolvers = {
   Query: {
-    userOne: async () => {
+    userOne: async (): Promise<User> => {
       const x = await prisma.user.findFirst();
-      console.log(x);
-      return { id: '2', firstName: '1', lastName: '1' } as any;
+      return { id: '1', firstName: 'Jozko', lastName: 'Ferko' };
     }
   },
   Mutation: {
     userUpdate: () => {
-      return { id: '1', firstName: '1', lastName: '1' } as any;
+      return { id: '1', firstName: 'Jozko', lastName: 'Ferko' };
     }
   }
 };
@@ -47,4 +47,4 @@ const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 }
 });
 
-console.log(`🚀  Server ready at: ${url}`);
+console.info(`🚀  Server ready at: ${url}`);

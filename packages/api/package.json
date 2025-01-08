@@ -5,6 +5,7 @@
     "private": true,
     "dependencies": {
       "@prisma/client": "^5.17.0",
+      "@graphql-codegen/cli": "5.0.3",
       "@apollo/server": "4.11.0",
       "date-fns": "^2.29.3",
       "html-to-text": "^9.0.5",

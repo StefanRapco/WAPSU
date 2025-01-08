@@ -20,3 +20,4 @@ dist/
 
 packages/api/src/schema.types.ts
 packages/api/src/prisma.ts
+packages/frontend/src/gql-generated

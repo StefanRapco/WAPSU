@@ -1,5 +1,5 @@
-import { ApolloClient, ApolloProvider, gql, useQuery } from '@apollo/client';
-import React from 'react';
+import { ApolloClient, ApolloProvider, useQuery } from '@apollo/client';
+import { gql } from './gql-generated/gql';
 
 interface AppProps {
   readonly apollo: ApolloClient<any>;
@@ -14,17 +14,25 @@ export function App(props: AppProps) {
 }
 
 function UserOne() {
-  const { data, loading } = useQuery(query, { variables: { id: '1' } });
+  const { data } = useQuery(query, { variables: { id: '1' } });
 
-  if (loading) return <>loading</>;
+  if (data == null) return <>loading</>;
 
-  return <>{data.userOne.id}</>;
+  return (
+    <>
+      {data.userOne.id}
+      {data.userOne.firstName}
+      {data.userOne.lastName}
+    </>
+  );
 }
 
-const query = gql`
-  query IDK($id: ID!) {
+const query = gql(`
+  query GetUser($id: ID!) {
     userOne(id: $id) {
       id
+      firstName
+      lastName
     }
   }
-`;
+`);
