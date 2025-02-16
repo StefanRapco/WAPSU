@@ -1,57 +1,118 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { User } from '@app/frontend/src/gql-generated/graphql';
-import { prisma } from './src/prisma';
+import { expressMiddleware } from '@apollo/server/express4';
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express, { Request, Response } from 'express';
+import { verifyToken } from './src/auth';
+import { identityResolver } from './src/graphql/identityResolver';
+import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
+import { userOneResolver } from './src/graphql/userOneResolver';
+import { userUpdateResolver } from './src/graphql/userUpdateResolver';
+import { InvocationContext, protectResolvers } from './src/invocationContext';
 
 export const typeDefs = `#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+  scalar DateTime
+  scalar Void
+  scalar JSONObject
 
-  # This "Book" type defines the queryable fields for every book in our data source.
-type User {
-  id: ID!
-  firstName: String!
-  lastName: String!
-}
-
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
-   userOne(id: ID!): User!
+    identity: User
+    userOne(id: ID!): User!
   }
+
   type Mutation {
-  userUpdate(id: ID!): User!
-}
+    signInCodeComplete(input: SignInCodeCompleteInput!): Void
+    userUpdate(id: ID!): User!
+  }
+
+  type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+  }
+
+  type ResendToken {
+    resendToken: String!
+  }
+
+  input SignInCodeCompleteInput {
+    email: String!
+    code: String!
+  }
+
 `;
 
+const queries = {
+  identity: identityResolver,
+  userOne: userOneResolver
+};
+
+const mutations = {
+  signInCodeComplete: signInCodeCompleteResolver,
+  userUpdate: userUpdateResolver
+};
+
 const resolvers = {
-  Query: {
-    userOne: async (): Promise<User> => {
-      const x = await prisma.user.findFirst();
-
-      // await sendEmail({
-      //   htmlContent: codeSignInEmail({ code: '42134' }),
-      //   subject: 'SignInCodeTest',
-      //   to: ['stefanrapco@gmail.com']
-      // });
-
-      return { id: '1', firstName: 'Jozko', lastName: 'Ferko' };
-    }
-  },
-  Mutation: {
-    userUpdate: () => {
-      return { id: '1', firstName: 'Jozko', lastName: 'Ferko' };
-    }
-  }
+  Query: protectResolvers(queries, ['userOne']),
+  Mutation: protectResolvers(mutations, ['userUpdate'])
 };
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  persistedQueries: false,
+  csrfPrevention: true
 });
 
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 }
-});
+const app = express();
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-console.info(`🚀  Server ready at: ${url}`);
+// Start the server
+async function startServer() {
+  await server.start();
+
+  app.use(
+    '/graphql',
+    expressMiddleware(server, {
+      context: async ({
+        req,
+        res
+      }: {
+        req?: Request;
+        res?: Response;
+      }): Promise<{
+        identity: InvocationContext['identity'] | null;
+        response: InvocationContext['response'];
+      }> => {
+        if (req == null) throw new Error('❌ `Request` is undefined in context');
+        if (res == null) throw new Error('❌ `Response` is undefined in context');
+
+        const noIdentity = { identity: null, response: res };
+
+        // console.log('🔥 Incoming Request Headers:', req.headers || 'No headers');
+        // console.log('🔥 Cookies Received:', req.headers.cookie || 'No cookies');
+
+        if (req.headers.cookie == null) return noIdentity;
+
+        const cookies = cookie.parse(req.headers.cookie);
+
+        if (cookies.auth_token == null) return noIdentity;
+
+        const token = verifyToken(cookies.auth_token);
+
+        return { identity: token, response: res };
+      }
+    })
+  );
+
+  app.listen(4000, () => console.log('🚀 Server running on http://localhost:4000/graphql'));
+}
+
+startServer();
+
+// # signInCodeRequest(input: SignInCodeRequestInput!): ResendToken!
