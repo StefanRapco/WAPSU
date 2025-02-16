@@ -28,6 +28,13 @@ const resolvers = {
   Query: {
     userOne: async (): Promise<User> => {
       const x = await prisma.user.findFirst();
+
+      // await sendEmail({
+      //   htmlContent: codeSignInEmail({ code: '42134' }),
+      //   subject: 'SignInCodeTest',
+      //   to: ['stefanrapco@gmail.com']
+      // });
+
       return { id: '1', firstName: 'Jozko', lastName: 'Ferko' };
     }
   },
