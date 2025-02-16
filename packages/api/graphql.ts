@@ -110,7 +110,7 @@ async function startServer() {
     })
   );
 
-  app.listen(4000, () => console.log('🚀 Server running on http://localhost:4000/graphql'));
+  app.listen(4000, () => console.info('🚀 Server running on http://localhost:4000/graphql'));
 }
 
 startServer();

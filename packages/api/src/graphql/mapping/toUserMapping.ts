@@ -6,6 +6,7 @@ export function toUserSchema(props: User): UserSchema {
     __typename: 'User',
     id: props.id,
     firstName: props.firstName,
-    lastName: props.lastName
+    lastName: props.lastName,
+    email: props.email
   };
 }
