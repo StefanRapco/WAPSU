@@ -13,7 +13,7 @@ export function useIdentity() {
   return { identity: data.identity, refetch, loading };
 }
 
-const identityQuery = gql(`
+export const identityQuery = gql(`
   query IdentityQuery {
     identity {
       id

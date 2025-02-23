@@ -1,0 +1,300 @@
+export function useConfig() {
+  return config;
+}
+
+export const colorPrimitives = {
+  accent: {
+    '100': '#4F76FF',
+    '200': '#6687FC'
+  },
+  red: {
+    '100': '#ffdbdb',
+    '200': '#ffc2c2',
+    '300': '#ff6b6b',
+    '400': '#ec5b5b',
+    '500': '#c92626',
+    '600': '#b60808',
+    '700': '#840606',
+    '800': '#4e0303'
+  },
+  citirine: {
+    '100': '#fcf5da',
+    '200': '#f8e8aa',
+    '300': '#f5e28f',
+    '400': '#f2d869',
+    '500': '#efcf45',
+    '600': '#cfab12',
+    '700': '#a79130',
+    '800': '#595235'
+  },
+  green: {
+    '100': '#bef3d7',
+    '200': '#93ecbc',
+    '300': '#68e4a1',
+    '400': '#3cdc85',
+    '500': '#1abc9c',
+    '600': '#1b9754',
+    '700': '#136c3c',
+    '800': '#0c4124'
+  },
+  aquamarine: {
+    '100': '#cff0fe',
+    '200': '#beebfd',
+    '300': '#8fddfc',
+    '400': '#5fcefa',
+    '500': '#2eb9ef',
+    '600': '#4ab0d9',
+    '700': '#4390af',
+    '800': '#355c70'
+  },
+  amethyst: {
+    '100': '#ebebff',
+    '200': '#e1e0ff',
+    '300': '#cdccff',
+    '400': '#b9b8ff',
+    '500': '#9b99ff',
+    '600': '#8b88dd',
+    '700': '#6d6bb3',
+    '800': '#4a4972'
+  },
+  gray: {
+    '50': '#F6F6F7',
+    '100': '#ededf2',
+    '200': '#dcdce6',
+    '300': '#90909d',
+    '400': '#5a5a69',
+    '500': '#464652',
+    '600': '#3c3c46',
+    '700': '#282832',
+    '800': '#111111'
+  },
+  crystal: {
+    '100': '#d8ebfd',
+    '200': '#b3d8fc',
+    '300': '#80bef9',
+    '400': '#4da4f7',
+    '500': '#2997ff',
+    '600': '#0C3CE4',
+    '700': '#004b92',
+    '800': '#1e385f'
+  },
+  sapphire: {
+    '100': '#dae0fb',
+    '200': '#adbaf5',
+    '300': '#7f93f0',
+    '400': '#516deb',
+    '500': '#2447e5',
+    '600': '#1634be',
+    '700': '#0a30b6',
+    '800': '#192c74'
+  },
+  neutral: {
+    black: '#000000',
+    white: '#ffffff'
+  }
+};
+
+export const colorsDark = {
+  foreground: {
+    infoOffset: colorPrimitives.aquamarine['300'],
+    successOffset: colorPrimitives.green['300'],
+    disabled: colorPrimitives.gray['400'],
+    info: colorPrimitives.aquamarine['500'],
+    inverseOnAccent: colorPrimitives.gray['800'],
+    warningOffset: colorPrimitives.citirine['300'],
+    neutralOnAccent: colorPrimitives.neutral.white,
+    inputIcon: colorPrimitives.gray['300'],
+    placeholder: colorPrimitives.gray['300'],
+    inverseFaded: colorPrimitives.gray['400'],
+    accent: colorPrimitives.crystal['600'],
+    negative: colorPrimitives.red['500'],
+    negativeOffset: colorPrimitives.red['400'],
+    warning: colorPrimitives.citirine['500'],
+    success: colorPrimitives.green['500'],
+    neutralFaded: colorPrimitives.gray['300'],
+    inverse: colorPrimitives.gray['800'],
+    neutral: colorPrimitives.neutral.white
+  },
+  background: {
+    faded: colorPrimitives.gray['700'],
+    frostedGlass: 'rgba(40, 40, 50, 0.4000)',
+    infoFaded: colorPrimitives.aquamarine['800'],
+    info: colorPrimitives.aquamarine['400'],
+    disabled: colorPrimitives.gray['600'],
+    success: colorPrimitives.green['500'],
+    overlay: 'rgba(0, 0, 0, 0.6400)',
+    neutral: colorPrimitives.neutral.black,
+    highlight: colorPrimitives.sapphire['600'],
+    accentFaded: colorPrimitives.crystal['700'],
+    successFaded: colorPrimitives.green['800'],
+    negativeFaded: colorPrimitives.red['800'],
+    primaryFocus: colorPrimitives.gray['200'],
+    secondaryActive: colorPrimitives.neutral.white,
+    secondaryHover: colorPrimitives.gray['500'],
+    secondaryFocus: colorPrimitives.gray['400'],
+    accent: colorPrimitives.crystal['600'],
+    warningFaded: colorPrimitives.citirine['800'],
+    primaryHover: colorPrimitives.gray['100'],
+    fadedFocus: colorPrimitives.gray['500'],
+    accentFocus: colorPrimitives.crystal['400'],
+    fadedHover: colorPrimitives.gray['600'],
+    accentHover: colorPrimitives.crystal['500'],
+    primary: colorPrimitives.neutral.white,
+    warning: colorPrimitives.citirine['500'],
+    negative: colorPrimitives.red['500'],
+    negativeHighlight: colorPrimitives.red['400'],
+    inverseFaded: colorPrimitives.gray['100'],
+    inverse: colorPrimitives.neutral.white,
+    secondary: colorPrimitives.gray['600'],
+    neutralHover: colorPrimitives.gray['700'],
+    neutralFocus: colorPrimitives.gray['600'],
+    negativeHover: colorPrimitives.red['400'],
+    negativeFocus: colorPrimitives.red['300']
+  },
+  border: {
+    disabled: colorPrimitives.gray['500'],
+    secondaryActive: colorPrimitives.neutral.white,
+    secondaryFocus: colorPrimitives.gray['400'],
+    secondaryHover: colorPrimitives.gray['500'],
+    chart: colorPrimitives.gray['600'],
+    neutralInverse: colorPrimitives.gray['200'],
+    active: colorPrimitives.neutral.white,
+    neutral: colorPrimitives.gray['400'],
+    neutralFaded: colorPrimitives.gray['700'],
+    negative: colorPrimitives.red['500'],
+    success: colorPrimitives.green['500'],
+    secondary: colorPrimitives.gray['600'],
+    negativeFaded: colorPrimitives.red['400']
+  },
+  data: {
+    dimAccent: colorPrimitives.accent['100'],
+    inverseAccentFaded: colorPrimitives.accent['200'],
+    neutral: colorPrimitives.gray['600'],
+    quinary: colorPrimitives.green['500'],
+    quinaryFaded: colorPrimitives.green['700'],
+    quinaryOpacity: 'rgba(35, 195, 108, 0.24)',
+    quarternary: colorPrimitives.sapphire['600'],
+    tertiary: colorPrimitives.citirine['500'],
+    secondary: colorPrimitives.aquamarine['400'],
+    primary: colorPrimitives.crystal['600'],
+    primaryOpacity: '#007DF43D',
+    secondaryOpacity: 'rgba(95, 206, 250, 0.2400)',
+    secondaryFaded: colorPrimitives.aquamarine['700'],
+    primaryFaded: colorPrimitives.crystal['700'],
+    quarternaryOpacity: 'rgba(22, 52, 190, 0.2400)',
+    tertiaryFaded: colorPrimitives.citirine['700'],
+    quarternaryFaded: colorPrimitives.sapphire['800'],
+    tertiaryOpacity: 'rgba(239, 207, 69, 0.2400)'
+  }
+};
+
+export const colorsLight = {
+  foreground: {
+    faded: colorPrimitives.gray['50'],
+    infoOffset: colorPrimitives.aquamarine['800'],
+    successOffset: colorPrimitives.green['800'],
+    disabled: colorPrimitives.gray['300'],
+    info: colorPrimitives.aquamarine['500'],
+    inverseOnAccent: colorPrimitives.gray['800'],
+    warningOffset: colorPrimitives.citirine['800'],
+    neutralOnAccent: colorPrimitives.neutral.white,
+    inputIcon: colorPrimitives.gray['300'],
+    placeholder: colorPrimitives.gray['300'],
+    inverseFaded: colorPrimitives.gray['400'],
+    accent: colorPrimitives.crystal['600'],
+    negative: colorPrimitives.red['600'],
+    negativeOffset: colorPrimitives.red['400'],
+    warning: colorPrimitives.citirine['500'],
+    success: colorPrimitives.green['500'],
+    neutralFaded: colorPrimitives.gray['400'],
+    inverse: colorPrimitives.neutral.white,
+    neutral: colorPrimitives.neutral.black
+  },
+  background: {
+    frostedGlass: 'rgba(255, 255, 255, 0.1000)',
+    infoFaded: colorPrimitives.aquamarine['200'],
+    info: colorPrimitives.aquamarine['400'],
+    disabled: colorPrimitives.gray['200'],
+    success: colorPrimitives.green['500'],
+    overlay: 'rgba(0, 0, 0, 0.6400)',
+    neutral: colorPrimitives.neutral.white,
+    highlight: colorPrimitives.sapphire['600'],
+    accentFaded: colorPrimitives.crystal['700'],
+    successFaded: colorPrimitives.green['100'],
+    negativeFaded: colorPrimitives.red['200'],
+    primaryFocus: colorPrimitives.gray['600'],
+    secondaryActive: colorPrimitives.neutral.black,
+    accent: colorPrimitives.crystal['600'],
+    warningFaded: colorPrimitives.citirine['200'],
+    primaryHover: colorPrimitives.gray['700'],
+    secondaryFocus: colorPrimitives.gray['300'],
+    fadedFocus: colorPrimitives.gray['300'],
+    secondaryHover: colorPrimitives.gray['200'],
+    accentFocus: colorPrimitives.crystal['400'],
+    fadedHover: colorPrimitives.gray['200'],
+    accentHover: colorPrimitives.crystal['500'],
+    primary: colorPrimitives.gray['800'],
+    faded: colorPrimitives.gray['50'],
+    warning: colorPrimitives.citirine['500'],
+    negative: colorPrimitives.red['600'],
+    negativeHighlight: colorPrimitives.red['500'],
+    inverseFaded: colorPrimitives.gray['100'],
+    inverse: colorPrimitives.neutral.black,
+    secondary: colorPrimitives.gray['100'],
+    neutralHover: colorPrimitives.gray['50'],
+    neutralFocus: colorPrimitives.gray['100'],
+    negativeHover: colorPrimitives.red['600'],
+    negativeFocus: colorPrimitives.red['300']
+  },
+  border: {
+    disabled: colorPrimitives.gray['200'],
+    secondaryActive: colorPrimitives.neutral.black,
+    secondaryFocus: colorPrimitives.gray['300'],
+    secondaryHover: colorPrimitives.gray['200'],
+    chart: colorPrimitives.gray['200'],
+    neutralInverse: colorPrimitives.gray['200'],
+    active: colorPrimitives.neutral.black,
+    neutral: colorPrimitives.gray['200'],
+    secondary: colorPrimitives.gray['100'],
+    neutralFaded: colorPrimitives.gray['100'],
+    negative: colorPrimitives.red['500'],
+    success: colorPrimitives.green['500'],
+    negativeFaded: colorPrimitives.red['400']
+  },
+  data: {
+    dimAccent: colorPrimitives.accent['100'],
+    inverseAccentFaded: colorPrimitives.accent['200'],
+    neutral: colorPrimitives.gray['200'],
+    quinary: colorPrimitives.green['500'],
+    quinaryFaded: colorPrimitives.green['700'],
+    quinaryOpacity: 'rgba(35, 195, 108, 0.24)',
+    quarternary: colorPrimitives.sapphire['600'],
+    tertiary: colorPrimitives.citirine['500'],
+    secondary: colorPrimitives.aquamarine['400'],
+    primary: colorPrimitives.crystal['600'],
+    primaryOpacity: '#007DF43D',
+    secondaryOpacity: 'rgba(95, 206, 250, 0.2400)',
+    secondaryFaded: colorPrimitives.aquamarine['700'],
+    primaryFaded: colorPrimitives.crystal['700'],
+    quarternaryOpacity: 'rgba(22, 52, 190, 0.2400)',
+    tertiaryFaded: colorPrimitives.citirine['700'],
+    quarternaryFaded: colorPrimitives.sapphire['800'],
+    tertiaryOpacity: 'rgba(239, 207, 69, 0.2400)'
+  }
+};
+
+const brandPalette: { dark: typeof colorsDark; light: typeof colorsLight } = {
+  dark: colorsDark,
+  light: colorsLight
+};
+
+const config = {
+  site: 'DoSync',
+  siteLogoUrl: '/',
+  showFooterAction: true,
+  contactUsLinkUrl: '#',
+  siteName: 'DoSync',
+  brandPalette,
+  navButtonColor: 'primary',
+  pageBackground: '#fff'
+} as const;

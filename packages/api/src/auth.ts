@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
+import { randomInt } from 'crypto';
 import dotenv from 'dotenv';
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { prisma } from './prisma';
 
 dotenv.config();
 const SECRET = process.env.JWT_SECRET;
@@ -51,4 +53,25 @@ export function clearAuthCookie(res: Response) {
     secure: false, // SHOULD BE TRUE IN PROD; process.env.isProd;
     sameSite: 'strict'
   });
+}
+
+export async function getUserIdByEmail(email: string): Promise<{ id: string }> {
+  const user = await prisma.user.findUnique({
+    where: {
+      email
+    },
+    select: { id: true }
+  });
+
+  if (user == null) throw new Error('Your credentials are invalid.');
+
+  return user;
+}
+
+export function generateNumericCode(length: number): string {
+  return generateCodeFromDict(length, '0123456789');
+}
+
+function generateCodeFromDict(length: number, dict: string) {
+  return Array.from({ length }, () => dict[randomInt(0, dict.length - 1)]).join('');
 }

@@ -7,6 +7,8 @@ import express, { Request, Response } from 'express';
 import { verifyToken } from './src/auth';
 import { identityResolver } from './src/graphql/identityResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
+import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
+import { signOutResolver } from './src/graphql/signOutResolver';
 import { userOneResolver } from './src/graphql/userOneResolver';
 import { userUpdateResolver } from './src/graphql/userUpdateResolver';
 import { InvocationContext, protectResolvers } from './src/invocationContext';
@@ -24,6 +26,8 @@ export const typeDefs = `#graphql
 
   type Mutation {
     signInCodeComplete(input: SignInCodeCompleteInput!): Void
+    signInCodeRequest(input: SignInCodeRequestInput!): Void
+    signOut(input: SignOutInput!): Void
     userUpdate(id: ID!): User!
   }
 
@@ -34,8 +38,12 @@ export const typeDefs = `#graphql
     email: String!
   }
 
-  type ResendToken {
-    resendToken: String!
+  input SignInCodeRequestInput {
+    email: String!
+  }
+
+  input SignOutInput {
+    email: String!
   }
 
   input SignInCodeCompleteInput {
@@ -51,13 +59,15 @@ const queries = {
 };
 
 const mutations = {
+  signInCodeRequest: signInCodeRequestResolver,
   signInCodeComplete: signInCodeCompleteResolver,
+  signOut: signOutResolver,
   userUpdate: userUpdateResolver
 };
 
 const resolvers = {
-  Query: protectResolvers(queries, ['userOne']),
-  Mutation: protectResolvers(mutations, ['userUpdate'])
+  Query: protectResolvers(queries, []),
+  Mutation: protectResolvers(mutations, ['signInCodeRequest', 'signInCodeComplete'])
 };
 
 const server = new ApolloServer({
@@ -114,5 +124,3 @@ async function startServer() {
 }
 
 startServer();
-
-// # signInCodeRequest(input: SignInCodeRequestInput!): ResendToken!

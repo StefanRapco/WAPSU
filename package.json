@@ -1,42 +1,41 @@
 {
-    "name": "bp",
-    "private": true,
-    "type": "module",
-    "scripts": {
-      "start": "concurrently \"yarn start-server\" \"yarn start-client\"",
-      "start-client": "cd packages/frontend && react-scripts start",
-      "start-server": "cd packages/api && nodemon --exec tsx graphql.ts",
-      "tsc": "tsc --build ./tsconfig.check.json -w",
-      "checkup": "opinionated checkup",
-      "gql-types": "graphql-codegen",
-      "gql-types-watch": "graphql-codegen -w"
-    },
-    "devDependencies": {
-      "@babel/plugin-proposal-private-property-in-object": "7.21.11",
-      "@types/node": "^20.14.11",
-      "@types/graphql": "14.5.0",
-      "@types/react": "19.0.3",
-      "@types/jsonwebtoken": "9.0.8",
-      "@deftomat/opinionated": "^1.1.3",
-      "graphql": "16.9.0",
-      "graphql-tag": "2.12.6",
-      "prettier": "^3.3.3",
-      "prettier-plugin-prisma": "^5.0.0",
-      "prisma": "^5.17.0",
-      "typescript": "5.5.3",
-      "tsx": "4.19.1",
-      "nodemon": "3.1.7",
-      "concurrently": "9.0.1",
-      "dotenv": "16.4.7",
-      "jsonwebtoken": "9.0.2"
-    },
-    "prettier": "@deftomat/opinionated/configs/prettier.config.mjs",
-    "volta": {
-      "node": "20.13.1",
-      "yarn": "1.22.22"
-    },
-    "workspaces": [
-      "packages/*"
-    ]
-  }
-  
+  "name": "bp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "concurrently \"yarn start-server\" \"yarn start-client\"",
+    "start-client": "cd packages/frontend && react-scripts start",
+    "start-server": "cd packages/api && nodemon --exec tsx graphql.ts",
+    "tsc": "tsc --build ./tsconfig.check.json -w",
+    "checkup": "opinionated checkup",
+    "gql-types": "graphql-codegen",
+    "gql-types-watch": "graphql-codegen -w"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
+    "@types/node": "^20.14.11",
+    "@types/graphql": "14.5.0",
+    "@types/react": "19.0.3",
+    "@types/jsonwebtoken": "9.0.8",
+    "@deftomat/opinionated": "^1.1.3",
+    "graphql": "16.9.0",
+    "graphql-tag": "2.12.6",
+    "prettier": "^3.3.3",
+    "prettier-plugin-prisma": "^5.0.0",
+    "prisma": "^5.17.0",
+    "typescript": "5.5.3",
+    "tsx": "4.19.1",
+    "nodemon": "3.1.7",
+    "concurrently": "9.0.1",
+    "dotenv": "16.4.7",
+    "jsonwebtoken": "9.0.2"
+  },
+  "prettier": "@deftomat/opinionated/configs/prettier.config.mjs",
+  "volta": {
+    "node": "20.13.1",
+    "yarn": "1.22.22"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

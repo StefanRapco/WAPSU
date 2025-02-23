@@ -1,38 +1,27 @@
 import { MutationSignInCodeCompleteArgs } from '@app/frontend/src/gql-generated/graphql';
-import { Response } from 'express';
-import { generateToken, setAuthCookie } from '../auth';
+import { generateToken, isCorrectPassword, setAuthCookie } from '../auth';
+import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
 
 export async function signInCodeCompleteResolver(
   _,
   { input }: MutationSignInCodeCompleteArgs,
-  { res }: { res: Response }
+  { response }: InvocationContext
 ): Promise<void> {
   const email = input.email.toLocaleLowerCase();
 
   const user = await prisma.user.findUniqueOrThrow({
-    where: { email }
+    where: { email },
+    select: { mfa: true, id: true, email: true, firstName: true, lastName: true }
   });
 
-  // clearAuthCookie(response);
+  if (user.mfa == null) throw new Error("User MFA can't be null when signing in with code");
 
-  // const token = generateToken({
-  //   id: user.id,
-  //   email: user.email,
-  //   fullName: `${user.firstName} ${user.lastName}`
-  // });
+  const isPasswordCorrect = await isCorrectPassword(input.code, user.mfa);
 
-  // setAuthCookie(response, token);
+  if (!isPasswordCorrect) throw new Error('Code is not correct');
 
-  // const token = generateToken(user.id);
-  // setAuthCookie(res, token);
-  // console.log(await isCorrectPassword('Password123!', user.password));
-
-  // await sendEmail({
-  //   htmlContent: codeSignInEmail({ code: '42134' }),
-  //   subject: 'SignInCodeTest',
-  //   to: ['stefanrapco@gmail.com']
-  // });
+  await prisma.user.update({ where: { id: user.id }, data: { mfa: null } });
 
   const token = generateToken({
     id: user.id,
@@ -40,5 +29,5 @@ export async function signInCodeCompleteResolver(
     fullName: `${user.firstName} ${user.lastName}`
   });
 
-  setAuthCookie(res, token);
+  setAuthCookie(response, token);
 }

@@ -1,6 +1,7 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import ReactDOM from 'react-dom/client';
 import { App } from './app.tsx';
+import { ModeContextProvider } from './modeContext.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -11,4 +12,8 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-root.render(<App apollo={client} />);
+root.render(
+  <ModeContextProvider>
+    <App apollo={client} />
+  </ModeContextProvider>
+);
