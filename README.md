@@ -1,4 +1,4 @@
-# [Náčrt BP](./docs/RapcoStefan_BP_Nacrt.pdf)
+# [Link - Náčrt BP - VIEW .PDF HERE](./docs/RapcoStefan_BP_Nacrt.pdf)
 
 # Webová aplikácia pre správu úloh – Navrhovaná štruktúra a harmonogram
 
