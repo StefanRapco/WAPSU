@@ -210,7 +210,7 @@ export function createTheme({ mode }: ThemeProps) {
     components: {
       MuiTypography: {
         styleOverrides: {
-          root: {}
+          root: { color: 'black' }
         }
       },
       MuiCssBaseline: {

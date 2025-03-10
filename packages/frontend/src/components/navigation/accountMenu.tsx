@@ -61,7 +61,7 @@ export function AccountMenu(props: AccountMenuProps) {
   );
 }
 
-function getInitials(name: string) {
+export function getInitials(name: string) {
   const splitName = name.split(' ');
 
   if (splitName.length === 1) return splitName[0][0];

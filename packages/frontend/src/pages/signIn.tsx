@@ -1,9 +1,11 @@
 import { useApolloClient, useMutation } from '@apollo/client';
-import { Box, Button, Container, Stack, TextField, useMediaQuery } from '@mui/material';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Box, Container, Stack, useMediaQuery } from '@mui/material';
+import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
+import { Button } from '../components/button';
 import { Snackbar } from '../components/snackbar';
+import { TextField } from '../components/textField';
 import { Typography } from '../components/typography';
 import { gql } from '../gql-generated';
 import { identityQuery } from '../hooks/useIdentity';
@@ -88,48 +90,36 @@ export function SignIn() {
             {({ isSubmitting, touched, errors }) => (
               <Form>
                 <Stack spacing={5}>
-                  <Field
-                    as={TextField}
-                    fullWidth
-                    id="email"
+                  <TextField
                     name="email"
                     label="Email"
-                    variant="outlined"
-                    margin="normal"
                     placeholder="Enter your email here"
-                    helperText={touched.email && <ErrorMessage name="email" />}
+                    autofocus
+                    helperText={touched.email}
                     error={touched.email && errors.email != null}
                   />
 
                   {screen.type === 'signInCodeComplete' && (
-                    <Field
-                      as={TextField}
-                      fullWidth
-                      id="code"
+                    <TextField
                       name="code"
                       label="Code"
-                      variant="outlined"
-                      margin="normal"
                       placeholder="Enter your code here"
-                      helperText={touched.code && <ErrorMessage name="code" />}
+                      helperText={touched.code}
                       error={touched.code && errors.code != null}
                     />
                   )}
                 </Stack>
 
                 <Button
-                  type="submit"
-                  variant="contained"
-                  color="info"
                   fullWidth
+                  type="submit"
                   sx={{ mt: 5 }}
                   disabled={isSubmitting}
-                >
-                  {((): string => {
+                  buttonText={((): string => {
                     if (screen.type === 'signInCode') return 'Send a code';
                     return isSubmitting ? 'Signing In...' : 'Sign In';
                   })()}
-                </Button>
+                />
               </Form>
             )}
           </Formik>

@@ -47,9 +47,8 @@ export function SectionHeader({
         {backLink != null && (
           <Stack direction="row" gap={3}>
             <Button
-              size="sm"
-              disableButtonStyles
-              variant="primary"
+              buttonText={null}
+              sx={{ size: 'sm' }}
               onClick={() => {
                 if (backLink != null && backLink.to != null) {
                   navigate(backLink.to);

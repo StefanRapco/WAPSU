@@ -91,7 +91,7 @@ function ProtectedRoutes(props: {
     >
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/account-settings/*" element={<AccountSettings />} />
+        <Route path="/account-settings/*" element={<AccountSettings identity={props.identity} />} />
         <Route path="/tasks/*" element={<Tasks />} />
         <Route path="/teams/*" element={<Teams />} />
         <Route path="/users/*" element={<Users />} />

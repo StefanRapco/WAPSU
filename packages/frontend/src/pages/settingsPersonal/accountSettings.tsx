@@ -3,9 +3,19 @@ import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility
 import { Box } from '@mui/material';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { SideBar } from '../../components/navigation/sideBar';
+import { Identity } from '../../hooks/useIdentity';
 import { isDarkMode } from '../../theme';
+import { Password } from './password';
+import { PersonalDetails } from './personalDetails';
 
-export function AccountSettings() {
+interface AccountSettingsProps {
+  readonly identity: Pick<
+    NonNullable<Identity>,
+    'id' | 'firstName' | 'lastName' | 'email' | 'fullName'
+  >;
+}
+
+export function AccountSettings(props: AccountSettingsProps) {
   const isModeDark = isDarkMode();
 
   return (
@@ -34,8 +44,8 @@ export function AccountSettings() {
       >
         <Routes>
           <Route path="" element={<Navigate to="personal-details" replace />} />
-          <Route path="/personal-details" element={<>TODO: Personal details sections</>} />
-          <Route path="/password" element={<>TODO: Password section</>} />
+          <Route path="/personal-details" element={<PersonalDetails identity={props.identity} />} />
+          <Route path="/password" element={<Password />} />
         </Routes>
       </Box>
     </Box>

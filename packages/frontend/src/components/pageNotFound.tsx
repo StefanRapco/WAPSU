@@ -15,7 +15,7 @@ export function PageNotFound() {
         </Typography>
 
         <Stack direction="row" justifyContent="start">
-          <Button onClick={() => navigate('/')}>Go to Dashboard</Button>
+          <Button onClick={() => navigate('/')} buttonText="Go to Dashboard" />
         </Stack>
       </Stack>
     </Stack>
