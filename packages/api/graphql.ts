@@ -4,6 +4,8 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
+import fs from 'fs';
+import { gql } from 'graphql-tag';
 import { verifyToken } from './src/auth';
 import { identityResolver } from './src/graphql/identityResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
@@ -13,46 +15,7 @@ import { userOneResolver } from './src/graphql/userOneResolver';
 import { userUpdateResolver } from './src/graphql/userUpdateResolver';
 import { InvocationContext, protectResolvers } from './src/invocationContext';
 
-export const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-  scalar DateTime
-  scalar Void
-  scalar JSONObject
-
-  type Query {
-    identity: User
-    userOne(id: ID!): User!
-  }
-
-  type Mutation {
-    signInCodeComplete(input: SignInCodeCompleteInput!): Void
-    signInCodeRequest(input: SignInCodeRequestInput!): Void
-    signOut(input: SignOutInput!): Void
-    userUpdate(id: ID!): User!
-  }
-
-  type User {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    fullName: String!
-    email: String!
-  }
-
-  input SignInCodeRequestInput {
-    email: String!
-  }
-
-  input SignOutInput {
-    email: String!
-  }
-
-  input SignInCodeCompleteInput {
-    email: String!
-    code: String!
-  }
-
-`;
+const typeDefs = gql(fs.readFileSync('./schema.graphql', 'utf8'));
 
 const queries = {
   identity: identityResolver,

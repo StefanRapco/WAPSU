@@ -1,0 +1,36 @@
+scalar DateTime
+scalar Void
+scalar JSONObject
+
+type Query {
+  identity: User
+  userOne(id: ID!): User!
+}
+
+type Mutation {
+  signInCodeComplete(input: SignInCodeCompleteInput!): Void
+  signInCodeRequest(input: SignInCodeRequestInput!): Void
+  signOut(input: SignOutInput!): Void
+  userUpdate(id: ID!): User!
+}
+
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  email: String!
+}
+
+input SignInCodeRequestInput {
+  email: String!
+}
+
+input SignOutInput {
+  email: String!
+}
+
+input SignInCodeCompleteInput {
+  email: String!
+  code: String!
+}
