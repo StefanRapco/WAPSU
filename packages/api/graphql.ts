@@ -35,6 +35,7 @@ export const typeDefs = `#graphql
     id: ID!
     firstName: String!
     lastName: String!
+    fullName: String!
     email: String!
   }
 

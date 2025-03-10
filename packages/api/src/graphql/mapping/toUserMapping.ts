@@ -7,6 +7,11 @@ export function toUserSchema(props: User): UserSchema {
     id: props.id,
     firstName: props.firstName,
     lastName: props.lastName,
+    fullName: toUserFullName({ firstName: props.firstName, lastName: props.lastName }),
     email: props.email
   };
+}
+
+function toUserFullName(props: { firstName: string; lastName: string }): string {
+  return `${props.firstName} ${props.lastName}`;
 }

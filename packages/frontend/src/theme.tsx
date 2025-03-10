@@ -251,11 +251,9 @@ export function createTheme({ mode }: ThemeProps) {
           root: {
             backgroundColor: brandPalette[mode].background.neutral,
             color: brandPalette[mode].foreground.neutral,
-            // padding: `${spacing[7]}px ${spacing[9]}px`,
             contain: 'content',
             border: 'none',
             boxShadow: 'none',
-
             '& .MuiToolbar-root': {
               display: 'flex',
               alignItems: 'center',
@@ -280,7 +278,6 @@ export function createTheme({ mode }: ThemeProps) {
             paddingLeft: '0 !important',
             paddingRight: '0 !important'
           },
-          /* Removes horizontal centering of containers */
           maxWidthXl: {
             marginLeft: 0
           },
@@ -311,7 +308,6 @@ export function createTheme({ mode }: ThemeProps) {
             '& .MuiTableRow-root': {
               paddingRight: '24px'
             },
-
             '& .MuiTableCell-sizeSmall': {
               padding: '16px 24px'
             },
@@ -385,15 +381,12 @@ export function createTheme({ mode }: ThemeProps) {
             fontSize: '0.75rem',
             fontWeight: 530,
             letterSpacing: '3%',
-
             '&:not(.Mui-selected):hover': {
               backgroundColor: brandPalette[mode].background.fadedHover
             },
-
             '&:not(.Mui-selected):focus': {
               backgroundColor: brandPalette[mode].background.fadedFocus
             },
-
             '&.Mui-selected': {
               backgroundColor: brandPalette[mode].background.secondaryActive,
               color: brandPalette[mode].foreground.inverse
@@ -442,7 +435,6 @@ export function createTheme({ mode }: ThemeProps) {
           color: 'primary'
         },
         styleOverrides: {
-          // Makes sure `<Link component="button"/>` looks the same like `<Link />`
           button: {
             verticalAlign: undefined,
             fontSize: 'inherit'
@@ -464,7 +456,6 @@ export function createTheme({ mode }: ThemeProps) {
         },
         styleOverrides: {
           paper: {
-            // Fix scroll issues
             '& > form': {
               overflowY: 'auto',
               display: 'flex',
@@ -480,11 +471,9 @@ export function createTheme({ mode }: ThemeProps) {
             borderRadius: radius.m + 'px',
             border: '1px solid transparent',
             transition: 'border 0.2s ease-in-out, background 0.2s ease-in-out',
-
             padding: spacing[4] + 'px',
             color: brandPalette[mode].foreground.neutral,
             backgroundColor: brandPalette[mode].background.secondary,
-
             input: {
               padding: 0,
               height: '20px !important',
@@ -494,15 +483,12 @@ export function createTheme({ mode }: ThemeProps) {
               color: brandPalette[mode].foreground.placeholder,
               opacity: '1 !important'
             },
-
             '&.Mui-disabled input::placeholder': {
               color: brandPalette[mode].foreground.disabled
             },
-
             '&:hover': {
               backgroundColor: brandPalette[mode].background.secondaryHover
             },
-
             '&:focus-within': {
               borderColor: brandPalette[mode].border.active,
               backgroundColor: brandPalette[mode].background.neutral
@@ -512,13 +498,9 @@ export function createTheme({ mode }: ThemeProps) {
               backgroundColor: brandPalette[mode].background.secondaryHover,
               cursor: 'disabled'
             },
-
             '&.Mui-error': {
-              // border: '1.5px solid transparent',
               borderColor: brandPalette[mode].border.negativeFaded
             },
-
-            // TODO check hover styles of autofill
             'input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active':
               {
                 WebkitBackgroundClip: 'text',
@@ -550,7 +532,6 @@ export function createTheme({ mode }: ThemeProps) {
             background: brandPalette[mode].background.neutral,
             boxShadow: shadow.l,
             borderRadius: radius.m + 'px',
-
             '.MuiPickersCalendarHeader-labelContainer': {
               fontWeight: '400'
             }
@@ -593,7 +574,6 @@ export function createTheme({ mode }: ThemeProps) {
           },
           yearButton: {
             color: brandPalette[mode].foreground.neutral,
-
             '&.Mui-selected': {
               background: brandPalette[mode].background.secondaryActive + '!important',
               color: brandPalette[mode].foreground.inverse
@@ -605,7 +585,6 @@ export function createTheme({ mode }: ThemeProps) {
         styleOverrides: {
           root: {
             color: brandPalette[mode].foreground.neutral,
-
             '&.Mui-selected': {
               background: brandPalette[mode].background.secondaryActive + '!important',
               color: brandPalette[mode].foreground.inverse
@@ -665,11 +644,9 @@ export function createTheme({ mode }: ThemeProps) {
             display: 'block',
             borderRadius: radius.m + 'px',
             width: '100%',
-
             '.MuiOutlinedInput-notchedOutline': {
               borderWidth: '0px !important'
             },
-
             '.MuiSelect-icon': {
               color: brandPalette[mode].foreground.inputIcon
             },
@@ -702,9 +679,7 @@ export function createTheme({ mode }: ThemeProps) {
             padding: `${spacing[4]}px`,
             color: brandPalette[mode].foreground.neutral,
             fontSize: '0.875rem',
-
             transition: 'background-color 0.2s ease-in-out',
-
             '&.Mui-selected, &.Mui-selected:hover': {
               background: brandPalette[mode].background.secondaryHover
             }

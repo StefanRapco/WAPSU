@@ -1,18 +1,26 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  ApolloQueryResult,
-  useMutation,
-  useQuery
-} from '@apollo/client';
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { ApolloClient, ApolloProvider, ApolloQueryResult, useQuery } from '@apollo/client';
+import { CircularProgress, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
+import { ReactNode } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { DarkModeLogo, LightModeLogo } from './components/logos';
+import { AccountMenu } from './components/navigation/accountMenu';
+import { DefaultLayout } from './components/navigation/defaultLayout';
+import { Footer } from './components/navigation/footer';
+import { toNavigation } from './components/navigation/toNavigation';
+import { TopBar } from './components/navigation/topBar';
+import { PageNotFound } from './components/pageNotFound';
 import { gql } from './gql-generated/gql';
 import { IdentityQueryQuery } from './gql-generated/graphql';
 import { Identity, useIdentity } from './hooks/useIdentity';
 import { useModeContext } from './modeContext';
+import { Analytics } from './pages/analytics';
+import { Dashboard } from './pages/dashboard';
+import { Settings } from './pages/settings';
 import { SignIn } from './pages/signIn';
+import { Tasks } from './pages/tasks';
+import { Teams } from './pages/teams';
+import { Users } from './pages/users';
 import { useTheme } from './theme';
 
 interface AppProps {
@@ -61,12 +69,35 @@ function ProtectedRoutes(props: {
   identity: NonNullable<Identity>;
   refetchIdentity: () => Promise<ApolloQueryResult<IdentityQueryQuery>>;
 }) {
-  return (
-    <Routes>
-      <Route path="/" element={<UserOne />} />
+  const navigation = toNavigation();
 
-      {/* <Route path="*" element={<PageNotFound />} /> */}
-    </Routes>
+  return (
+    <DefaultLayout
+      navigation={navigation}
+      footer={<Footer variant="simple" />}
+      topBar={
+        <TopBar
+          variant="default"
+          desktopLogo={((): ReactNode => {
+            if (props.mode === 'light') return <LightModeLogo sx={{ width: '70px' }} />;
+            if (props.mode === 'dark') return <DarkModeLogo sx={{ width: '70px' }} />;
+
+            return null;
+          })()}
+          actions={<AccountMenu identity={props.identity} />}
+        />
+      }
+    >
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/tasks/*" element={<Tasks />} />
+        <Route path="/teams/*" element={<Teams />} />
+        <Route path="/users/*" element={<Users />} />
+        <Route path="/analytics/*" element={<Analytics />} />
+        <Route path="/settings/*" element={<Settings />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </DefaultLayout>
   );
 }
 
@@ -81,7 +112,6 @@ function RedirectHomeIfSignedIn(props: { children: React.ReactNode }) {
 function UserOne() {
   const { identity } = useIdentity();
   const { data } = useQuery(query, { variables: { id: identity?.id ?? '' } });
-  const [signOut] = useMutation(signOutMutation);
 
   if (data == null) return <>loading</>;
 
@@ -91,15 +121,6 @@ function UserOne() {
         ID: {data.userOne.id} &nbsp; FirstName: {data.userOne.firstName} &nbsp; LastName:{' '}
         {data.userOne.lastName}
       </Typography>
-
-      <Button
-        onClick={async () => {
-          await signOut({ variables: { input: { email: data.userOne.email } } });
-          window.location.reload();
-        }}
-      >
-        LOG OUT
-      </Button>
     </>
   );
 }
@@ -112,12 +133,6 @@ const query = gql(`
       lastName
       email
     }
-  }
-`);
-
-const signOutMutation = gql(`
-  mutation SignOut($input: SignOutInput!) {
-    signOut(input: $input)
   }
 `);
 

@@ -1,9 +1,10 @@
 import { useApolloClient, useMutation } from '@apollo/client';
-import { Box, Button, Container, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Container, Stack, TextField, useMediaQuery } from '@mui/material';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
 import { Snackbar } from '../components/snackbar';
+import { Typography } from '../components/typography';
 import { gql } from '../gql-generated';
 import { identityQuery } from '../hooks/useIdentity';
 
@@ -59,17 +60,15 @@ export function SignIn() {
           }}
           spacing={5}
         >
-          <Typography variant="h2" sx={{ mb: 2, color: theme => theme.palette.neutral.main }}>
+          <Typography variant="h2" sx={{ mb: 2 }}>
             DoSync
           </Typography>
 
-          <Typography variant="h4" sx={{ mb: 2, color: theme => theme.palette.neutral.main }}>
+          <Typography variant="h4" sx={{ mb: 2 }}>
             Welcome back!
           </Typography>
 
-          <Typography sx={{ mb: 2, color: theme => theme.palette.neutral.main }}>
-            Sign in to DoSync.
-          </Typography>
+          <Typography sx={{ mb: 2 }}>Sign in to DoSync.</Typography>
 
           <Formik
             initialValues={{ email: '', code: '' }}

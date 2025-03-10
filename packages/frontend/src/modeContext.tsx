@@ -1,4 +1,3 @@
-import { call } from '@everlutionsk/helpers';
 import { ReactNode, createContext, useContext, useState } from 'react';
 
 type ModeContextState = 'light' | 'dark';
@@ -10,7 +9,7 @@ const ModeContext = createContext<
 
 export function ModeContextProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<ModeContextState>(
-    call((): ModeContextState => {
+    ((): ModeContextState => {
       const mode = localStorage.getItem(identifier);
 
       if (mode == null) return 'light';
@@ -18,7 +17,7 @@ export function ModeContextProvider({ children }: { children: ReactNode }) {
       if (mode === 'dark') return 'dark';
 
       throw new Error(`Unexpected state. Unknown mode: ${mode}`);
-    })
+    })()
   );
 
   return (

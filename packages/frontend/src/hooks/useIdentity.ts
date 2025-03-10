@@ -19,6 +19,7 @@ export const identityQuery = gql(`
       id
       firstName
       lastName
+      fullName
       email
     }
   }
