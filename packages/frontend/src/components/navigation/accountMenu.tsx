@@ -41,13 +41,6 @@ export function AccountMenu(props: AccountMenuProps) {
         <Divider />
         <MenuItem
           onClick={() => {
-            navigate('/personal-details');
-            setAnchorElUser(null);
-          }}
-          text="Personal details"
-        />
-        <MenuItem
-          onClick={() => {
             navigate('/account-settings');
             setAnchorElUser(null);
           }}

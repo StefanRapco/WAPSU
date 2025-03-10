@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
 import { ReactNode } from 'react';
-import { SectionHeader } from '../components/header';
-import { Typography } from '../components/typography';
+import { SectionHeader } from '../../components/header';
+import { Typography } from '../../components/typography';
 
 export function Settings(): ReactNode {
   return (
