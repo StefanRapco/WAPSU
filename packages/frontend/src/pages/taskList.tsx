@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { SectionHeader } from '../components/header';
 import { Typography } from '../components/typography';
 
-export function Tasks() {
+export function TaskList() {
   const [tasks, setTasks] = useState([
     { id: 1, name: 'Complete project report', dueDate: '2025-03-10', completed: false },
     { id: 2, name: 'Prepare presentation for meeting', dueDate: '2025-03-12', completed: false },

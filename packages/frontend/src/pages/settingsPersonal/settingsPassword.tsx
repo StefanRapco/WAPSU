@@ -6,27 +6,35 @@ import * as yup from 'yup';
 import { Button } from '../../components/button';
 import { SectionHeader } from '../../components/header';
 import { TextField } from '../../components/textField';
+import { Identity } from '../../hooks/useIdentity';
 
-export function Password() {
+interface PasswordProps {
+  readonly identity: Pick<NonNullable<Identity>, 'id' | 'isPasswordNull'>;
+}
+
+export function SettingsPassword(props: PasswordProps) {
   return (
     <Stack spacing={9}>
-      <SectionHeader>
+      <SectionHeader breadcrumbs={[{ label: 'Account settings' }, { label: 'Password' }]}>
         <Box display="flex" flexDirection="column">
           <Typography variant="h2Bold">Password</Typography>
           <Typography>Update your password and how you log in</Typography>
         </Box>
       </SectionHeader>
 
-      <PasswordForm />
+      <PasswordForm identity={props.identity} />
     </Stack>
   );
 }
 
-function PasswordForm() {
-  const [isValid, setIsValid] = useState(false);
+function PasswordForm(props: PasswordProps) {
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const requireCurrentPassword = !props.identity.isPasswordNull;
 
   const validationSchema = yup.object({
-    currentPassword: yup.string().required('Current password is a required field.'),
+    currentPassword: requireCurrentPassword
+      ? yup.string().required('Current password is a required field.')
+      : yup.string().nullable(),
     newPassword: yup
       .string()
       .required('New password is a required field')
@@ -58,17 +66,19 @@ function PasswordForm() {
             <Form>
               <Stack sx={{ maxWidth: '350px' }}>
                 <Grid container spacing={6}>
-                  <Grid item xs={12}>
-                    <TextField
-                      name="currentPassword"
-                      label="Current password"
-                      placeholder="Password123!"
-                      type="password"
-                      error={false}
-                      helperText={false}
-                      autofocus
-                    />
-                  </Grid>
+                  {requireCurrentPassword && (
+                    <Grid item xs={12}>
+                      <TextField
+                        name="currentPassword"
+                        label="Current password"
+                        placeholder="Password123!"
+                        type="password"
+                        error={false}
+                        helperText={false}
+                        autofocus
+                      />
+                    </Grid>
+                  )}
 
                   <Grid item xs={12}>
                     <TextField

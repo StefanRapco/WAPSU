@@ -16,12 +16,11 @@ import { Identity, useIdentity } from './hooks/useIdentity';
 import { useModeContext } from './modeContext';
 import { Analytics } from './pages/analytics';
 import { Dashboard } from './pages/dashboard';
-import { Settings } from './pages/settingsAdmin/settings';
-import { AccountSettings } from './pages/settingsPersonal/accountSettings';
+import { SettingsIndex } from './pages/settingsAdmin';
+import { AccountSettingsIndex } from './pages/settingsPersonal';
 import { SignIn } from './pages/signIn';
-import { Tasks } from './pages/tasks';
-import { Teams } from './pages/teams';
-import { Users } from './pages/users';
+import { TaskList } from './pages/taskList';
+import { TeamRoutes } from './pages/team/teamRoutes';
 import { useTheme } from './theme';
 
 interface AppProps {
@@ -91,12 +90,14 @@ function ProtectedRoutes(props: {
     >
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/account-settings/*" element={<AccountSettings identity={props.identity} />} />
-        <Route path="/tasks/*" element={<Tasks />} />
-        <Route path="/teams/*" element={<Teams />} />
-        <Route path="/users/*" element={<Users />} />
+        <Route
+          path="/account-settings/*"
+          element={<AccountSettingsIndex identity={props.identity} />}
+        />
+        <Route path="/tasks/*" element={<TaskList />} />
+        <Route path="/teams/*" element={<TeamRoutes identity={props.identity} />} />
         <Route path="/analytics/*" element={<Analytics />} />
-        <Route path="/settings/*" element={<Settings />} />
+        <Route path="/settings/*" element={<SettingsIndex />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </DefaultLayout>

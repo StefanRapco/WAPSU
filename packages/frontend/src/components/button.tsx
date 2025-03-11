@@ -5,10 +5,10 @@ interface ButtonPropsA extends ButtonProps {
   readonly buttonText: ReactNode;
 }
 
-export function Button(props: ButtonPropsA) {
+export function Button({ buttonText, ...props }: ButtonPropsA) {
   return (
     <MuiButton {...props} variant={props.variant ?? 'contained'} color={props.color ?? 'info'}>
-      {props.buttonText}
+      {buttonText}
       {props.children}
     </MuiButton>
   );

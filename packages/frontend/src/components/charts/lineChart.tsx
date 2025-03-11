@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import { strokeColors } from './helpers/colors';
 
 export function LineChart(): ReactNode {
   return (
@@ -18,10 +19,17 @@ export function LineChart(): ReactNode {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip />
+          <Tooltip contentStyle={{ color: 'black' }} />
           <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          {Object.keys(data.map(({ name, ...rest }) => rest)[0]).map((item, index) => (
+            <Line
+              key={`${item}#${index}`}
+              dataKey={item}
+              type="monotone"
+              stroke={strokeColors[index]}
+              activeDot={{ r: 7 }}
+            />
+          ))}
         </LineChartRe>
       </ResponsiveContainer>
     </div>

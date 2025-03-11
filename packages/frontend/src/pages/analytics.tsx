@@ -1,7 +1,12 @@
 import { Grid, Paper, Stack } from '@mui/material';
 import { ReactNode } from 'react';
-import { BarChart } from '../components/charts/barChart';
+import { AreaChart } from '../components/charts/areaChart';
+import { BarChartStacked } from '../components/charts/barChart';
+import { ComposedChart } from '../components/charts/composedChart';
+import { ChartCard } from '../components/charts/helpers/chartCard';
 import { LineChart } from '../components/charts/lineChart';
+import { PieChartBasic, PieChartEnhanced } from '../components/charts/pieChart';
+import { RadarChart } from '../components/charts/radarChart';
 import { SectionHeader } from '../components/header';
 import { Typography } from '../components/typography';
 
@@ -72,13 +77,50 @@ export function Analytics(): ReactNode {
         </Grid>
       </Grid>
 
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 20, marginRight: 20 }}>
         <Stack direction="row">
           <div style={{ minWidth: 0, width: '100%' }}>
-            <LineChart />
+            <ChartCard title="Title of LineChart">
+              <LineChart />
+            </ChartCard>
           </div>
           <div style={{ minWidth: 0, width: '100%' }}>
-            <BarChart />
+            <ChartCard title="Title of AreaChart">
+              <AreaChart />
+            </ChartCard>
+          </div>
+        </Stack>
+      </div>
+      <div style={{ marginTop: 20, marginRight: 20 }}>
+        <ChartCard maxWidth={1180} title="Title of ComposedChart">
+          <ComposedChart />
+        </ChartCard>
+      </div>
+      <div style={{ marginTop: 20, marginRight: 20 }}>
+        <Stack direction="row">
+          <div style={{ minWidth: 0, width: '100%' }}>
+            <ChartCard title="Title of RadarChart">
+              <RadarChart />
+            </ChartCard>
+          </div>
+          <div style={{ minWidth: 0, width: '100%' }}>
+            <ChartCard title="Title of PieChart">
+              <PieChartEnhanced />
+            </ChartCard>
+          </div>
+        </Stack>
+      </div>
+      <div style={{ marginTop: 20, marginRight: 20 }}>
+        <Stack direction="row">
+          <div style={{ minWidth: 0, width: '100%' }}>
+            <ChartCard title="Title of BarChart">
+              <BarChartStacked />
+            </ChartCard>
+          </div>
+          <div style={{ minWidth: 0, width: '100%' }}>
+            <ChartCard title="Title of PieChart">
+              <PieChartBasic />
+            </ChartCard>
           </div>
         </Stack>
       </div>

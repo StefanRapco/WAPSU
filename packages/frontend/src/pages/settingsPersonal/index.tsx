@@ -1,3 +1,4 @@
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import PasswordIcon from '@mui/icons-material/Password';
 import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
 import { Box } from '@mui/material';
@@ -5,17 +6,18 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { SideBar } from '../../components/navigation/sideBar';
 import { Identity } from '../../hooks/useIdentity';
 import { isDarkMode } from '../../theme';
-import { Password } from './password';
-import { PersonalDetails } from './personalDetails';
+import { SettingsNotifications } from './settingsNotifications';
+import { SettingsPassword } from './settingsPassword';
+import { SettingsPersonalDetails } from './settingsPersonalDetails';
 
 interface AccountSettingsProps {
   readonly identity: Pick<
     NonNullable<Identity>,
-    'id' | 'firstName' | 'lastName' | 'email' | 'fullName'
+    'id' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'isPasswordNull'
   >;
 }
 
-export function AccountSettings(props: AccountSettingsProps) {
+export function AccountSettingsIndex(props: AccountSettingsProps) {
   const isModeDark = isDarkMode();
 
   return (
@@ -31,6 +33,11 @@ export function AccountSettings(props: AccountSettingsProps) {
             label: 'Password',
             to: '/account-settings/password',
             icon: <PasswordIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
+          },
+          {
+            label: 'Notifications',
+            to: '/account-settings/notifications',
+            icon: <NotificationsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
           }
         ]}
       />
@@ -44,8 +51,15 @@ export function AccountSettings(props: AccountSettingsProps) {
       >
         <Routes>
           <Route path="" element={<Navigate to="personal-details" replace />} />
-          <Route path="/personal-details" element={<PersonalDetails identity={props.identity} />} />
-          <Route path="/password" element={<Password />} />
+          <Route
+            path="/personal-details"
+            element={<SettingsPersonalDetails identity={props.identity} />}
+          />
+          <Route path="/password" element={<SettingsPassword identity={props.identity} />} />
+          <Route
+            path="/notifications"
+            element={<SettingsNotifications identity={props.identity} />}
+          />
         </Routes>
       </Box>
     </Box>

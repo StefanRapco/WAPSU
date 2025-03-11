@@ -21,6 +21,7 @@ export const identityQuery = gql(`
       lastName
       fullName
       email
+      isPasswordNull
     }
   }
 `);

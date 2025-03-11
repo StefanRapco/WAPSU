@@ -30,7 +30,7 @@ export function NavigationBar(props: { items: NavigationItem[] }) {
   const sections = [
     {
       items: ((): NavigationItem[] => {
-        const validSections: NavSection[] = ['/', '/users', '/teams', '/analytics', '/tasks'];
+        const validSections: NavSection[] = ['/', '/teams', '/analytics', '/tasks'];
 
         return props.items.filter(item => item.to != null && validSections.includes(item.to));
       })()

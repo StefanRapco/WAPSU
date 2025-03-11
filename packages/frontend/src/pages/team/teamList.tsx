@@ -1,14 +1,16 @@
-import GroupsIcon from '@mui/icons-material/Groups';
-import { Card, CardContent, CardMedia, Grid, IconButton } from '@mui/material';
+import { Card, CardContent, CardMedia, Grid, Stack } from '@mui/material';
 import { ReactNode } from 'react';
-import { SectionHeader } from '../components/header';
-import { Typography } from '../components/typography';
-import designImage from '../images/designTeam.jpg';
-import devImage from '../images/devTeam.jpg';
-import hrImage from '../images/hrTeam.jpg';
-import marketingImage from '../images/marketingTeam.jpg';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../../components/button';
+import { SectionHeader } from '../../components/header';
+import { Typography } from '../../components/typography';
+import designImage from '../../images/designTeam.jpg';
+import devImage from '../../images/devTeam.jpg';
+import hrImage from '../../images/hrTeam.jpg';
+import marketingImage from '../../images/marketingTeam.jpg';
 
-export function Teams(): ReactNode {
+export function TeamList(): ReactNode {
+  const navigate = useNavigate();
   const teams = [
     { id: 1, name: 'Development Team', members: 10, image: devImage },
     { id: 2, name: 'Marketing Team', members: 7, image: marketingImage },
@@ -42,9 +44,13 @@ export function Teams(): ReactNode {
               <Typography variant="body2" color="textSecondary">
                 {team.members} Members
               </Typography>
-              <IconButton>
-                <GroupsIcon />
-              </IconButton>
+              <Stack direction="row" mt={5} spacing={5}>
+                <Button
+                  buttonText="Visit team"
+                  onClick={() => navigate(`${team.id}`)}
+                  sx={{ minWidth: 200 }}
+                />
+              </Stack>
             </CardContent>
           </Card>
         </Grid>

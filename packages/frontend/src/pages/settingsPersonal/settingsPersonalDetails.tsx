@@ -16,7 +16,7 @@ interface PersonalDetailsProps {
   >;
 }
 
-export function PersonalDetails(props: PersonalDetailsProps) {
+export function SettingsPersonalDetails(props: PersonalDetailsProps) {
   const validationSchema = yup.object({
     firstName: yup.string().required('First name is a required field.'),
     lastName: yup
@@ -29,6 +29,7 @@ export function PersonalDetails(props: PersonalDetailsProps) {
   return (
     <Stack gap={8}>
       <SectionHeader
+        breadcrumbs={[{ label: 'Account settings' }, { label: 'Personal details' }]}
         badge={
           <Badge
             variant="positive"
@@ -39,7 +40,6 @@ export function PersonalDetails(props: PersonalDetailsProps) {
       >
         <Stack direction="row" gap={4} alignItems="center">
           <CircularAvatar size="m">{getInitials(props.identity.fullName)}</CircularAvatar>
-
           <Typography variant="bodyLEmphasis">{props.identity.fullName}</Typography>
         </Stack>
       </SectionHeader>

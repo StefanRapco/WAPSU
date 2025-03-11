@@ -8,7 +8,8 @@ export function toUserSchema(props: User): UserSchema {
     firstName: props.firstName,
     lastName: props.lastName,
     fullName: toUserFullName({ firstName: props.firstName, lastName: props.lastName }),
-    email: props.email
+    email: props.email,
+    isPasswordNull: props.password == null
   };
 }
 

@@ -9,10 +9,10 @@ import {
   TableRow
 } from '@mui/material';
 import { ReactNode } from 'react';
-import { SectionHeader } from '../components/header';
-import { Typography } from '../components/typography';
+import { SectionHeader } from '../../components/header';
+import { Typography } from '../../components/typography';
 
-export function Users(): ReactNode {
+export function TeamUserList(): ReactNode {
   const users = [
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
@@ -23,7 +23,15 @@ export function Users(): ReactNode {
   return (
     <Grid container spacing={9}>
       <Grid item xs={12}>
-        <SectionHeader>Users</SectionHeader>
+        <SectionHeader
+          breadcrumbs={[
+            { label: 'Teams', to: '/teams' },
+            { label: 'Team name' },
+            { label: 'Team users' }
+          ]}
+        >
+          Team users
+        </SectionHeader>
       </Grid>
 
       <Grid item xs={12}>
@@ -38,6 +46,9 @@ export function Users(): ReactNode {
       </Grid>
 
       <Grid item xs={12}>
+        <Typography variant="h6" sx={{ mb: 3 }}>
+          Users
+        </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>

@@ -1,49 +1,45 @@
-import { ReactNode } from 'react';
 import {
-  Bar,
-  BarChart as BarChartRe,
+  Area,
+  AreaChart as AreaChartRe,
   CartesianGrid,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
 } from 'recharts';
-import { fillColors } from './helpers/colors';
+import { fillColors, strokeColors } from './helpers/colors';
 
-export function BarChartStacked(): ReactNode {
+export function AreaChart() {
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChartRe data={data}>
+        <AreaChartRe
+          width={500}
+          height={400}
+          data={data}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0
+          }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip contentStyle={{ color: 'black' }} />
-          <Legend />
-          {Object.keys(data.map(({ name, ...rest }) => rest)[0]).map((item, index) => (
-            <Bar key={`${item}#${index}`} dataKey={item} stackId="a" fill={fillColors[index]} />
-          ))}
-        </BarChartRe>
-      </ResponsiveContainer>
-    </div>
-  );
-}
 
-export function BarChartDefault(): ReactNode {
-  return (
-    <div style={{ width: '100%', height: 300 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChartRe data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip contentStyle={{ color: 'black' }} />
-          <Legend />
           {Object.keys(data.map(({ name, ...rest }) => rest)[0]).map((item, index) => (
-            <Bar key={`${item}#${index}`} dataKey={item} fill={fillColors[index]} />
+            <Area
+              key={`${item}#${index}`}
+              dataKey={item}
+              type="monotone"
+              stackId="1"
+              fill={fillColors[index]}
+              stroke={strokeColors[index]}
+            />
           ))}
-        </BarChartRe>
+        </AreaChartRe>
       </ResponsiveContainer>
     </div>
   );
