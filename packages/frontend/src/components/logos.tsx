@@ -8,7 +8,7 @@ interface LogoProps {
 export function LightModeLogo(props: LogoProps) {
   const navigate = useNavigate();
   return (
-    <Box sx={props.sx} onClick={() => navigate('/')}>
+    <Box sx={{ ...props.sx, cursor: 'pointer' }} onClick={() => navigate('/')}>
       LOGO
     </Box>
   );
@@ -17,7 +17,7 @@ export function LightModeLogo(props: LogoProps) {
 export function DarkModeLogo(props: LogoProps) {
   const navigate = useNavigate();
   return (
-    <Box sx={props.sx} onClick={() => navigate('/')}>
+    <Box sx={{ ...props.sx, cursor: 'pointer' }} onClick={() => navigate('/')}>
       LOGO
     </Box>
   );
