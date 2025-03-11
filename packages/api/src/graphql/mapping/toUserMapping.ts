@@ -3,7 +3,6 @@ import { User } from '@prisma/client';
 
 export function toUserSchema(props: User): UserSchema {
   return {
-    __typename: 'User',
     id: props.id,
     firstName: props.firstName,
     lastName: props.lastName,

@@ -8,6 +8,7 @@ import fs from 'fs';
 import { gql } from 'graphql-tag';
 import { verifyToken } from './src/auth';
 import { identityResolver } from './src/graphql/identityResolver';
+import { identityUpdateResolver } from './src/graphql/identityUpdateResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
 import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
 import { signOutResolver } from './src/graphql/signOutResolver';
@@ -23,6 +24,7 @@ const queries = {
 };
 
 const mutations = {
+  identityUpdate: identityUpdateResolver,
   signInCodeRequest: signInCodeRequestResolver,
   signInCodeComplete: signInCodeCompleteResolver,
   signOut: signOutResolver,

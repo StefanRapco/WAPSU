@@ -8,14 +8,21 @@ interface SnackbarErrorInterface {
   readonly setMutationError: (value: boolean) => void;
 }
 
-export function Snackbar(props: SnackbarErrorInterface & SnackbarProps) {
-  const { apolloErrors, mutationError, setMutationError, ...rest } = props;
+export function SnackbarError(props: SnackbarErrorInterface & SnackbarProps) {
+  const { apolloErrors, mutationError, setMutationError, sx, ...rest } = props;
   return (
     <MuiSnackbar
       {...rest}
+      sx={{
+        ...sx,
+        '& .MuiSnackbarContent-root': {
+          backgroundColor: '#f44336',
+          color: 'white'
+        }
+      }}
       open={props.apolloErrors.some(item => item != null) && props.mutationError}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      autoHideDuration={5000}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      transitionDuration={{ appear: 100, enter: 100, exit: 100 }}
       message={((): string =>
         props.apolloErrors.find(item => item != null)?.message ?? 'Unknown error message')()}
       action={

@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
 import { Button } from '../components/button';
-import { Snackbar } from '../components/snackbar';
+import { SnackbarError } from '../components/snackbarError';
 import { TextField } from '../components/textField';
 import { Typography } from '../components/typography';
 import { gql } from '../gql-generated';
@@ -126,7 +126,7 @@ export function SignIn() {
         </Stack>
       </Box>
 
-      <Snackbar
+      <SnackbarError
         mutationError={error}
         setMutationError={value => setError(value)}
         apolloErrors={[signInError, signInCompleteError]}

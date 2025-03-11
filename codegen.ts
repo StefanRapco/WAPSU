@@ -6,9 +6,7 @@ const config: CodegenConfig = {
   documents: [
     'packages/api/graphql.ts',
     'packages/api/schema.graphql',
-    'packages/frontend/src/**.tsx',
-    'packages/frontend/src/components/navigation/**.tsx',
-    'packages/frontend/src/pages/**.tsx',
+    'packages/frontend/src/**/*.tsx',
     'packages/frontend/src/hooks/**.ts'
   ],
   generates: {

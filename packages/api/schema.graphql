@@ -8,10 +8,11 @@ type Query {
 }
 
 type Mutation {
+  identityUpdate(input: IdentityUpdateInput!): User!
   signInCodeComplete(input: SignInCodeCompleteInput!): Void
   signInCodeRequest(input: SignInCodeRequestInput!): Void
   signOut(input: SignOutInput!): Void
-  userUpdate(id: ID!): User!
+  userUpdate(input: UserUpdateInput!): User!
 }
 
 type User {
@@ -34,4 +35,15 @@ input SignOutInput {
 input SignInCodeCompleteInput {
   email: String!
   code: String!
+}
+
+input IdentityUpdateInput {
+  firstName: String
+  lastName: String
+}
+
+input UserUpdateInput {
+  id: ID!
+  firstName: String
+  lastName: String
 }

@@ -1,13 +1,18 @@
+import { useMutation } from '@apollo/client';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
+import { useState } from 'react';
 import * as yup from 'yup';
 import { Badge } from '../../components/badge';
 import { Button } from '../../components/button';
 import { SectionHeader } from '../../components/header';
 import { getInitials } from '../../components/navigation/accountMenu';
 import { CircularAvatar } from '../../components/navigation/circularAvatar';
+import { SnackbarError } from '../../components/snackbarError';
+import { SnackBarSuccess, snackbarUseEffect } from '../../components/snackbarSuccess';
 import { TextField } from '../../components/textField';
-import { Identity } from '../../hooks/useIdentity';
+import { gql } from '../../gql-generated';
+import { Identity, identityQuery } from '../../hooks/useIdentity';
 
 interface PersonalDetailsProps {
   readonly identity: Pick<
@@ -24,6 +29,22 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
       .required('Last name is a required field')
       .max(128, 'Max. 128 characters'),
     email: yup.string().required('Email is a required field.').max(128, 'Max. 128 characters')
+  });
+
+  const [error, setError] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+
+  const [update, { error: updateError }] = useMutation(mutation, {
+    refetchQueries: [identityQuery],
+    onCompleted: () => setSuccess(true),
+    onError: () => setError(true)
+  });
+
+  snackbarUseEffect({
+    error,
+    success,
+    setError: value => setError(value),
+    setSuccess: value => setSuccess(value)
   });
 
   return (
@@ -55,9 +76,10 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
         }}
         enableReinitialize
         validationSchema={validationSchema}
-        onSubmit={async (values, { resetForm }) => {
-          //   await props.onSubmit(values);
-          //   resetForm();
+        onSubmit={async values => {
+          await update({
+            variables: { input: { firstName: values.firstName, lastName: values.lastName } }
+          });
         }}
       >
         {({ isSubmitting }) => {
@@ -109,6 +131,28 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
           );
         }}
       </Formik>
+
+      <SnackBarSuccess
+        open={success}
+        successMsg="Personal data successfully updated"
+        setSuccess={value => setSuccess(value)}
+      />
+
+      <SnackbarError
+        mutationError={error}
+        setMutationError={value => setError(value)}
+        apolloErrors={[updateError]}
+      />
     </Stack>
   );
 }
+
+const mutation = gql(`
+  mutation IdentityUpdate($input: IdentityUpdateInput!) {
+    identityUpdate(input: $input){
+      id
+      firstName
+      lastName
+    }
+  }
+`);
