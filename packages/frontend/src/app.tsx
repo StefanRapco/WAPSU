@@ -10,6 +10,7 @@ import { Footer } from './components/navigation/footer';
 import { toNavigation } from './components/navigation/toNavigation';
 import { TopBar } from './components/navigation/topBar';
 import { PageNotFound } from './components/pageNotFound';
+import { ScrollToTop } from './components/scrollToTop';
 import { gql } from './gql-generated/gql';
 import { IdentityQueryQuery } from './gql-generated/graphql';
 import { Identity, useIdentity } from './hooks/useIdentity';
@@ -35,6 +36,7 @@ export function App(props: AppProps) {
     <ThemeProvider theme={theme}>
       <ApolloProvider client={props.apollo}>
         <Router>
+          <ScrollToTop />
           <Routes>
             <Route
               path="/sign-in"
