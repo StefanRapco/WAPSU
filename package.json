@@ -10,7 +10,7 @@
     "checkup": "opinionated checkup",
     "gql-types": "graphql-codegen",
     "gql-types-watch": "graphql-codegen -w",
-    "pushToMain": "git push origin main && git push org main"
+    "push-to-main": "git push origin main && git push org main"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
