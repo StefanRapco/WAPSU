@@ -44,7 +44,7 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
         </Stack>
       </SectionHeader>
       <Box display="flex" flexDirection="column">
-        <Typography>Update your personal information</Typography>
+        <Typography>Update your personal information.</Typography>
       </Box>
 
       <Formik

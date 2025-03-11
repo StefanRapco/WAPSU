@@ -40,7 +40,7 @@ export function SettingsNotifications(props: NotificationsProps) {
       <Card sx={{ maxWidth: 700, mx: 'auto', my: 4, p: 2, boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Notification Preferences
+            Notification preferences:
           </Typography>
           <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 3 }}>
             {notificationOptions.map(option => (

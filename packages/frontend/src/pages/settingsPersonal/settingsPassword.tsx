@@ -18,7 +18,7 @@ export function SettingsPassword(props: PasswordProps) {
       <SectionHeader breadcrumbs={[{ label: 'Account settings' }, { label: 'Password' }]}>
         <Box display="flex" flexDirection="column">
           <Typography variant="h2Bold">Password</Typography>
-          <Typography>Update your password and how you log in</Typography>
+          <Typography>Update your password and how you log in.</Typography>
         </Box>
       </SectionHeader>
 
