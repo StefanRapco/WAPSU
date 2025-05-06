@@ -87,7 +87,12 @@ export function Badge(props: BadgeProps) {
       <Typography
         variant="label"
         component="p"
-        sx={{ color: textColor, textTransform: props.textTransform ?? 'none' }}
+        sx={{
+          color: textColor,
+          textTransform: props.textTransform ?? 'none',
+          letterSpacing: '0.5px',
+          fontSize: '0.775rem'
+        }}
       >
         {processedNotification}
       </Typography>
@@ -101,7 +106,7 @@ const badgeStyles: SxProps<Theme> = {
   alignItems: 'center',
   flexDirection: 'row',
   gap: 3,
-  p: theme => theme.spacing(2, 3),
+  p: theme => theme.spacing(3, 4),
   borderRadius: theme => theme.radius.full + 'px',
   maxHeight: '20px'
 };

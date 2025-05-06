@@ -20,7 +20,7 @@ import robert from './robert.jpg';
 import ryan from './ryan.jpg';
 import ryker from './ryker.jpg';
 
-interface TeamAvatar {
+export interface TeamAvatar {
   readonly id: string;
   readonly src: string;
 }

@@ -1,5 +1,5 @@
-import { ApolloClient, ApolloProvider, ApolloQueryResult, useQuery } from '@apollo/client';
-import { CircularProgress, Typography } from '@mui/material';
+import { ApolloClient, ApolloProvider, ApolloQueryResult } from '@apollo/client';
+import { CircularProgress } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { ReactNode } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
@@ -11,7 +11,6 @@ import { toNavigation } from './components/navigation/toNavigation';
 import { TopBar } from './components/navigation/topBar';
 import { PageNotFound } from './components/pageNotFound';
 import { ScrollToTop } from './components/scrollToTop';
-import { gql } from './gql-generated/gql';
 import { IdentityQueryQuery } from './gql-generated/graphql';
 import { Identity, useIdentity } from './hooks/useIdentity';
 import { useModeContext } from './modeContext';
@@ -114,32 +113,32 @@ function RedirectHomeIfSignedIn(props: { children: React.ReactNode }) {
   return <>{props.children}</>;
 }
 
-function UserOne() {
-  const { identity } = useIdentity();
-  const { data } = useQuery(query, { variables: { id: identity?.id ?? '' } });
+// function UserOne() {
+//   const { identity } = useIdentity();
+//   const { data } = useQuery(query, { variables: { id: identity?.id ?? '' } });
 
-  if (data == null) return <>loading</>;
+//   if (data == null) return <>loading</>;
 
-  return (
-    <>
-      <Typography>
-        ID: {data.userOne.id} &nbsp; FirstName: {data.userOne.firstName} &nbsp; LastName:{' '}
-        {data.userOne.lastName}
-      </Typography>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <Typography>
+//         ID: {data.userOne.id} &nbsp; FirstName: {data.userOne.firstName} &nbsp; LastName:{' '}
+//         {data.userOne.lastName}
+//       </Typography>
+//     </>
+//   );
+// }
 
-const query = gql(`
-  query GetUser($id: ID!) {
-    userOne(id: $id) {
-      id
-      firstName
-      lastName
-      email
-    }
-  }
-`);
+// const query = gql(`
+//   query GetUser($id: ID!) {
+//     userOne(id: $id) {
+//       id
+//       firstName
+//       lastName
+//       email
+//     }
+//   }
+// `);
 
 // {((): string => {
 //   if (screen.type === 'signInCode') return 'Send a code';

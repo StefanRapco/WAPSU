@@ -13,9 +13,7 @@ export async function userManyResolver(
   const where = toUserWhere({ input: input?.filter, identity });
 
   const total = await prisma.user.count({
-    where: { AND: where },
-    take: page.pageSize + 1,
-    skip: page.page * page.pageSize
+    where: { AND: where }
   });
 
   const users = await prisma.user.findMany({

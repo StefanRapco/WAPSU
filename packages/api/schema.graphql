@@ -4,6 +4,8 @@ scalar JSONObject
 
 type Query {
   identity: User
+  teamOne(id: ID!): Team!
+  teamMany(input: TeamManyInput): TeamManyOutput!
   userOne(id: ID!): User!
   userMany(input: UserManyInput): UserManyOutput!
 }
@@ -13,6 +15,7 @@ type Mutation {
   signInCodeComplete(input: SignInCodeCompleteInput!): Void
   signInCodeRequest(input: SignInCodeRequestInput!): Void
   signOut(input: SignOutInput!): Void
+  teamCreate(input: TeamCreateInput!): Team!
   userUpdate(input: UserUpdateInput!): User!
 }
 
@@ -23,6 +26,15 @@ type User {
   fullName: String!
   email: String!
   isPasswordNull: Boolean!
+  teams: [Team!]!
+}
+
+type Team {
+  id: ID!
+  name: String!
+  avatar: String!
+  createdAt: DateTime!
+  users: [User!]!
 }
 
 type UserManyOutput {
@@ -31,9 +43,20 @@ type UserManyOutput {
   hasMore: Boolean!
 }
 
+type TeamManyOutput {
+  items: [Team!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
 input UserManyInput {
   page: PageInput
   filter: UserManyFilterInput
+}
+
+input TeamManyInput {
+  page: PageInput
+  filter: TeamManyFilterInput
 }
 
 input PageInput {
@@ -45,6 +68,11 @@ input UserManyFilterInput {
   term: String
   teamId: [ID!]
   notTeamId: [ID!]
+  filterIdentity: Boolean
+}
+
+input TeamManyFilterInput {
+  term: String
 }
 
 input SignInCodeRequestInput {
@@ -69,4 +97,10 @@ input UserUpdateInput {
   id: ID!
   firstName: String
   lastName: String
+}
+
+input TeamCreateInput {
+  name: String!
+  avatar: String!
+  userIds: [ID!]
 }

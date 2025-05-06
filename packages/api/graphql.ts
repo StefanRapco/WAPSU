@@ -12,6 +12,9 @@ import { identityUpdateResolver } from './src/graphql/identityUpdateResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
 import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
 import { signOutResolver } from './src/graphql/signOutResolver';
+import { teamCreateResolver } from './src/graphql/teamCreateResolver';
+import { teamManyResolver } from './src/graphql/teamManyResolver';
+import { teamOneResolver } from './src/graphql/teamOneResolver';
 import { userManyResolver } from './src/graphql/userManyResolver';
 import { userOneResolver } from './src/graphql/userOneResolver';
 import { userUpdateResolver } from './src/graphql/userUpdateResolver';
@@ -21,6 +24,8 @@ const typeDefs = gql(fs.readFileSync('./schema.graphql', 'utf8'));
 
 const queries = {
   identity: identityResolver,
+  teamOne: teamOneResolver,
+  teamMany: teamManyResolver,
   userOne: userOneResolver,
   userMany: userManyResolver
 };
@@ -30,6 +35,7 @@ const mutations = {
   signInCodeRequest: signInCodeRequestResolver,
   signInCodeComplete: signInCodeCompleteResolver,
   signOut: signOutResolver,
+  teamCreate: teamCreateResolver,
   userUpdate: userUpdateResolver
 };
 

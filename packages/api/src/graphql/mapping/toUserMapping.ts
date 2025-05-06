@@ -1,6 +1,8 @@
 import { UserManyFilterInput, User as UserSchema } from '@app/frontend/src/gql-generated/graphql';
 import { Prisma, User } from '@prisma/client';
 import { InvocationContext } from '../../invocationContext';
+import { prisma } from '../../prisma';
+import { toTeamSchema } from './toTeamMapping';
 
 export function toUserSchema(props: User): UserSchema {
   return {
@@ -9,7 +11,17 @@ export function toUserSchema(props: User): UserSchema {
     lastName: props.lastName,
     fullName: toUserFullName({ firstName: props.firstName, lastName: props.lastName }),
     email: props.email,
-    isPasswordNull: props.password == null
+    isPasswordNull: props.password == null,
+    // @ts-expect-error
+    teams: async () => {
+      const teamsDb = await prisma.team.findMany({
+        where: {
+          users: { some: { userId: props.id } }
+        }
+      });
+
+      return teamsDb.map(toTeamSchema);
+    }
   };
 }
 
@@ -27,6 +39,12 @@ export function toUserWhere({
   const conditions: Prisma.UserWhereInput[] = new Array();
 
   if (filter == null) return conditions;
+
+  if (filter.filterIdentity) {
+    conditions.push({
+      id: { not: identity.id }
+    });
+  }
 
   if (filter.term != null && filter.term.length > 0) {
     const or: { OR: Prisma.UserWhereInput['OR'] } = { OR: new Array() };
