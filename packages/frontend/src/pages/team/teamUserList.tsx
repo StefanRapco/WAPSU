@@ -1,6 +1,7 @@
 import {
   Grid,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -8,17 +9,39 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
+import { Button } from '../../components/button';
+import { Drawer } from '../../components/drawer';
 import { SectionHeader } from '../../components/header';
+import { getInitials } from '../../components/navigation/accountMenu';
+import { CircularAvatar } from '../../components/navigation/circularAvatar';
+import { Pagination } from '../../components/pagination';
 import { Typography } from '../../components/typography';
+import { UserSelect } from '../../components/userSelect';
+import { useUserMany } from '../../hooks/useUserMany';
+
+interface User {
+  readonly id: number;
+  readonly name: string;
+  readonly email: string;
+  readonly role: string;
+}
 
 export function TeamUserList(): ReactNode {
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'Editor' },
-    { id: 4, name: 'Bob Brown', email: 'bob@example.com', role: 'Viewer' }
-  ];
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [filterTerm, setFilterTerm] = useState<string>('');
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+
+  const { data: teamUsers } = useUserMany({
+    term: filterTerm,
+    page,
+    pageSize: rowsPerPage
+  });
+
+  const handleAddUsers = (selectedUserIds: string[]) => {
+    alert(`Selected users: ${selectedUserIds}`);
+  };
 
   return (
     <Grid container spacing={9}>
@@ -29,6 +52,7 @@ export function TeamUserList(): ReactNode {
             { label: 'Team name' },
             { label: 'Team users' }
           ]}
+          action={<Button buttonText="Add user" onClick={() => setIsDrawerOpen(true)} />}
         >
           Team users
         </SectionHeader>
@@ -65,23 +89,49 @@ export function TeamUserList(): ReactNode {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map(user => (
+              {teamUsers?.items.map(user => (
                 <TableRow key={user.id}>
                   <TableCell>
-                    <Typography>{user.name}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={5}>
+                      <CircularAvatar size="s">{getInitials(user.fullName)}</CircularAvatar>
+                      <Typography>{user.fullName}</Typography>
+                    </Stack>
                   </TableCell>
                   <TableCell>
                     <Typography>{user.email}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{user.role}</Typography>
+                    <Typography>{'ROLEE'}</Typography>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+          {teamUsers != null && (
+            <Pagination
+              total={teamUsers.total}
+              hasMore={teamUsers.hasMore}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(newPage, newRowsPerPage) => {
+                setPage(newPage);
+                setRowsPerPage(newRowsPerPage);
+              }}
+              upperDivider
+            />
+          )}
         </TableContainer>
       </Grid>
+
+      <Drawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} title="Add Users to Team">
+        <UserSelect
+          onSubmit={values => {
+            handleAddUsers(values);
+            setIsDrawerOpen(false);
+          }}
+        />
+      </Drawer>
     </Grid>
   );
 }

@@ -20,4 +20,25 @@ model User {
   password  String?  @db.Text
   createdAt DateTime @default(now())
   mfa       String?  @db.TinyText
+
+  teams UserOnTeam[]
+}
+
+model Team {
+  id        String   @id
+  name      String   @db.TinyText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users UserOnTeam[]
+}
+
+model UserOnTeam {
+  userId String
+  teamId String
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@id([userId, teamId])
 }

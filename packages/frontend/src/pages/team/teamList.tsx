@@ -4,18 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { SectionHeader } from '../../components/header';
 import { Typography } from '../../components/typography';
-import designImage from '../../images/designTeam.jpg';
-import devImage from '../../images/devTeam.jpg';
-import hrImage from '../../images/hrTeam.jpg';
-import marketingImage from '../../images/marketingTeam.jpg';
 
 export function TeamList(): ReactNode {
   const navigate = useNavigate();
   const teams = [
-    { id: 1, name: 'Development Team', members: 10, image: devImage },
-    { id: 2, name: 'Marketing Team', members: 7, image: marketingImage },
-    { id: 3, name: 'Design Team', members: 5, image: designImage },
-    { id: 4, name: 'HR Team', members: 4, image: hrImage }
+    { id: 1, name: 'Development Team', members: 10, image: 'devImage' },
+    { id: 2, name: 'Marketing Team', members: 7, image: 'marketingImage' },
+    { id: 3, name: 'Design Team', members: 5, image: 'designImage' },
+    { id: 4, name: 'HR Team', members: 4, image: 'hrImage' }
   ];
 
   return (

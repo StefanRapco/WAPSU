@@ -1,0 +1,47 @@
+import { useQuery } from '@apollo/client';
+import { gql } from '../gql-generated/gql';
+
+interface UserFilter {
+  readonly term?: string;
+  readonly teamId?: [string];
+  readonly notTeamId?: [string];
+  readonly page?: number;
+  readonly pageSize?: number;
+}
+
+export function useUserMany(filter?: UserFilter) {
+  const { data, loading, error, refetch } = useQuery(query, {
+    variables: {
+      input: {
+        filter: {
+          teamId: filter?.teamId,
+          notTeamId: filter?.notTeamId,
+          term: filter?.term
+        },
+        page: {
+          page: filter?.page ?? 0,
+          pageSize: filter?.pageSize ?? 5
+        }
+      }
+    }
+  });
+  if (loading) return { data: undefined, refetch, loading, error };
+  if (data == null) return { data: null, refetch, loading, error };
+  return { data: data.userMany, refetch, loading, error };
+}
+
+const query = gql(`
+    query UserManyQuery($input: UserManyInput) {
+      userMany(input: $input) {
+        items {
+          id
+          firstName
+          lastName
+          fullName
+          email
+        }
+        total
+        hasMore
+      }
+    }
+  `);

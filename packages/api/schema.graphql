@@ -5,6 +5,7 @@ scalar JSONObject
 type Query {
   identity: User
   userOne(id: ID!): User!
+  userMany(input: UserManyInput): UserManyOutput!
 }
 
 type Mutation {
@@ -22,6 +23,28 @@ type User {
   fullName: String!
   email: String!
   isPasswordNull: Boolean!
+}
+
+type UserManyOutput {
+  items: [User!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+input UserManyInput {
+  page: PageInput
+  filter: UserManyFilterInput
+}
+
+input PageInput {
+  page: Int!
+  pageSize: Int!
+}
+
+input UserManyFilterInput {
+  term: String
+  teamId: [ID!]
+  notTeamId: [ID!]
 }
 
 input SignInCodeRequestInput {
