@@ -1,5 +1,5 @@
 import { UserManyFilterInput, User as UserSchema } from '@app/frontend/src/gql-generated/graphql';
-import { Prisma, SystemRole, TeamRole, User } from '@prisma/client';
+import { Prisma, SystemRole, TeamRole, User, UserStatus } from '@prisma/client';
 import { InvocationContext } from '../../invocationContext';
 import { prisma } from '../../prisma';
 import { toTeamSchema } from './toTeamMapping';
@@ -13,6 +13,7 @@ export function toUserSchema(props: User): UserSchema {
     email: props.email,
     isPasswordNull: props.password == null,
     systemRole: { label: prettifySystemRole(props.systemRole), value: props.systemRole },
+    status: { label: prettifyUserStatus(props.status), value: props.status },
     // @ts-expect-error
     teams: async () => {
       const teamsDb = await prisma.team.findMany({
@@ -41,6 +42,13 @@ export function prettifySystemRole(role: SystemRole): string {
   if (role === 'admin') return 'Admin';
   if (role === 'user') return 'User';
   throw new Error('Unknown system role');
+}
+
+export function prettifyUserStatus(status: UserStatus): string {
+  if (status === 'active') return 'Active';
+  if (status === 'archived') return 'Archived';
+  if (status === 'invited') return 'Invited';
+  throw new Error('Unknown user status');
 }
 
 export function toUserWhere({
@@ -88,15 +96,17 @@ export function toUserWhere({
     });
   }
 
-  if (filter.adminRoleOnly)
+  if (filter.systemRole != null && filter.systemRole.length > 0) {
     conditions.push({
-      systemRole: { equals: 'admin' }
+      systemRole: { in: filter.systemRole.map(role => role as SystemRole) }
     });
+  }
 
-  if (filter.userRoleOnly)
+  if (filter.status != null && filter.status.length > 0) {
     conditions.push({
-      systemRole: { equals: 'user' }
+      status: { in: filter.status.map(status => status as UserStatus) }
     });
+  }
 
   return conditions;
 }

@@ -21,6 +21,8 @@ model User {
   createdAt DateTime @default(now())
   mfa       String?  @db.TinyText
 
+  status UserStatus @default(active)
+
   systemRole SystemRole   @default(user)
   teams      UserOnTeam[]
 }
@@ -59,4 +61,10 @@ enum TeamRole {
 enum SystemRole {
   admin
   user
+}
+
+enum UserStatus {
+  active
+  archived
+  invited
 }

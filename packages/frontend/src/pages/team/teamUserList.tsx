@@ -21,7 +21,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Tooltip
 } from '@mui/material';
 import { ReactNode, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -80,8 +81,8 @@ export function TeamUserList(): ReactNode {
   const { data: teamUsers, refetch } = useTeamOne(id, {
     term: filterTerm,
     teamId: [id],
-    page: 0, // Get all users
-    pageSize: 1000 // Large enough to get all users
+    page: 0,
+    pageSize: 1000
   });
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
@@ -241,36 +242,57 @@ export function TeamUserList(): ReactNode {
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        aria-label="upgrade role"
-                        onClick={() => handleRoleChange(user.id, 'upgrade' as TeamUserEditAction)}
-                        disabled={loading || user.teamRole.value === 'owner'}
+                      <Tooltip
+                        title={
+                          user.teamRole.value === 'ambassador'
+                            ? 'Upgrade to owner'
+                            : 'Upgrade to ambassador'
+                        }
                       >
-                        <ArrowUpwardIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        aria-label="downgrade role"
-                        onClick={() => handleRoleChange(user.id, 'downgrade' as TeamUserEditAction)}
-                        disabled={loading || teamUsers?.users.total === 1}
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          aria-label="upgrade role"
+                          onClick={() => handleRoleChange(user.id, 'upgrade' as TeamUserEditAction)}
+                          disabled={loading || user.teamRole.value === 'owner'}
+                        >
+                          <ArrowUpwardIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip
+                        title={
+                          user.teamRole.value === 'owner'
+                            ? 'Downgrade to ambassador'
+                            : 'Downgrade to member'
+                        }
                       >
-                        <ArrowDownwardIcon />
-                      </IconButton>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          aria-label="downgrade role"
+                          onClick={() =>
+                            handleRoleChange(user.id, 'downgrade' as TeamUserEditAction)
+                          }
+                          disabled={loading || user.teamRole.value === 'member'}
+                        >
+                          <ArrowDownwardIcon />
+                        </IconButton>
+                      </Tooltip>
                     </Stack>
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      aria-label="remove user"
-                      onClick={() => handleRoleChange(user.id, 'remove' as TeamUserEditAction)}
-                      disabled={loading || user.teamRole.value === 'owner'}
-                    >
-                      <CloseIcon />
-                    </IconButton>
+                    <Tooltip title="Remove user">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        aria-label="remove user"
+                        onClick={() => handleRoleChange(user.id, 'remove' as TeamUserEditAction)}
+                        disabled={loading || user.teamRole.value === 'owner'}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

@@ -20,6 +20,8 @@ type Mutation {
   teamUserAdd(input: TeamUserAddInput!): Team!
   teamUserEdit(input: TeamUserEditInput!): Team!
   userUpdate(input: UserUpdateInput!): User!
+  userRoleUpdate(input: UserRoleUpdateInput!): User!
+  userArchive(input: UserArchiveInput!): User!
 }
 
 type User {
@@ -31,6 +33,7 @@ type User {
   isPasswordNull: Boolean!
   teams: [Team!]!
   systemRole: Option!
+  status: Option!
 }
 
 type Team {
@@ -90,8 +93,8 @@ input UserManyFilterInput {
   teamId: [ID!]
   notTeamId: [ID!]
   filterIdentity: Boolean
-  adminRoleOnly: Boolean
-  userRoleOnly: Boolean
+  systemRole: [String!]
+  status: [String!]
 }
 
 input TeamManyFilterInput {
@@ -156,4 +159,18 @@ input TeamEditInput {
 type Option {
   label: String!
   value: String!
+}
+
+input UserRoleUpdateInput {
+  userId: ID!
+  systemRole: SystemRole!
+}
+
+enum SystemRole {
+  admin
+  user
+}
+
+input UserArchiveInput {
+  userId: ID!
 }

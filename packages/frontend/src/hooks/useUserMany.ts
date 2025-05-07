@@ -8,8 +8,8 @@ interface UserFilter {
   readonly filterIdentity?: boolean;
   readonly page?: number;
   readonly pageSize?: number;
-  readonly adminRoleOnly?: boolean;
-  readonly userRoleOnly?: boolean;
+  readonly systemRole?: string[];
+  readonly status?: string[];
 }
 
 export function useUserMany(filter?: UserFilter) {
@@ -21,8 +21,8 @@ export function useUserMany(filter?: UserFilter) {
           notTeamId: filter?.notTeamId,
           term: filter?.term,
           filterIdentity: filter?.filterIdentity,
-          adminRoleOnly: filter?.adminRoleOnly,
-          userRoleOnly: filter?.userRoleOnly
+          systemRole: filter?.systemRole,
+          status: filter?.status
         },
         page: {
           page: filter?.page ?? 0,
@@ -46,6 +46,14 @@ const query = gql(`
           lastName
           fullName
           email
+          status {
+            label
+            value
+          }
+          systemRole {
+            label
+            value
+          }
         }
         total
         hasMore

@@ -294,8 +294,6 @@ function NavItem(props: NavigationItem) {
 const minNavBarWidth = '200px';
 
 function toNavItemStyles(): SxProps<Theme> {
-  const isModeDark = isDarkMode();
-
   return {
     p: 0,
     height: '48px',

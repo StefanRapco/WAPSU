@@ -37,10 +37,6 @@ export function TeamOverview(): ReactNode {
   const { data: team, refetch } = useTeamOne(id);
   const { editTeam, loading, error } = useTeamEdit();
 
-  const handleOpenDrawer = () => {
-    setIsDrawerOpen(true);
-  };
-
   const handleSubmit = async (values: { name: string; description: string; avatar: string }) => {
     if (team == null) return;
     try {

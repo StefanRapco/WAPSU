@@ -4,8 +4,9 @@ import { ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { SideBar } from '../../components/navigation/sideBar';
 import { isDarkMode } from '../../theme';
+import { SettingsUserArchivedList } from './settingsUserArchivedList';
+import { SettingsUserInvitedList } from './settingsUserInvitedList';
 import { SettingsUserList } from './settingsUserList';
-
 export function SettingsIndex(): ReactNode {
   const isModeDark = isDarkMode();
 
@@ -16,6 +17,16 @@ export function SettingsIndex(): ReactNode {
           {
             label: 'System users',
             to: '/settings/system-users',
+            icon: <GroupsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
+          },
+          {
+            label: 'Invited users',
+            to: '/settings/invited-users',
+            icon: <GroupsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
+          },
+          {
+            label: 'Archived users',
+            to: '/settings/archived-users',
             icon: <GroupsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
           }
         ]}
@@ -31,6 +42,8 @@ export function SettingsIndex(): ReactNode {
         <Routes>
           <Route path="" element={<Navigate to="system-users" replace />} />
           <Route path="/system-users" element={<SettingsUserList />} />
+          <Route path="/invited-users" element={<SettingsUserInvitedList />} />
+          <Route path="/archived-users" element={<SettingsUserArchivedList />} />
         </Routes>
       </Box>
     </Box>

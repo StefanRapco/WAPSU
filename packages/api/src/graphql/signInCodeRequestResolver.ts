@@ -9,6 +9,10 @@ export async function signInCodeRequestResolver(
   const email = input.email.toLocaleLowerCase();
   const { id } = await getUserIdByEmail(email);
 
+  const user = await prisma.user.findUniqueOrThrow({ where: { id }, select: { status: true } });
+
+  if (user.status === 'archived') throw new Error('User is archived!');
+
   const code = generateNumericCode(6);
   const mfa = await hashPassword(code);
 

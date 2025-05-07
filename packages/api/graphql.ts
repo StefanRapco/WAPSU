@@ -18,8 +18,10 @@ import { teamManyResolver } from './src/graphql/teamManyResolver';
 import { teamOneResolver } from './src/graphql/teamOneResolver';
 import { teamUserAddResolver } from './src/graphql/teamUserAddResolver';
 import { teamUserEditResolver } from './src/graphql/teamUserEditResolver';
+import { userArchiveResolver } from './src/graphql/userArchiveResolver';
 import { userManyResolver } from './src/graphql/userManyResolver';
 import { userOneResolver } from './src/graphql/userOneResolver';
+import { userRoleUpdateResolver } from './src/graphql/userRoleUpdateResolver';
 import { userUpdateResolver } from './src/graphql/userUpdateResolver';
 import { InvocationContext, protectResolvers } from './src/invocationContext';
 
@@ -42,7 +44,9 @@ const mutations = {
   teamEdit: teamEditResolver,
   teamUserAdd: teamUserAddResolver,
   teamUserEdit: teamUserEditResolver,
-  userUpdate: userUpdateResolver
+  userUpdate: userUpdateResolver,
+  userRoleUpdate: userRoleUpdateResolver,
+  userArchive: userArchiveResolver
 };
 
 const resolvers = {
