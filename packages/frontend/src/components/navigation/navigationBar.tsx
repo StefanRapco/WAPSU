@@ -8,12 +8,12 @@ import {
   Stack,
   SxProps,
   Theme,
-  Toolbar,
-  Tooltip
+  Toolbar
 } from '@mui/material';
 import React, { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { isDarkMode } from '../../theme';
+import { Typography } from '../typography';
 
 export type NavSection = '/' | '/teams' | '/users' | '/settings' | '/analytics' | '/tasks';
 
@@ -130,17 +130,59 @@ function NavBar(props: NavBarProps) {
 
 function NavItem(props: NavigationItem) {
   const navItemStyles = toNavItemStyles();
+  const navigate = useNavigate();
 
   if (props.to === undefined) {
     return (
       <ListItem
         disablePadding
-        sx={{ width: '48px', height: '48px', mb: 2 }}
+        sx={{ width: 'auto', height: '50px', mb: 2 }}
         onClick={props.onClick}
       >
-        <ListItemButton sx={navItemStyles} disableRipple>
-          <ListItemIcon sx={{ minWidth: 'auto' }}>{props.icon}</ListItemIcon>
+        <ListItemButton
+          sx={{
+            ...navItemStyles,
+            width: '50px',
+            height: '50px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          disableRipple
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              '& svg': { fontSize: '28px' }
+            }}
+          >
+            {props.icon}
+          </ListItemIcon>
         </ListItemButton>
+        <Box
+          onClick={() => {
+            if (props.to == null) return;
+            navigate(props.to);
+          }}
+        >
+          <Typography
+            variant="bodyS"
+            sx={{
+              ml: 3,
+              color: theme => theme.brandPalette.foreground.neutralFaded,
+              whiteSpace: 'nowrap',
+              fontSize: '16px',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            {props.label}
+          </Typography>
+        </Box>
       </ListItem>
     );
   }
@@ -150,23 +192,53 @@ function NavItem(props: NavigationItem) {
       <Stack direction="row" alignItems="center">
         {((): ReactNode => {
           return (
-            <Tooltip title={props.label} arrow placement="right">
-              <ListItem
-                disablePadding
-                sx={{ width: '48px', height: '48px', mb: 2 }}
-                onClick={props.onClick}
+            <ListItem
+              disablePadding
+              sx={{ width: 'auto', height: '50px', mb: 2 }}
+              onClick={props.onClick}
+            >
+              <ListItemButton
+                sx={{
+                  ...navItemStyles,
+                  width: '100%',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  px: 2
+                }}
+                disableRipple
+                component={NavLink}
+                to={props.to}
+                end
               >
-                <ListItemButton
-                  sx={navItemStyles}
-                  disableRipple
-                  component={NavLink}
-                  to={props.to}
-                  end
+                <ListItemIcon
+                  sx={{
+                    minWidth: 'auto',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    '& svg': { fontSize: '28px' }
+                  }}
                 >
-                  <ListItemIcon sx={{ minWidth: 'auto' }}>{props.icon}</ListItemIcon>
-                </ListItemButton>
-              </ListItem>
-            </Tooltip>
+                  {props.icon}
+                </ListItemIcon>
+                <Typography
+                  variant="bodyS"
+                  sx={{
+                    ml: 3,
+                    color: 'inherit',
+                    whiteSpace: 'nowrap',
+                    fontSize: '16px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 500,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {props.label}
+                </Typography>
+              </ListItemButton>
+            </ListItem>
           );
         })()}
       </Stack>
@@ -174,27 +246,52 @@ function NavItem(props: NavigationItem) {
   }
 
   return (
-    <Stack direction="row" alignItems="center">
-      {((): ReactNode => {
-        return (
-          <Tooltip title={props.label} arrow placement="right">
-            <ListItem
-              disablePadding
-              sx={{ width: '48px', height: '48px', mb: 2 }}
-              onClick={props.onClick}
-            >
-              <ListItemButton sx={navItemStyles} disableRipple component={NavLink} to={props.to}>
-                <ListItemIcon sx={{ minWidth: 'auto' }}>{props.icon}</ListItemIcon>
-              </ListItemButton>
-            </ListItem>
-          </Tooltip>
-        );
-      })()}
-    </Stack>
+    <ListItem disablePadding sx={{ width: 'auto', height: '50px', mb: 2 }} onClick={props.onClick}>
+      <ListItemButton
+        sx={{
+          ...navItemStyles,
+          width: '100%',
+          height: '50px',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          px: 2
+        }}
+        disableRipple
+        component={NavLink}
+        to={props.to}
+      >
+        <ListItemIcon
+          sx={{
+            minWidth: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            '& svg': { fontSize: '28px' }
+          }}
+        >
+          {props.icon}
+        </ListItemIcon>
+        <Typography
+          variant="bodyS"
+          sx={{
+            ml: 3,
+            color: 'inherit',
+            whiteSpace: 'nowrap',
+            fontSize: '16px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 500,
+            cursor: 'pointer'
+          }}
+        >
+          {props.label}
+        </Typography>
+      </ListItemButton>
+    </ListItem>
   );
 }
 
-const minNavBarWidth = '104px';
+const minNavBarWidth = '200px';
 
 function toNavItemStyles(): SxProps<Theme> {
   const isModeDark = isDarkMode();
@@ -202,13 +299,14 @@ function toNavItemStyles(): SxProps<Theme> {
   return {
     p: 0,
     height: '48px',
-    width: '48px',
+    width: 'auto',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     borderRadius: theme => theme.radius.m + 'px',
     transition: 'all 0.3s ease-in-out',
     pointerEvents: 'auto',
+    color: theme => theme.brandPalette.foreground.neutralFaded,
     '&:focus': {
       backgroundColor: theme => theme.brandPalette.background.fadedFocus
     },
@@ -216,14 +314,18 @@ function toNavItemStyles(): SxProps<Theme> {
       backgroundColor: theme => theme.brandPalette.background.fadedHover
     },
     '&.active': {
-      backgroundColor: theme => theme.brandPalette.background.secondaryActive
-    },
-    '&.active svg': {
-      color: isModeDark ? 'black' : 'white'
+      backgroundColor: 'black',
+      color: 'white',
+      '& svg': {
+        color: 'white'
+      },
+      '& .MuiTypography-root': {
+        color: 'white'
+      }
     },
     svg: {
       color: theme => theme.brandPalette.foreground.neutralFaded,
-      fontSize: '22px'
+      fontSize: '28px'
     }
   };
 }

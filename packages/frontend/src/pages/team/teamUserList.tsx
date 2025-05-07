@@ -1,6 +1,15 @@
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
+  IconButton,
   MenuItem,
   Pagination as MuiPagination,
   Paper,
@@ -22,15 +31,29 @@ import { SectionHeader } from '../../components/header';
 import { getInitials } from '../../components/navigation/accountMenu';
 import { CircularAvatar } from '../../components/navigation/circularAvatar';
 import { SearchField } from '../../components/searchField';
+import { SnackBarSuccess } from '../../components/snackbarSuccess';
 import { Typography } from '../../components/typography';
 import { UserSelect } from '../../components/userSelect';
+import { TeamUserEditAction } from '../../gql-generated/graphql';
+import { useIdentity } from '../../hooks/useIdentity';
 import { useTeamOne } from '../../hooks/useTeamOne';
-import { useUserMany } from '../../hooks/useUserMany';
+import { useTeamUserManagement } from '../../hooks/useTeamUserManagement';
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 25, 50];
 
+const rolePriority: Record<'owner' | 'ambassador' | 'member', number> = {
+  owner: 0,
+  ambassador: 1,
+  member: 2
+};
+
 export function TeamUserList(): ReactNode {
   const { id } = useParams<{ id: string }>();
+  const { identity } = useIdentity();
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
+    open: false,
+    message: ''
+  });
 
   if (id == null) throw new Error('Team ID is required');
 
@@ -40,12 +63,25 @@ export function TeamUserList(): ReactNode {
   const [page, setPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
-  const { data: teamUsers } = useUserMany({
+  const { addUsers, editUser, loading } = useTeamUserManagement();
+
+  const { data: teamUsers, refetch } = useTeamOne(id, {
     term: filterTerm,
     teamId: [id],
-    page: page - 1,
-    pageSize: rowsPerPage
+    page: 0, // Get all users
+    pageSize: 1000 // Large enough to get all users
   });
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
@@ -62,7 +98,71 @@ export function TeamUserList(): ReactNode {
     setPage(1); // Reset to first page when searching
   };
 
+  const handleAddUsers = async () => {
+    if (selectedUsers.length === 0) return;
+    await addUsers(id, selectedUsers);
+    setIsDrawerOpen(false);
+    setSelectedUsers([]);
+    refetch();
+    setSnackbar({ open: true, message: 'Users added to team successfully' });
+  };
+
+  const handleRoleChange = async (userId: string, action: TeamUserEditAction) => {
+    const targetUser = teamUsers?.users.items.find(u => u.id === userId);
+    const currentUser = teamUsers?.users.items.find(u => u.id === identity?.id);
+
+    if (!targetUser || !currentUser) return;
+
+    // Check if this is an owner transfer
+    if (
+      action === 'upgrade' &&
+      targetUser.teamRole.value === 'ambassador' &&
+      currentUser.teamRole.value === 'owner'
+    ) {
+      setConfirmDialog({
+        open: true,
+        title: 'Transfer Ownership',
+        message: 'Are you sure you want to transfer ownership? You will lose your owner role.',
+        onConfirm: async () => {
+          await editUser(id, userId, action as TeamUserEditAction);
+          refetch();
+          setConfirmDialog({ ...confirmDialog, open: false });
+          setSnackbar({ open: true, message: 'Ownership transferred successfully' });
+        }
+      });
+      return;
+    }
+
+    await editUser(id, userId, action as TeamUserEditAction);
+    refetch();
+
+    switch (action) {
+      case 'upgrade':
+        setSnackbar({ open: true, message: 'User role upgraded successfully' });
+        break;
+      case 'downgrade':
+        setSnackbar({ open: true, message: 'User role downgraded successfully' });
+        break;
+      case 'remove':
+        setSnackbar({ open: true, message: 'User removed from team successfully' });
+        break;
+    }
+  };
+
   if (team == null) return null;
+
+  const copy = [...(teamUsers?.users.items ?? [])];
+
+  const sortedUsers = copy.sort((a, b) => {
+    const roleDiff = rolePriority[a.teamRole.value] - rolePriority[b.teamRole.value];
+    if (roleDiff !== 0) {
+      return roleDiff;
+    }
+    return a.fullName.localeCompare(b.fullName);
+  });
+
+  // Apply pagination after sorting
+  const paginatedUsers = sortedUsers.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
     <Grid container spacing={9}>
@@ -116,10 +216,16 @@ export function TeamUserList(): ReactNode {
                 <TableCell>
                   <Typography>Role</Typography>
                 </TableCell>
+                <TableCell>
+                  <Typography>Role Management</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>Remove User</Typography>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {teamUsers?.items.map(user => (
+              {paginatedUsers.map(user => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <Stack direction="row" alignItems="center" spacing={5}>
@@ -131,14 +237,47 @@ export function TeamUserList(): ReactNode {
                     <Typography>{user.email}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{'ROLEE'}</Typography>
+                    <Typography>{user.teamRole.label}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1}>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        aria-label="upgrade role"
+                        onClick={() => handleRoleChange(user.id, 'upgrade' as TeamUserEditAction)}
+                        disabled={loading || user.teamRole.value === 'owner'}
+                      >
+                        <ArrowUpwardIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        aria-label="downgrade role"
+                        onClick={() => handleRoleChange(user.id, 'downgrade' as TeamUserEditAction)}
+                        disabled={loading || teamUsers?.users.total === 1}
+                      >
+                        <ArrowDownwardIcon />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      aria-label="remove user"
+                      onClick={() => handleRoleChange(user.id, 'remove' as TeamUserEditAction)}
+                      disabled={loading || user.teamRole.value === 'owner'}
+                    >
+                      <CloseIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
 
-          {teamUsers != null && (
+          {teamUsers != null && teamUsers.users.items != null && (
             <Box
               sx={{
                 display: 'flex',
@@ -166,8 +305,9 @@ export function TeamUserList(): ReactNode {
                   ))}
                 </Select>
               </Stack>
+
               <MuiPagination
-                count={Math.ceil(teamUsers.total / rowsPerPage)}
+                count={Math.ceil(sortedUsers.length / rowsPerPage)}
                 page={page}
                 onChange={handlePageChange}
                 color="primary"
@@ -177,6 +317,23 @@ export function TeamUserList(): ReactNode {
           )}
         </TableContainer>
       </Grid>
+
+      <Dialog
+        open={confirmDialog.open}
+        onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}
+      >
+        <DialogTitle>{confirmDialog.title}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{confirmDialog.message}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            buttonText="Cancel"
+            onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}
+          />
+          <Button buttonText="Confirm" onClick={confirmDialog.onConfirm} />
+        </DialogActions>
+      </Dialog>
 
       <Drawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} title="Add Users to Team">
         <Stack spacing={2} ml={8} mr={8}>
@@ -188,13 +345,19 @@ export function TeamUserList(): ReactNode {
           <Box sx={{ mt: 3 }}>
             <Button
               type="submit"
-              disabled={selectedUsers == null || selectedUsers.length === 0}
+              disabled={selectedUsers == null || selectedUsers.length === 0 || loading}
               buttonText="Add Selected Users"
-              onClick={() => setIsDrawerOpen(false)}
+              onClick={handleAddUsers}
             />
           </Box>
         </Stack>
       </Drawer>
+
+      <SnackBarSuccess
+        open={snackbar.open}
+        successMsg={snackbar.message}
+        setSuccess={value => setSnackbar({ ...snackbar, open: value })}
+      />
     </Grid>
   );
 }

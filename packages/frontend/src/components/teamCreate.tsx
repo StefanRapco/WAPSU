@@ -116,11 +116,13 @@ const mutation = gql(`
       avatar
       createdAt
       users {
-        id
-        firstName
-        lastName
-        fullName
-        email
+        items {
+          id
+          firstName
+          lastName
+          fullName
+          email
+        }
       }
     }
   }

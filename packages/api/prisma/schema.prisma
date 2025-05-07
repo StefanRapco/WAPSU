@@ -21,14 +21,16 @@ model User {
   createdAt DateTime @default(now())
   mfa       String?  @db.TinyText
 
-  teams UserOnTeam[]
+  systemRole SystemRole   @default(user)
+  teams      UserOnTeam[]
 }
 
 model Team {
-  id        String   @id
-  name      String   @db.TinyText
-  avatar    String   @db.TinyText
-  createdAt DateTime @default(now())
+  id          String   @id
+  name        String   @db.TinyText
+  description String?  @db.Text
+  avatar      String   @db.TinyText
+  createdAt   DateTime @default(now())
 
   users UserOnTeam[]
 }
@@ -40,8 +42,21 @@ model UserOnTeam {
   isOwner  Boolean  @default(false)
   joinedAt DateTime @default(now())
 
+  teamRole TeamRole @default(member)
+
   user User @relation(fields: [userId], references: [id])
   team Team @relation(fields: [teamId], references: [id])
 
   @@id([userId, teamId])
+}
+
+enum TeamRole {
+  owner
+  ambassador
+  member
+}
+
+enum SystemRole {
+  admin
+  user
 }

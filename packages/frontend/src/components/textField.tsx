@@ -13,12 +13,16 @@ interface TextFieldProps {
   readonly error?: boolean;
   readonly autofocus?: boolean;
   readonly disabled?: boolean;
+  readonly multiline?: boolean;
+  readonly rows?: number;
 }
 
 export function TextField({
   type = 'text',
   variant = 'outlined',
   autofocus = false,
+  multiline = false,
+  rows,
   ...props
 }: TextFieldProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -30,6 +34,8 @@ export function TextField({
           {...field}
           {...props}
           autoFocus={autofocus}
+          multiline={multiline}
+          rows={rows}
           type={((): TextFieldProps['type'] => {
             if (type === 'text') return 'text';
             if (type === 'password' && showPassword) return 'text';

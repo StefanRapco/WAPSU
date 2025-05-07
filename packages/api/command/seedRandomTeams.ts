@@ -50,6 +50,7 @@ export async function seedRandomTeams(count = 10) {
         create: teamMembers.map((user, index) => ({
           userId: user.id,
           isOwner: index === 0,
+          teamRole: index === 0 ? 'owner' : 'member',
           joinedAt: new Date()
         }))
       }

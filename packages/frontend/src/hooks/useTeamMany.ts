@@ -5,6 +5,7 @@ interface TeamFilter {
   readonly term?: string;
   readonly page?: number;
   readonly pageSize?: number;
+  readonly userId?: string[];
 }
 
 export function useTeamMany(filter?: TeamFilter) {
@@ -12,7 +13,8 @@ export function useTeamMany(filter?: TeamFilter) {
     variables: {
       input: {
         filter: {
-          term: filter?.term
+          term: filter?.term,
+          userId: filter?.userId
         },
         page: {
           page: filter?.page ?? 0,
@@ -34,15 +36,24 @@ const query = gql(`
         name
         avatar
         createdAt
+        description
         users {
+          items {
           id
           firstName
           lastName
           email
+          teamRole {
+            label
+            value
+          }
         }
+        total
+        hasMore
       }
-      total
-      hasMore
+    }
+    total
+    hasMore
     }
   }
 `);

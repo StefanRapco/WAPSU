@@ -1,5 +1,5 @@
 import { UserManyFilterInput, User as UserSchema } from '@app/frontend/src/gql-generated/graphql';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, SystemRole, TeamRole, User } from '@prisma/client';
 import { InvocationContext } from '../../invocationContext';
 import { prisma } from '../../prisma';
 import { toTeamSchema } from './toTeamMapping';
@@ -12,6 +12,7 @@ export function toUserSchema(props: User): UserSchema {
     fullName: toUserFullName({ firstName: props.firstName, lastName: props.lastName }),
     email: props.email,
     isPasswordNull: props.password == null,
+    systemRole: { label: prettifySystemRole(props.systemRole), value: props.systemRole },
     // @ts-expect-error
     teams: async () => {
       const teamsDb = await prisma.team.findMany({
@@ -25,8 +26,21 @@ export function toUserSchema(props: User): UserSchema {
   };
 }
 
-function toUserFullName(props: { firstName: string; lastName: string }): string {
+export function toUserFullName(props: { firstName: string; lastName: string }): string {
   return `${props.firstName} ${props.lastName}`;
+}
+
+export function prettifyTeamRole(role: TeamRole): string {
+  if (role === 'owner') return 'Owner';
+  if (role === 'ambassador') return 'Ambassador';
+  if (role === 'member') return 'Member';
+  throw new Error('Unknown team role');
+}
+
+export function prettifySystemRole(role: SystemRole): string {
+  if (role === 'admin') return 'Admin';
+  if (role === 'user') return 'User';
+  throw new Error('Unknown system role');
 }
 
 export function toUserWhere({

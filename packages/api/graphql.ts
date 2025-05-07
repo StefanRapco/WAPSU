@@ -13,8 +13,11 @@ import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteReso
 import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
 import { signOutResolver } from './src/graphql/signOutResolver';
 import { teamCreateResolver } from './src/graphql/teamCreateResolver';
+import { teamEditResolver } from './src/graphql/teamEditResolver';
 import { teamManyResolver } from './src/graphql/teamManyResolver';
 import { teamOneResolver } from './src/graphql/teamOneResolver';
+import { teamUserAddResolver } from './src/graphql/teamUserAddResolver';
+import { teamUserEditResolver } from './src/graphql/teamUserEditResolver';
 import { userManyResolver } from './src/graphql/userManyResolver';
 import { userOneResolver } from './src/graphql/userOneResolver';
 import { userUpdateResolver } from './src/graphql/userUpdateResolver';
@@ -36,6 +39,9 @@ const mutations = {
   signInCodeComplete: signInCodeCompleteResolver,
   signOut: signOutResolver,
   teamCreate: teamCreateResolver,
+  teamEdit: teamEditResolver,
+  teamUserAdd: teamUserAddResolver,
+  teamUserEdit: teamUserEditResolver,
   userUpdate: userUpdateResolver
 };
 

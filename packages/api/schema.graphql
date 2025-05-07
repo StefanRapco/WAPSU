@@ -16,6 +16,9 @@ type Mutation {
   signInCodeRequest(input: SignInCodeRequestInput!): Void
   signOut(input: SignOutInput!): Void
   teamCreate(input: TeamCreateInput!): Team!
+  teamEdit(input: TeamEditInput!): Team!
+  teamUserAdd(input: TeamUserAddInput!): Team!
+  teamUserEdit(input: TeamUserEditInput!): Team!
   userUpdate(input: UserUpdateInput!): User!
 }
 
@@ -27,14 +30,32 @@ type User {
   email: String!
   isPasswordNull: Boolean!
   teams: [Team!]!
+  systemRole: Option!
 }
 
 type Team {
   id: ID!
   name: String!
+  description: String
   avatar: String!
   createdAt: DateTime!
-  users: [User!]!
+  users(input: UserManyInput): TeamUserOutput!
+}
+
+type TeamUserOutput {
+  items: [TeamUser!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+type TeamUser {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  email: String!
+  teamRole: Option!
+  systemRole: Option!
 }
 
 type UserManyOutput {
@@ -73,6 +94,7 @@ input UserManyFilterInput {
 
 input TeamManyFilterInput {
   term: String
+  userId: [ID!]
 }
 
 input SignInCodeRequestInput {
@@ -103,4 +125,33 @@ input TeamCreateInput {
   name: String!
   avatar: String!
   userIds: [ID!]
+}
+
+input TeamUserAddInput {
+  teamId: ID!
+  userIds: [ID!]!
+}
+
+input TeamUserEditInput {
+  teamId: ID!
+  userId: ID!
+  action: TeamUserEditAction!
+}
+
+enum TeamUserEditAction {
+  upgrade
+  downgrade
+  remove
+}
+
+input TeamEditInput {
+  teamId: ID!
+  name: String
+  description: String
+  avatar: String
+}
+
+type Option {
+  label: String!
+  value: String!
 }

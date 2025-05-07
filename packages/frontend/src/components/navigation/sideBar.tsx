@@ -50,7 +50,21 @@ function NavItem({ icon, to = '/', label, end = true }: SideNavItem) {
     <ListItem disablePadding>
       <ListItemButton component={NavLink} sx={navItemStyles} disableRipple to={to} end={end}>
         {icon != null && <ListItemIcon sx={{ minWidth: 'auto', mr: 4 }}>{icon}</ListItemIcon>}
-        <ListItemText primary={<Typography variant="bodyMEmphasis">{label}</Typography>} />
+        <ListItemText
+          primary={
+            <Typography
+              sx={{
+                whiteSpace: 'nowrap',
+                fontSize: '16px',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500,
+                cursor: 'pointer'
+              }}
+            >
+              {label}
+            </Typography>
+          }
+        />
       </ListItemButton>
     </ListItem>
   );

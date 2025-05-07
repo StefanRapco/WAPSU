@@ -10,7 +10,7 @@ interface TeamRoutesProps {
 export function TeamRoutes(props: TeamRoutesProps) {
   return (
     <Routes>
-      <Route path="/" element={<TeamList />} />
+      <Route path="/" element={<TeamList identity={props.identity} />} />
       <Route path=":id/*" element={<TeamIndex />} />
     </Routes>
   );

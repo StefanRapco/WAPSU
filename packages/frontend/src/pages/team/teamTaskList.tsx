@@ -10,10 +10,18 @@ import {
   Paper
 } from '@mui/material';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { SectionHeader } from '../../components/header';
 import { Typography } from '../../components/typography';
+import { useTeamOne } from '../../hooks/useTeamOne';
 
 export function TeamTaskList() {
+  const { id } = useParams<{ id: string }>();
+
+  if (id == null) throw new Error('Team ID is required');
+
+  const { data } = useTeamOne(id);
+
   const [tasks, setTasks] = useState([
     { id: 1, name: 'Complete project report', dueDate: '2025-03-10', completed: false },
     { id: 2, name: 'Prepare presentation for meeting', dueDate: '2025-03-12', completed: false },
@@ -30,6 +38,8 @@ export function TeamTaskList() {
     setTasks(tasks.filter(task => task.id !== taskId));
   };
 
+  if (data == null) return null;
+
   return (
     <>
       <Grid container spacing={9}>
@@ -37,7 +47,7 @@ export function TeamTaskList() {
           <SectionHeader
             breadcrumbs={[
               { label: 'Teams', to: '/teams' },
-              { label: 'Team name' },
+              { label: data.name, to: `/teams/${id}` },
               { label: 'Team tasks' }
             ]}
           >

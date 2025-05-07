@@ -25,7 +25,8 @@ export function useUserMany(filter?: UserFilter) {
           pageSize: filter?.pageSize ?? 5
         }
       }
-    }
+    },
+    fetchPolicy: 'cache-and-network'
   });
   if (loading) return { data: undefined, refetch, loading, error };
   if (data == null) return { data: null, refetch, loading, error };

@@ -8,11 +8,12 @@ import { SnackBarSuccess, snackbarUseEffect } from '../../components/snackbarSuc
 import { TeamCard } from '../../components/teamCard';
 import { TeamCreate } from '../../components/teamCreate';
 import { Typography } from '../../components/typography';
+import { Identity } from '../../hooks/useIdentity';
 import { useTeamMany } from '../../hooks/useTeamMany';
 
 const ITEMS_PER_PAGE = 16;
 
-export function TeamList(): ReactNode {
+export function TeamList(props: { identity: NonNullable<Identity> }): ReactNode {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -21,7 +22,8 @@ export function TeamList(): ReactNode {
   const { data, refetch } = useTeamMany({
     page: page - 1,
     pageSize: ITEMS_PER_PAGE,
-    term: searchTerm
+    term: searchTerm,
+    userId: [props.identity.id]
   });
 
   const handleTeamCreate = () => {

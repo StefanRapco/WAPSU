@@ -25,18 +25,26 @@ interface TeamCardProps {
     readonly id: string;
     readonly name: string;
     readonly avatar: string;
+    readonly description?: string | null | undefined;
     readonly createdAt: string;
-    readonly users: Array<{
-      readonly id: string;
-      readonly firstName: string;
-      readonly lastName: string;
-      readonly email: string;
-    }>;
+    readonly users: {
+      readonly items: Array<{
+        readonly id: string;
+        readonly firstName: string;
+        readonly lastName: string;
+        readonly email: string;
+        readonly teamRole: {
+          readonly label: string;
+          readonly value: string;
+        };
+      }>;
+    };
   };
 }
 
 export function TeamCard({ team }: TeamCardProps): ReactNode {
   const navigate = useNavigate();
+  const remainingMembers = team.users.items.length - 4;
 
   return (
     <Card
@@ -88,8 +96,7 @@ export function TeamCard({ team }: TeamCardProps): ReactNode {
               whiteSpace: 'nowrap'
             }}
           >
-            A collaborative team focused on delivering high-quality results through effective
-            communication and teamwork.
+            {team.description ?? 'No description found...'}
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
             <AvatarGroup
@@ -100,7 +107,7 @@ export function TeamCard({ team }: TeamCardProps): ReactNode {
                 }
               }}
             >
-              {team.users.slice(0, 4).map(user => (
+              {team.users.items.slice(0, 4).map(user => (
                 <Tooltip
                   key={user.id}
                   title={
@@ -147,6 +154,42 @@ export function TeamCard({ team }: TeamCardProps): ReactNode {
                 </Tooltip>
               ))}
             </AvatarGroup>
+            {remainingMembers > 0 && (
+              <>
+                <Tooltip
+                  title={
+                    <Box sx={{ p: 1 }}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {`+${remainingMembers} members`}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  }
+                  arrow
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        bgcolor: 'background.paper',
+                        color: 'text.primary',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        '& .MuiTooltip-arrow': {
+                          color: 'background.paper'
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <Avatar sx={{ width: 32, height: 32 }}>
+                    <CircularAvatar size="s">
+                      {remainingMembers <= 9 ? `+${remainingMembers}` : '9+'}
+                    </CircularAvatar>
+                  </Avatar>
+                </Tooltip>
+              </>
+            )}
           </Box>
         </Box>
 
@@ -164,7 +207,7 @@ export function TeamCard({ team }: TeamCardProps): ReactNode {
           />
           <Chip
             icon={<Group fontSize="small" />}
-            label={`${team.users.length} Act. Team Members`}
+            label={`${team.users.items.length} Act. Team Members`}
             size="small"
             sx={{
               backgroundColor: 'rgba(0, 0, 0, 0.04)',
