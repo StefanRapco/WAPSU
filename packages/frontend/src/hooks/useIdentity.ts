@@ -22,6 +22,14 @@ export const identityQuery = gql(`
       fullName
       email
       isPasswordNull
+      systemRole {
+        label
+        value
+      }
+      status {
+        label
+        value
+      }
     }
   }
 `);

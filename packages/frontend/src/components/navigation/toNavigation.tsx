@@ -3,9 +3,10 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import TuneIcon from '@mui/icons-material/Tune';
+import { Identity } from '../../hooks/useIdentity';
 import { NavigationItem } from './navigationBar';
 
-export function toNavigation(): NavigationItem[] {
+export function toNavigation(props: NonNullable<Identity>): NavigationItem[] {
   const dashboard: NavigationItem = {
     icon: <SpaceDashboardIcon />,
     to: '/',
@@ -48,12 +49,13 @@ export function toNavigation(): NavigationItem[] {
     )
   ];
 
-  navigation.push({
-    icon: <TuneIcon />,
-    to: '/settings',
-    label: 'Settings',
-    slot: 'settings'
-  });
+  if (props.systemRole.value === 'admin')
+    navigation.push({
+      icon: <TuneIcon />,
+      to: '/settings',
+      label: 'Settings',
+      slot: 'settings'
+    });
 
   return navigation;
 }

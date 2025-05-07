@@ -70,7 +70,7 @@ function ProtectedRoutes(props: {
   identity: NonNullable<Identity>;
   refetchIdentity: () => Promise<ApolloQueryResult<IdentityQueryQuery>>;
 }) {
-  const navigation = toNavigation();
+  const navigation = toNavigation(props.identity);
 
   return (
     <DefaultLayout
@@ -98,7 +98,14 @@ function ProtectedRoutes(props: {
         <Route path="/tasks/*" element={<TaskList />} />
         <Route path="/teams/*" element={<TeamRoutes identity={props.identity} />} />
         <Route path="/analytics/*" element={<Analytics />} />
-        <Route path="/settings/*" element={<SettingsIndex />} />
+        <Route
+          path="/settings/*"
+          element={
+            <EnsureRouteRole identity={props.identity} sufficientRoles={['admin']}>
+              <SettingsIndex />
+            </EnsureRouteRole>
+          }
+        />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </DefaultLayout>
@@ -111,6 +118,16 @@ function RedirectHomeIfSignedIn(props: { children: React.ReactNode }) {
 
   if (isLoggedIn) return <Navigate to="/" />;
   return <>{props.children}</>;
+}
+
+function EnsureRouteRole(props: {
+  readonly children: React.ReactNode;
+  readonly identity: Pick<NonNullable<Identity>, 'systemRole'>;
+  readonly sufficientRoles: string[];
+}) {
+  if (props.sufficientRoles.includes(props.identity.systemRole.value)) return <>{props.children}</>;
+
+  return <Navigate to="/" replace />;
 }
 
 // function UserOne() {
