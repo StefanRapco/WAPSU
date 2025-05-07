@@ -8,6 +8,8 @@ interface UserFilter {
   readonly filterIdentity?: boolean;
   readonly page?: number;
   readonly pageSize?: number;
+  readonly adminRoleOnly?: boolean;
+  readonly userRoleOnly?: boolean;
 }
 
 export function useUserMany(filter?: UserFilter) {
@@ -18,7 +20,9 @@ export function useUserMany(filter?: UserFilter) {
           teamId: filter?.teamId,
           notTeamId: filter?.notTeamId,
           term: filter?.term,
-          filterIdentity: filter?.filterIdentity
+          filterIdentity: filter?.filterIdentity,
+          adminRoleOnly: filter?.adminRoleOnly,
+          userRoleOnly: filter?.userRoleOnly
         },
         page: {
           page: filter?.page ?? 0,

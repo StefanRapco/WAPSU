@@ -90,6 +90,8 @@ input UserManyFilterInput {
   teamId: [ID!]
   notTeamId: [ID!]
   filterIdentity: Boolean
+  adminRoleOnly: Boolean
+  userRoleOnly: Boolean
 }
 
 input TeamManyFilterInput {

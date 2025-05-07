@@ -88,5 +88,15 @@ export function toUserWhere({
     });
   }
 
+  if (filter.adminRoleOnly)
+    conditions.push({
+      systemRole: { equals: 'admin' }
+    });
+
+  if (filter.userRoleOnly)
+    conditions.push({
+      systemRole: { equals: 'user' }
+    });
+
   return conditions;
 }
