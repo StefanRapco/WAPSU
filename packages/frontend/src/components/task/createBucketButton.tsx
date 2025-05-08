@@ -57,7 +57,7 @@ export function CreateBucketButton({ onCreateBucket }: CreateBucketButtonProps) 
 
   return (
     <Button
-      buttonText="+ Add Bucket"
+      buttonText="Add Bucket"
       onClick={() => setIsEditing(true)}
       size="small"
       sx={{ width: '100%', minWidth: 280, mt: 8 }}

@@ -12,6 +12,7 @@ import { CreateTaskCard } from './createTaskCard';
 
 interface KanbanBoardProps {
   readonly buckets: Bucket[];
+  readonly disabled?: boolean;
   readonly onTaskEdit: (task: any) => void;
   readonly onTaskDelete: (task: any) => void;
   readonly onChecklistItemToggle: (item: any) => void;
@@ -40,6 +41,8 @@ export function KanbanBoard(props: KanbanBoardProps) {
   }, [editingBucketId]);
 
   const handleDragEnd = (result: DropResult) => {
+    if (props.disabled) return;
+
     const { destination, draggableId, type } = result;
 
     if (destination == null) return;
@@ -80,7 +83,12 @@ export function KanbanBoard(props: KanbanBoardProps) {
       }}
     >
       <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="COLUMN"
+          isDropDisabled={props.disabled}
+        >
           {provided => (
             <Box
               ref={provided.innerRef}
@@ -107,7 +115,12 @@ export function KanbanBoard(props: KanbanBoardProps) {
               }}
             >
               {props.buckets.map((bucket, index) => (
-                <Draggable key={bucket.id} draggableId={bucket.id} index={index}>
+                <Draggable
+                  key={bucket.id}
+                  draggableId={bucket.id}
+                  index={index}
+                  isDragDisabled={props.disabled}
+                >
                   {(provided, snapshot) => (
                     <Box
                       ref={provided.innerRef}
@@ -206,7 +219,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
                       </Stack>
 
                       <Button
-                        buttonText="+ Add Task"
+                        buttonText="Add Task"
                         onClick={() => setCreatingTaskInBucket(bucket.id)}
                         size="small"
                         sx={{
@@ -231,7 +244,11 @@ export function KanbanBoard(props: KanbanBoardProps) {
                           boxShadow: `0 2px 4px ${theme.palette.grey[200]}`
                         }}
                       >
-                        <Droppable droppableId={bucket.id}>
+                        <Droppable
+                          droppableId={bucket.id}
+                          type="TASK"
+                          isDropDisabled={props.disabled}
+                        >
                           {(provided, snapshot) => (
                             <Box
                               ref={provided.innerRef}
@@ -272,7 +289,12 @@ export function KanbanBoard(props: KanbanBoardProps) {
                                 />
                               )}
                               {bucket.tasks.map((task, index) => (
-                                <Draggable key={task.id} draggableId={task.id} index={index}>
+                                <Draggable
+                                  key={task.id}
+                                  draggableId={task.id}
+                                  index={index}
+                                  isDragDisabled={props.disabled}
+                                >
                                   {(provided, snapshot) => (
                                     <Box
                                       ref={provided.innerRef}
@@ -305,9 +327,11 @@ export function KanbanBoard(props: KanbanBoardProps) {
                 </Draggable>
               ))}
               {provided.placeholder}
-              <Box sx={{ minWidth: 320, maxWidth: 320, p: 2 }}>
-                <CreateBucketButton onCreateBucket={props.onCreateBucket} />
-              </Box>
+              {props.buckets.length > 0 && !props.disabled && (
+                <Box sx={{ minWidth: 320, maxWidth: 320, p: 2 }}>
+                  <CreateBucketButton onCreateBucket={props.onCreateBucket} />
+                </Box>
+              )}
             </Box>
           )}
         </Droppable>

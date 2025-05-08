@@ -121,7 +121,7 @@ async function handleSortOrder(
         id: taskId
       },
       data: {
-        sortOrder: sortOrder
+        sortOrder
       }
     });
 
@@ -145,7 +145,7 @@ async function handleSortOrder(
 
   await prisma.task.updateMany({
     where: {
-      bucketId: bucketId,
+      bucketId,
       sortOrder: {
         gte: sortOrder
       }
@@ -162,8 +162,8 @@ async function handleSortOrder(
       id: taskId
     },
     data: {
-      sortOrder: sortOrder,
-      bucketId: bucketId
+      sortOrder,
+      bucketId
     }
   });
 }

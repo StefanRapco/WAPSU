@@ -49,11 +49,11 @@ async function handleSortOrder(bucketId: string, sortOrder: number | null | unde
 
   if (sortOrder == null) return;
 
-  if (bucket.sortOrder == sortOrder) return;
+  if (bucket.sortOrder === sortOrder) return;
 
-  //userId buckets
+  // userId buckets
   if (bucket.userId != null) {
-    //move right
+    // move right
     if (bucket.sortOrder < sortOrder)
       await prisma.bucket.updateMany({
         where: {
@@ -70,7 +70,7 @@ async function handleSortOrder(bucketId: string, sortOrder: number | null | unde
         }
       });
 
-    //move left
+    // move left
     if (bucket.sortOrder > sortOrder)
       await prisma.bucket.updateMany({
         where: {
@@ -95,9 +95,9 @@ async function handleSortOrder(bucketId: string, sortOrder: number | null | unde
     return;
   }
 
-  //teamId buckets
+  // teamId buckets
   if (bucket.teamId != null) {
-    //move right
+    // move right
     if (bucket.sortOrder < sortOrder)
       await prisma.bucket.updateMany({
         where: {
@@ -114,7 +114,7 @@ async function handleSortOrder(bucketId: string, sortOrder: number | null | unde
         }
       });
 
-    //move left
+    // move left
     if (bucket.sortOrder > sortOrder)
       await prisma.bucket.updateMany({
         where: {
@@ -135,7 +135,5 @@ async function handleSortOrder(bucketId: string, sortOrder: number | null | unde
       where: { id: bucketId },
       data: { sortOrder }
     });
-
-    return;
   }
 }

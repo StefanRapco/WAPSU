@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { useState } from 'react';
 import { ConfirmDialog } from '../components/confirmDialog';
 import { SectionHeader } from '../components/header';
+import { SearchField } from '../components/searchField';
 import { SnackbarError } from '../components/snackbarError';
 import { SnackBarSuccess, snackbarUseEffect } from '../components/snackbarSuccess';
 import { KanbanBoard } from '../components/task/kanbanBoard';
@@ -13,6 +14,7 @@ import { TaskEdit } from '../components/task/taskEdit';
 import { Task } from '../gql-generated/graphql';
 import { useBucketMany } from '../hooks/useBucketMany';
 import { Identity } from '../hooks/useIdentity';
+import { useTaskMany } from '../hooks/useTaskMany';
 
 const taskDeleteMutation = gql(`
   mutation TaskDelete($input: TaskDeleteInput!) {
@@ -103,6 +105,9 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
   const [isCreateBucketDialogOpen, setIsCreateBucketDialogOpen] = useState(false);
 
   const { data: bucketData, refetch: bucketRefetch, error: bucketError } = useBucketMany();
+  const { data: taskData, error: taskError } = useTaskMany({
+    term: filterTerm
+  });
 
   const [deleteTask, { error: deleteError }] = useMutation(taskDeleteMutation);
   const [editChecklistItem, { error: checklistError }] = useMutation(taskChecklistEditMutation);
@@ -178,10 +183,6 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
     } catch (error) {
       setError(true);
     }
-  };
-
-  const handleSearchChange = (value: string) => {
-    setFilterTerm(value);
   };
 
   const handleTaskMove = async (taskId: string, destinationBucketId: string, newIndex: number) => {
@@ -298,40 +299,94 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
   return (
     <Box>
       <SectionHeader>
-        <Stack direction="row" alignItems="center" width="100%">
+        <Stack direction="row" alignItems="center" width="100%" spacing={2}>
           <Typography variant="h2" fontWeight={700}>
             Tasks
           </Typography>
         </Stack>
       </SectionHeader>
 
-      <Typography sx={{ mb: 4 }}>
-        Stay organized by setting deadlines, prioritizing your tasks, and completing them one by
-        one. You'll be more productive and focused as you accomplish each item on your list!
-      </Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        width="100%"
+        spacing={2}
+        sx={{ mb: 5 }}
+      >
+        <Typography sx={{ mb: 4 }}>
+          Stay organized by setting deadlines, prioritizing your tasks, and completing them one by
+          one. You'll be more productive and focused as you accomplish each item on your list!
+        </Typography>
 
-      <KanbanBoard
-        buckets={bucketData?.items ?? []}
-        onTaskEdit={task => {
-          setSelectedTask(task);
-          setIsEditDrawerOpen(true);
-        }}
-        onTaskDelete={task => {
-          setSelectedTask(task);
-          setIsDeleteDialogOpen(true);
-        }}
-        onChecklistItemToggle={handleChecklistItemToggle}
-        onViewComments={task => {
-          setSelectedTask(task);
-          setIsCommentsDrawerOpen(true);
-        }}
-        onCreateTask={handleCreateTask}
-        onTaskMove={handleTaskMove}
-        onCreateBucket={handleCreateBucket}
-        onBucketMove={handleBucketMove}
-        onBucketEdit={handleBucketEdit}
-        onBucketDelete={handleBucketDelete}
-      />
+        <SearchField
+          value={filterTerm}
+          onSearchChange={setFilterTerm}
+          placeholder="Search tasks..."
+          sx={{ width: 300 }}
+        />
+      </Stack>
+
+      {filterTerm && (!taskData?.items || taskData.items.length === 0) ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: 8,
+            px: 4,
+            bgcolor: 'grey.50',
+            borderRadius: 2
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            No tasks found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Try adjusting your search term or create a new task
+          </Typography>
+        </Box>
+      ) : (
+        <KanbanBoard
+          buckets={
+            filterTerm
+              ? (taskData?.items.reduce((acc: any[], task) => {
+                  const bucket = acc.find(b => b.id === task.bucket.id);
+                  if (bucket) {
+                    bucket.tasks.push(task);
+                  } else {
+                    acc.push({
+                      ...task.bucket,
+                      tasks: [task]
+                    });
+                  }
+                  return acc;
+                }, []) ?? [])
+              : (bucketData?.items ?? [])
+          }
+          disabled={Boolean(filterTerm)}
+          onTaskEdit={task => {
+            setSelectedTask(task);
+            setIsEditDrawerOpen(true);
+          }}
+          onTaskDelete={task => {
+            setSelectedTask(task);
+            setIsDeleteDialogOpen(true);
+          }}
+          onChecklistItemToggle={handleChecklistItemToggle}
+          onViewComments={task => {
+            setSelectedTask(task);
+            setIsCommentsDrawerOpen(true);
+          }}
+          onCreateTask={handleCreateTask}
+          onTaskMove={handleTaskMove}
+          onCreateBucket={handleCreateBucket}
+          onBucketMove={handleBucketMove}
+          onBucketEdit={handleBucketEdit}
+          onBucketDelete={handleBucketDelete}
+        />
+      )}
 
       <TaskCreate
         open={isCreateDrawerOpen}
@@ -394,6 +449,7 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
         setMutationError={value => setError(value)}
         apolloErrors={[
           bucketError,
+          taskError,
           deleteError,
           checklistError,
           moveError,
