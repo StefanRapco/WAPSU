@@ -76,6 +76,13 @@ const query = gql(`
             content
             createdAt
             isEdited
+            author {
+              id
+              firstName
+              lastName
+              email
+              fullName
+            }
           }
           checklist {
             id
@@ -83,10 +90,6 @@ const query = gql(`
             createdAt
             completed
             sortOrder
-          }
-          tags {
-            id
-            name
           }
         }
       }

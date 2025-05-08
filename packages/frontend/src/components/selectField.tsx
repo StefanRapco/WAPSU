@@ -1,10 +1,11 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { ErrorMessage, Field, FieldProps } from 'formik';
+import { ReactNode } from 'react';
 
 interface SelectFieldProps {
   readonly name: string;
   readonly label: string;
-  readonly options: Array<{ label: string; value: string }>;
+  readonly options: Array<{ label: string; value: string; icon?: ReactNode }>;
   readonly required?: boolean;
   readonly disabled?: boolean;
 }
@@ -14,11 +15,35 @@ export function SelectField({ name, label, options, required, disabled }: Select
     <Field name={name}>
       {({ field, form }: FieldProps) => (
         <FormControl fullWidth error={form.touched[name] && Boolean(form.errors[name])}>
-          <InputLabel>{label}</InputLabel>
-          <Select {...field} label={label} required={required} disabled={disabled}>
+          <InputLabel sx={{ color: 'black' }}>{label}</InputLabel>
+          <Select
+            {...field}
+            label={label}
+            required={required}
+            disabled={disabled}
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black'
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black'
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'black'
+              },
+              '& .MuiSelect-select': {
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }
+            }}
+          >
             {options.map(option => (
               <MenuItem key={option.value} value={option.value}>
-                {option.label}
+                <Stack direction="row" spacing={3} alignItems="center">
+                  {option.icon}
+                  <Typography>{option.label}</Typography>
+                </Stack>
               </MenuItem>
             ))}
           </Select>

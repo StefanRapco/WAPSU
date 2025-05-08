@@ -23,7 +23,20 @@ export function DateField({ name, label, required, disabled }: DateFieldProps) {
               fullWidth: true,
               error: form.touched[name] && Boolean(form.errors[name]),
               helperText:
-                form.touched[name] && form.errors[name] ? <ErrorMessage name={name} /> : undefined
+                form.touched[name] && form.errors[name] ? <ErrorMessage name={name} /> : undefined,
+              sx: {
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'black' },
+                  '&:hover fieldset': { borderColor: 'black' },
+                  '&.Mui-focused fieldset': { borderColor: 'black' }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'black'
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'black'
+                }
+              }
             }
           }}
         />

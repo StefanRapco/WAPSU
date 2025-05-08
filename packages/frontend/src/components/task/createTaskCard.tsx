@@ -47,7 +47,6 @@ export function CreateTaskCard({ onCreateTask, onCancel }: CreateTaskCardProps) 
           assignees: [],
           comments: [],
           checklist: [],
-          tags: [],
           bucket: {
             id: '',
             name: '',
@@ -59,7 +58,6 @@ export function CreateTaskCard({ onCreateTask, onCancel }: CreateTaskCardProps) 
         onEdit={() => {}}
         onDelete={() => {}}
         onChecklistItemToggle={() => {}}
-        onViewComments={() => {}}
         customContent={
           <TextField
             inputRef={textFieldRef}

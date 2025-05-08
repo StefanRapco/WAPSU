@@ -29,7 +29,6 @@ export async function taskCreateResolver(
     },
     include: {
       assignees: true,
-      tags: true,
       comments: true,
       checklist: true
     }

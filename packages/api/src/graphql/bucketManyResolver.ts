@@ -19,7 +19,6 @@ export async function bucketManyResolver(
       tasks: {
         include: {
           assignees: true,
-          tags: true,
           comments: true,
           checklist: true
         },

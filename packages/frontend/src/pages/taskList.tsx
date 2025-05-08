@@ -8,7 +8,6 @@ import { SearchField } from '../components/searchField';
 import { SnackbarError } from '../components/snackbarError';
 import { SnackBarSuccess, snackbarUseEffect } from '../components/snackbarSuccess';
 import { KanbanBoard } from '../components/task/kanbanBoard';
-import { TaskComments } from '../components/task/taskComments';
 import { TaskCreate } from '../components/task/taskCreate';
 import { TaskEdit } from '../components/task/taskEdit';
 import { Task } from '../gql-generated/graphql';
@@ -94,7 +93,6 @@ const bucketDeleteMutation = gql(`
 export function TaskList(props: { identity: NonNullable<Identity> }) {
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [isCommentsDrawerOpen, setIsCommentsDrawerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [selectedBucketId, setSelectedBucketId] = useState<string | null>(null);
@@ -104,7 +102,11 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [isCreateBucketDialogOpen, setIsCreateBucketDialogOpen] = useState(false);
 
-  const { data: bucketData, refetch: bucketRefetch, error: bucketError } = useBucketMany();
+  const {
+    data: bucketData,
+    refetch: bucketRefetch,
+    error: bucketError
+  } = useBucketMany({ userId: props.identity.id });
   const { data: taskData, error: taskError } = useTaskMany({
     term: filterTerm
   });
@@ -377,7 +379,6 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
           onChecklistItemToggle={handleChecklistItemToggle}
           onViewComments={task => {
             setSelectedTask(task);
-            setIsCommentsDrawerOpen(true);
           }}
           onCreateTask={handleCreateTask}
           onTaskMove={handleTaskMove}
@@ -412,14 +413,7 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
             onError={handleTaskEditError}
             task={selectedTask}
           />
-          <TaskComments
-            open={isCommentsDrawerOpen}
-            onClose={() => {
-              setIsCommentsDrawerOpen(false);
-              setSelectedTask(null);
-            }}
-            task={selectedTask}
-          />
+
           <ConfirmDialog
             open={isDeleteDialogOpen}
             onClose={() => {

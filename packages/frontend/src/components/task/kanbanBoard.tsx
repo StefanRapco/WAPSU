@@ -3,7 +3,7 @@ import { Box, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import { Bucket } from '../../gql-generated/graphql';
+import { Bucket, Task } from '../../gql-generated/graphql';
 import { Button } from '../button';
 import { ConfirmDialog } from '../confirmDialog';
 import { TaskCard } from '../taskCard';
@@ -13,16 +13,47 @@ import { CreateTaskCard } from './createTaskCard';
 interface KanbanBoardProps {
   readonly buckets: Bucket[];
   readonly disabled?: boolean;
-  readonly onTaskEdit: (task: any) => void;
-  readonly onTaskDelete: (task: any) => void;
+  readonly onTaskEdit: (task: Task) => void;
+  readonly onTaskDelete: (task: Task) => void;
   readonly onChecklistItemToggle: (item: any) => void;
-  readonly onViewComments: (task: any) => void;
+  readonly onViewComments: (task: Task) => void;
   readonly onCreateTask: (bucketId: string, name: string) => void;
   readonly onTaskMove: (taskId: string, destinationBucketId: string, sortOrder: number) => void;
   readonly onCreateBucket: (name: string) => void;
   readonly onBucketMove: (bucketId: string, sortOrder: number) => void;
   readonly onBucketEdit: (bucketId: string, name: string) => void;
   readonly onBucketDelete: (bucketId: string) => void;
+}
+
+function EmptyState({ onCreateBucket }: { onCreateBucket: (name: string) => void }) {
+  const theme = useTheme();
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'left',
+        py: 8,
+        px: 4,
+        bgcolor: 'grey.50',
+        borderRadius: 2,
+        border: `1px dashed ${theme.palette.grey[300]}`,
+        width: '100%',
+        maxWidth: 400,
+        mt: 4
+      }}
+    >
+      <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+        No Buckets Yet
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
+        Create your first bucket to start organizing your tasks!
+      </Typography>
+      <CreateBucketButton onCreateBucket={onCreateBucket} />
+    </Box>
+  );
 }
 
 export function KanbanBoard(props: KanbanBoardProps) {
@@ -72,6 +103,10 @@ export function KanbanBoard(props: KanbanBoardProps) {
       setBucketToDelete(null);
     }
   };
+
+  if (props.buckets.length === 0 && !props.disabled) {
+    return <EmptyState onCreateBucket={props.onCreateBucket} />;
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -195,19 +230,21 @@ export function KanbanBoard(props: KanbanBoardProps) {
                           </Typography>
                         </Tooltip>
                       </Stack>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleBucketDelete(bucket)}
-                        sx={{
-                          color: theme.palette.error.main,
-                          '&:hover': {
-                            color: theme.palette.error.dark,
-                            bgcolor: theme.palette.error.light
-                          }
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      <Tooltip title="Delete bucket">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleBucketDelete(bucket)}
+                          sx={{
+                            color: 'text.secondary',
+                            '&:hover': {
+                              color: 'error.main',
+                              bgcolor: 'error.50'
+                            }
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </Stack>
 
                     <Button
@@ -303,7 +340,6 @@ export function KanbanBoard(props: KanbanBoardProps) {
                                       onEdit={() => props.onTaskEdit(task)}
                                       onDelete={() => props.onTaskDelete(task)}
                                       onChecklistItemToggle={props.onChecklistItemToggle}
-                                      onViewComments={() => props.onViewComments(task)}
                                     />
                                   </Box>
                                 )}

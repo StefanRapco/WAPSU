@@ -94,7 +94,7 @@ function ProtectedRoutes(props: {
       }
     >
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Dashboard identity={props.identity} />} />
         <Route
           path="/account-settings/*"
           element={<AccountSettingsIndex identity={props.identity} />}

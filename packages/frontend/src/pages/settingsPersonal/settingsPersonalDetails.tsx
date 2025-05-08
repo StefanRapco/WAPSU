@@ -11,7 +11,7 @@ import { CircularAvatar } from '../../components/navigation/circularAvatar';
 import { SnackbarError } from '../../components/snackbarError';
 import { SnackBarSuccess, snackbarUseEffect } from '../../components/snackbarSuccess';
 import { TextField } from '../../components/textField';
-import { gql } from '../../gql-generated';
+import { gql } from '../../gql-generated/gql';
 import { Identity, identityQuery } from '../../hooks/useIdentity';
 
 interface PersonalDetailsProps {

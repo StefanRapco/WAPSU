@@ -23,11 +23,11 @@ model User {
 
   status UserStatus @default(active)
 
-  systemRole    SystemRole   @default(user)
+  systemRole    SystemRole    @default(user)
   teams         UserOnTeam[]
   buckets       Bucket[]
   tasksAssignee Task[]
-  tags          Tag[]
+  taskComment   TaskComment[]
 }
 
 model Team {
@@ -36,8 +36,6 @@ model Team {
   description String?  @db.Text
   avatar      String   @db.TinyText
   createdAt   DateTime @default(now())
-
-  tags Tag[]
 
   users   UserOnTeam[]
   buckets Bucket[]
@@ -94,8 +92,6 @@ model Task {
   comments  TaskComment[]
   checklist TaskChecklist[]
 
-  tags TaskTagOnTask[]
-
   bucketId String @db.VarChar(48)
   bucket   Bucket @relation(fields: [bucketId], references: [id])
 }
@@ -137,6 +133,9 @@ model TaskComment {
 
   taskId String @db.VarChar(48)
   task   Task   @relation(fields: [taskId], references: [id])
+
+  authorId String @db.VarChar(48)
+  author   User   @relation(fields: [authorId], references: [id])
 }
 
 model TaskChecklist {
@@ -149,27 +148,4 @@ model TaskChecklist {
 
   taskId String @db.VarChar(48)
   task   Task   @relation(fields: [taskId], references: [id])
-}
-
-model Tag {
-  id   String @id
-  name String @db.TinyText
-
-  tasks TaskTagOnTask[]
-
-  teamId String? @db.VarChar(48)
-  team   Team?   @relation(fields: [teamId], references: [id])
-
-  userId String? @db.VarChar(48)
-  user   User?   @relation(fields: [userId], references: [id])
-}
-
-model TaskTagOnTask {
-  taskId String
-  tagId  String
-
-  task Task @relation(fields: [taskId], references: [id])
-  tag  Tag  @relation(fields: [tagId], references: [id])
-
-  @@id([taskId, tagId])
 }

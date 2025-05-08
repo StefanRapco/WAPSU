@@ -7,6 +7,14 @@ export async function taskDeleteResolver(
   { input }: MutationTaskDeleteArgs,
   { identity }: InvocationContext
 ): Promise<void> {
+  await prisma.taskChecklist.deleteMany({
+    where: { taskId: input.id }
+  });
+
+  await prisma.taskComment.deleteMany({
+    where: { taskId: input.id }
+  });
+
   await prisma.task.delete({
     where: { id: input.id }
   });

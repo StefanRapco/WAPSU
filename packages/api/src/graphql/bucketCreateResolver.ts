@@ -36,7 +36,6 @@ export async function bucketCreateResolver(
       tasks: {
         include: {
           assignees: true,
-          tags: true,
           comments: true,
           checklist: true
         },

@@ -15,7 +15,6 @@ export async function taskManyResolver(
     orderBy: { sortOrder: 'asc' },
     include: {
       assignees: true,
-      tags: true,
       comments: true,
       checklist: true,
       bucket: {

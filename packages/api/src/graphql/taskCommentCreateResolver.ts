@@ -1,7 +1,4 @@
-import {
-  MutationTaskCommentCreateArgs,
-  TaskComment
-} from '@app/frontend/src/gql-generated/graphql';
+import { MutationTaskCommentCreateArgs, Task } from '@app/frontend/src/gql-generated/graphql';
 import { uuid } from '../helpers';
 import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
@@ -11,7 +8,7 @@ export async function taskCommentCreateResolver(
   _,
   { input }: MutationTaskCommentCreateArgs,
   { identity }: InvocationContext
-): Promise<TaskComment> {
+): Promise<Task> {
   const { content, taskId } = input;
 
   const comment = await prisma.taskComment.create({
@@ -19,18 +16,11 @@ export async function taskCommentCreateResolver(
       id: uuid(),
       content,
       taskId,
+      authorId: identity.id,
       isEdited: false
     },
-    include: {
-      task: true
-    }
+    select: { task: true }
   });
 
-  return {
-    id: comment.id,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    isEdited: comment.isEdited,
-    task: toTaskSchema(comment.task)
-  };
+  return toTaskSchema(comment.task);
 }

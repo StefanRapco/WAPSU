@@ -36,7 +36,6 @@ export function toBucketSchema(props: Bucket): BucketSchema {
         where: { bucketId: props.id },
         include: {
           assignees: true,
-          tags: true,
           comments: true,
           checklist: true
         },

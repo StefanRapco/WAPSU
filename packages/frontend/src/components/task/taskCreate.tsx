@@ -45,10 +45,6 @@ const taskCreateMutation = gql(`
         completed
         sortOrder
       }
-      tags {
-        id
-        name
-      }
       bucket {
         id
         name

@@ -3,7 +3,6 @@ import { Prisma, Task, TaskPriority, TaskProgress } from '@prisma/client';
 import { InvocationContext } from '../../invocationContext';
 import { prisma } from '../../prisma';
 import { toBucketSchema } from './toBucketMapping';
-import { toTagSchema } from './toTagMapping';
 import { toUserSchema } from './toUserMapping';
 
 export function toTaskSchema(props: Task): TaskSchema {
@@ -28,14 +27,18 @@ export function toTaskSchema(props: Task): TaskSchema {
     comments: async () => {
       const comments = await prisma.taskComment.findMany({
         where: { taskId: props.id },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: true
+        }
       });
       return comments.map(comment => ({
         id: comment.id,
         content: comment.content,
         createdAt: comment.createdAt,
         isEdited: comment.isEdited,
-        task: toTaskSchema(props)
+        task: toTaskSchema(props),
+        author: toUserSchema(comment.author)
       }));
     },
     // @ts-expect-error
@@ -52,13 +55,6 @@ export function toTaskSchema(props: Task): TaskSchema {
         sortOrder: item.sortOrder,
         task: toTaskSchema(props)
       }));
-    },
-    // @ts-expect-error
-    tags: async () => {
-      const tags = await prisma.tag.findMany({
-        where: { tasks: { some: { taskId: props.id } } }
-      });
-      return tags.map(toTagSchema);
     },
     // @ts-expect-error
     bucket: async () => {
@@ -84,8 +80,6 @@ export function toTaskWhere({
   if (filter.bucketId) conditions.push({ bucketId: filter.bucketId });
 
   if (filter.assigneeId) conditions.push({ assignees: { some: { id: filter.assigneeId } } });
-
-  if (filter.tagId) conditions.push({ tags: { some: { tagId: filter.tagId } } });
 
   if (filter.progress && filter.progress.length > 0)
     conditions.push({ progress: { in: filter.progress } });

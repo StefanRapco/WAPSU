@@ -18,8 +18,7 @@ export async function taskEditResolver(
     priority,
     bucketId,
     sortOrder,
-    assigneeIds,
-    tagIds
+    assigneeIds
   } = input;
 
   await handleSortOrder(id, sortOrder, bucketId);
@@ -37,20 +36,15 @@ export async function taskEditResolver(
         ? {
             set: assigneeIds.map(id => ({ id }))
           }
-        : undefined,
-      tags: tagIds
-        ? {
-            deleteMany: {},
-            create: tagIds.map(tagId => ({
-              tagId
-            }))
-          }
         : undefined
     },
     include: {
       assignees: true,
-      tags: true,
-      comments: true,
+      comments: {
+        include: {
+          author: true
+        }
+      },
       checklist: true,
       bucket: true
     }

@@ -8,7 +8,7 @@ import { LightModeLogo } from '../components/logos';
 import { SnackbarError } from '../components/snackbarError';
 import { TextField } from '../components/textField';
 import { Typography } from '../components/typography';
-import { gql } from '../gql-generated';
+import { gql } from '../gql-generated/gql';
 import { identityQuery } from '../hooks/useIdentity';
 
 export function SignIn() {

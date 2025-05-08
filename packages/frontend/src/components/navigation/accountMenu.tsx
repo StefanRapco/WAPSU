@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { gql } from '../../gql-generated';
+import { gql } from '../../gql-generated/gql';
 import { Identity } from '../../hooks/useIdentity';
 import { Typography } from '../typography';
 import { CircularAvatar } from './circularAvatar';

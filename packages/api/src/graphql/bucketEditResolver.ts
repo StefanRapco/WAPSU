@@ -23,7 +23,6 @@ export async function bucketEditResolver(
       tasks: {
         include: {
           assignees: true,
-          tags: true,
           comments: true,
           checklist: true
         },

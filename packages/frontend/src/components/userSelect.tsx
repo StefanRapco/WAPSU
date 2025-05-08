@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { ReactNode, useState } from 'react';
-import * as yup from 'yup';
 import { useUserMany } from '../hooks/useUserMany';
 import { getInitials } from './navigation/accountMenu';
 import { CircularAvatar } from './navigation/circularAvatar';
@@ -17,14 +16,16 @@ interface UserSelectProps {
   readonly onUserChange: (selectedUserIds: string[]) => void;
   readonly filterIdentity?: boolean;
   readonly notTeamId?: string[];
+  readonly initialSelectedUsers?: string[];
 }
 
 export function UserSelect({
   onUserChange,
   filterIdentity,
-  notTeamId
+  notTeamId,
+  initialSelectedUsers = []
 }: UserSelectProps): ReactNode {
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(initialSelectedUsers);
   const [filterTerm, setFilterTerm] = useState<string>('');
 
   const { data: filteredUsers } = useUserMany({
@@ -33,26 +34,24 @@ export function UserSelect({
     notTeamId
   });
 
-  const validationSchema = yup.object({
-    users: yup.array().of(yup.string()).min(1, 'Please select at least one user')
-  });
-
   const handleUserToggle = (userId: string) => {
-    setSelectedUsers(prev =>
-      prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
-    );
+    const newSelectedUsers = selectedUsers.includes(userId)
+      ? selectedUsers.filter(id => id !== userId)
+      : [...selectedUsers, userId];
+
+    setSelectedUsers(newSelectedUsers);
+    onUserChange(newSelectedUsers);
   };
 
   return (
     <Formik
-      initialValues={{ users: [] }}
-      validationSchema={validationSchema}
+      initialValues={{ users: selectedUsers }}
       enableReinitialize
       onSubmit={async () => {
         onUserChange(selectedUsers);
       }}
     >
-      {({ setFieldValue }) => (
+      {() => (
         <Form>
           <TextField
             fullWidth
@@ -92,17 +91,7 @@ export function UserSelect({
               >
                 <Checkbox
                   checked={selectedUsers.includes(user.id)}
-                  onChange={() => {
-                    handleUserToggle(user.id);
-
-                    const newSelectedUsers = selectedUsers.includes(user.id)
-                      ? selectedUsers.filter(id => id !== user.id)
-                      : [...selectedUsers, user.id];
-
-                    setFieldValue('users', newSelectedUsers);
-
-                    onUserChange(newSelectedUsers);
-                  }}
+                  onChange={() => handleUserToggle(user.id)}
                 />
                 <CircularAvatar size="s">{getInitials(user.fullName)}</CircularAvatar>
                 <Box sx={{ ml: 5 }}>

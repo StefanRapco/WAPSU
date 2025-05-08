@@ -12,7 +12,6 @@ type Query {
   bucketMany(input: BucketManyInput): BucketManyOutput!
   taskOne(id: ID!): Task!
   taskMany(input: TaskManyInput): TaskManyOutput!
-  tagMany(input: TagManyInput): TagManyOutput!
 }
 
 type Mutation {
@@ -33,15 +32,12 @@ type Mutation {
   taskCreate(input: TaskCreateInput!): Task!
   taskEdit(input: TaskEditInput!): Task!
   taskDelete(input: TaskDeleteInput!): Void
-  taskCommentCreate(input: TaskCommentCreateInput!): TaskComment!
-  taskCommentEdit(input: TaskCommentEditInput!): TaskComment!
-  taskCommentDelete(input: TaskCommentDeleteInput!): Void
+  taskCommentCreate(input: TaskCommentCreateInput!): Task!
+  taskCommentEdit(input: TaskCommentEditInput!): Task!
+  taskCommentDelete(input: TaskCommentDeleteInput!): Task!
   taskChecklistCreate(input: TaskChecklistCreateInput!): TaskChecklist!
   taskChecklistEdit(input: TaskChecklistEditInput!): TaskChecklist!
   taskChecklistDelete(input: TaskChecklistDeleteInput!): Void
-  tagCreate(input: TagCreateInput!): Tag!
-  tagEdit(input: TagEditInput!): Tag!
-  tagDelete(input: TagDeleteInput!): Void
 }
 
 type User {
@@ -217,7 +213,6 @@ type Task {
   priority: Option!
   comments: [TaskComment!]!
   checklist: [TaskChecklist!]!
-  tags: [Tag!]!
   bucket: Bucket!
 }
 
@@ -227,6 +222,7 @@ type TaskComment {
   createdAt: DateTime!
   isEdited: Boolean!
   task: Task!
+  author: User!
 }
 
 type TaskChecklist {
@@ -238,14 +234,6 @@ type TaskChecklist {
   task: Task!
 }
 
-type Tag {
-  id: ID!
-  name: String!
-  team: Team
-  user: User
-  tasks: [Task!]!
-}
-
 type BucketManyOutput {
   items: [Bucket!]!
   total: Int!
@@ -254,12 +242,6 @@ type BucketManyOutput {
 
 type TaskManyOutput {
   items: [Task!]!
-  total: Int!
-  hasMore: Boolean!
-}
-
-type TagManyOutput {
-  items: [Tag!]!
   total: Int!
   hasMore: Boolean!
 }
@@ -287,11 +269,6 @@ input TaskManyInput {
   filter: TaskManyFilterInput
 }
 
-input TagManyInput {
-  page: PageInput
-  filter: TagManyFilterInput
-}
-
 input BucketManyFilterInput {
   teamId: ID
   userId: ID
@@ -300,15 +277,8 @@ input BucketManyFilterInput {
 input TaskManyFilterInput {
   bucketId: ID
   assigneeId: ID
-  tagId: ID
   progress: [TaskProgress!]
   priority: [TaskPriority!]
-  term: String
-}
-
-input TagManyFilterInput {
-  teamId: ID
-  userId: ID
   term: String
 }
 
@@ -346,7 +316,6 @@ input TaskEditInput {
   progress: TaskProgress
   priority: TaskPriority
   bucketId: ID
-  tagIds: [ID!]
 }
 
 input TaskDeleteInput {
@@ -381,20 +350,5 @@ input TaskChecklistEditInput {
 }
 
 input TaskChecklistDeleteInput {
-  id: ID!
-}
-
-input TagCreateInput {
-  name: String!
-  teamId: ID
-  userId: ID
-}
-
-input TagEditInput {
-  id: ID!
-  name: String!
-}
-
-input TagDeleteInput {
   id: ID!
 }
