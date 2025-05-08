@@ -23,8 +23,11 @@ model User {
 
   status UserStatus @default(active)
 
-  systemRole SystemRole   @default(user)
-  teams      UserOnTeam[]
+  systemRole    SystemRole   @default(user)
+  teams         UserOnTeam[]
+  buckets       Bucket[]
+  tasksAssignee Task[]
+  tags          Tag[]
 }
 
 model Team {
@@ -34,7 +37,10 @@ model Team {
   avatar      String   @db.TinyText
   createdAt   DateTime @default(now())
 
-  users UserOnTeam[]
+  tags Tag[]
+
+  users   UserOnTeam[]
+  buckets Bucket[]
 }
 
 model UserOnTeam {
@@ -67,4 +73,103 @@ enum UserStatus {
   active
   archived
   invited
+}
+
+model Task {
+  id        String   @id
+  name      String   @db.TinyText
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+
+  startDate DateTime?
+  dueDate   DateTime?
+
+  sortOrder Int
+
+  assignees User[]
+
+  progress TaskProgress @default(notStarted)
+  priority TaskPriority @default(low)
+
+  comments  TaskComment[]
+  checklist TaskChecklist[]
+
+  tags TaskTagOnTask[]
+
+  bucketId String @db.VarChar(48)
+  bucket   Bucket @relation(fields: [bucketId], references: [id])
+}
+
+model Bucket {
+  id   String @id
+  name String @db.TinyText
+
+  sortOrder Int
+
+  teamId String? @db.VarChar(48)
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  userId String? @db.VarChar(48)
+  user   User?   @relation(fields: [userId], references: [id])
+
+  tasks Task[]
+}
+
+enum TaskProgress {
+  notStarted
+  inProgress
+  completed
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+model TaskComment {
+  id        String   @id
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  isEdited Boolean @default(false)
+
+  taskId String @db.VarChar(48)
+  task   Task   @relation(fields: [taskId], references: [id])
+}
+
+model TaskChecklist {
+  id        String   @id
+  name      String   @db.TinyText
+  createdAt DateTime @default(now())
+  completed Boolean  @default(false)
+
+  sortOrder Int
+
+  taskId String @db.VarChar(48)
+  task   Task   @relation(fields: [taskId], references: [id])
+}
+
+model Tag {
+  id   String @id
+  name String @db.TinyText
+
+  tasks TaskTagOnTask[]
+
+  teamId String? @db.VarChar(48)
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  userId String? @db.VarChar(48)
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+model TaskTagOnTask {
+  taskId String
+  tagId  String
+
+  task Task @relation(fields: [taskId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId])
 }

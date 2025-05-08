@@ -1,88 +1,408 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import {
-  Box,
-  Checkbox,
-  Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Paper
-} from '@mui/material';
+import { useMutation } from '@apollo/client';
+import { Box, Stack, Typography } from '@mui/material';
+import gql from 'graphql-tag';
 import { useState } from 'react';
+import { ConfirmDialog } from '../components/confirmDialog';
 import { SectionHeader } from '../components/header';
-import { Typography } from '../components/typography';
+import { SnackbarError } from '../components/snackbarError';
+import { SnackBarSuccess, snackbarUseEffect } from '../components/snackbarSuccess';
+import { KanbanBoard } from '../components/task/kanbanBoard';
+import { TaskComments } from '../components/task/taskComments';
+import { TaskCreate } from '../components/task/taskCreate';
+import { TaskEdit } from '../components/task/taskEdit';
+import { Task } from '../gql-generated/graphql';
+import { useBucketMany } from '../hooks/useBucketMany';
+import { Identity } from '../hooks/useIdentity';
 
-export function TaskList() {
-  const [tasks, setTasks] = useState([
-    { id: 1, name: 'Complete project report', dueDate: '2025-03-10', completed: false },
-    { id: 2, name: 'Prepare presentation for meeting', dueDate: '2025-03-12', completed: false },
-    { id: 3, name: 'Respond to emails', dueDate: '2025-03-07', completed: true }
-  ]);
+const taskDeleteMutation = gql(`
+  mutation TaskDelete($input: TaskDeleteInput!) {
+    taskDelete(input: $input)
+  }
+`);
 
-  const handleToggleCompleted = (taskId: number) => {
-    setTasks(
-      tasks.map(task => (task.id === taskId ? { ...task, completed: !task.completed } : task))
-    );
+const taskChecklistEditMutation = gql(`
+  mutation TaskChecklistEdit($input: TaskChecklistEditInput!) {
+    taskChecklistEdit(input: $input) {
+      id
+      name
+      createdAt
+      completed
+      sortOrder
+      task {
+        id
+      }
+    }
+  }
+`);
+
+const taskMoveMutation = gql(`
+  mutation TaskMove($input: TaskEditInput!) {
+    taskEdit(input: $input) {
+      id
+      bucket {
+        id
+      }
+      sortOrder
+    }
+  }
+`);
+
+const bucketCreateMutation = gql(`
+  mutation BucketCreate($input: BucketCreateInput!) {
+    bucketCreate(input: $input) {
+      id
+      name
+      tasks {
+        id
+      }
+    }
+  }
+`);
+
+const bucketEditMutation = gql(`
+  mutation BucketEdit($input: BucketEditInput!) {
+    bucketEdit(input: $input) {
+      id
+      name
+      sortOrder
+    }
+  }
+`);
+
+const taskCreateMutation = gql`
+  mutation TaskCreateList($input: TaskCreateInput!) {
+    taskCreate(input: $input) {
+      id
+      name
+      notes
+      bucket {
+        id
+      }
+      sortOrder
+    }
+  }
+`;
+
+const bucketDeleteMutation = gql(`
+  mutation BucketDelete($input: BucketDeleteInput!) {
+    bucketDelete(input: $input)
+  }
+`);
+
+export function TaskList(props: { identity: NonNullable<Identity> }) {
+  const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [isCommentsDrawerOpen, setIsCommentsDrawerOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedBucketId, setSelectedBucketId] = useState<string | null>(null);
+  const [filterTerm, setFilterTerm] = useState('');
+  const [error, setError] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [isCreateBucketDialogOpen, setIsCreateBucketDialogOpen] = useState(false);
+
+  const { data: bucketData, refetch: bucketRefetch, error: bucketError } = useBucketMany();
+
+  const [deleteTask, { error: deleteError }] = useMutation(taskDeleteMutation);
+  const [editChecklistItem, { error: checklistError }] = useMutation(taskChecklistEditMutation);
+  const [moveTask, { error: moveError }] = useMutation(taskMoveMutation);
+  const [createBucket, { error: createBucketError }] = useMutation(bucketCreateMutation);
+  const [editBucket, { error: editBucketError }] = useMutation(bucketEditMutation);
+  const [createTask, { error: createTaskError }] = useMutation(taskCreateMutation);
+  const [deleteBucket, { error: deleteBucketError }] = useMutation(bucketDeleteMutation);
+
+  snackbarUseEffect({
+    success,
+    error,
+    setSuccess: value => setSuccess(value),
+    setError: value => setError(value)
+  });
+
+  const handleTaskCreate = async () => {
+    setIsCreateDrawerOpen(false);
+    setSelectedBucketId(null);
+    await bucketRefetch();
+    setSuccessMessage('Task created successfully');
+    setSuccess(true);
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+  const handleTaskCreateError = (error: string) => {
+    setError(true);
+  };
+
+  const handleTaskEdit = async () => {
+    setIsEditDrawerOpen(false);
+    setSelectedTask(null);
+    await bucketRefetch();
+    setSuccessMessage('Task updated successfully');
+    setSuccess(true);
+  };
+
+  const handleTaskEditError = (error: string) => {
+    setError(true);
+  };
+
+  const handleTaskDelete = async () => {
+    if (!selectedTask) return;
+
+    try {
+      await deleteTask({
+        variables: {
+          input: {
+            id: selectedTask.id
+          }
+        }
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedTask(null);
+      await bucketRefetch();
+      setSuccessMessage('Task deleted successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleChecklistItemToggle = async (item: any) => {
+    try {
+      await editChecklistItem({
+        variables: {
+          input: {
+            id: item.id,
+            completed: !item.completed
+          }
+        }
+      });
+      await bucketRefetch();
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setFilterTerm(value);
+  };
+
+  const handleTaskMove = async (taskId: string, destinationBucketId: string, newIndex: number) => {
+    try {
+      await moveTask({
+        variables: {
+          input: {
+            id: taskId,
+            bucketId: destinationBucketId,
+            sortOrder: newIndex
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Task moved successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleCreateBucket = async (name: string) => {
+    if (!name.trim()) return;
+
+    try {
+      await createBucket({
+        variables: {
+          input: {
+            name: name.trim(),
+            userId: props.identity.id
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Bucket created successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleCreateTask = async (bucketId: string, name: string) => {
+    try {
+      await createTask({
+        variables: {
+          input: {
+            name,
+            bucketId,
+            userId: props.identity.id
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Task created successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleBucketMove = async (bucketId: string, newSortOrder: number) => {
+    try {
+      await editBucket({
+        variables: {
+          input: {
+            id: bucketId,
+            sortOrder: newSortOrder
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Bucket moved successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleBucketEdit = async (bucketId: string, name: string) => {
+    try {
+      await editBucket({
+        variables: {
+          input: {
+            id: bucketId,
+            name
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Bucket updated successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
+  };
+
+  const handleBucketDelete = async (bucketId: string) => {
+    try {
+      await deleteBucket({
+        variables: {
+          input: {
+            id: bucketId
+          }
+        }
+      });
+      await bucketRefetch();
+      setSuccessMessage('Bucket deleted successfully');
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    }
   };
 
   return (
-    <>
-      <Grid container spacing={9}>
-        <Grid item xs={12}>
-          <SectionHeader>Tasks</SectionHeader>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography>
-            Stay organized by setting deadlines, prioritizing your tasks, and completing them one by
-            one. You'll be more productive and focused as you accomplish each item on your list!
+    <Box>
+      <SectionHeader>
+        <Stack direction="row" alignItems="center" width="100%">
+          <Typography variant="h2" fontWeight={700}>
+            Tasks
           </Typography>
-        </Grid>
+        </Stack>
+      </SectionHeader>
 
-        <Grid item xs={12}>
-          <Box>
-            <Paper elevation={3} sx={{ padding: 3 }}>
-              <Typography variant="h5" gutterBottom>
-                Your Tasks
-              </Typography>
+      <Typography sx={{ mb: 4 }}>
+        Stay organized by setting deadlines, prioritizing your tasks, and completing them one by
+        one. You'll be more productive and focused as you accomplish each item on your list!
+      </Typography>
 
-              <List>
-                {tasks.map(task => (
-                  <ListItem key={task.id} sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Checkbox
-                      checked={task.completed}
-                      onChange={() => handleToggleCompleted(task.id)}
-                      sx={{ marginRight: 2 }}
-                    />
-                    <ListItemText
-                      primary={task.name}
-                      secondary={`Due: ${task.dueDate}`}
-                      sx={{
-                        textDecoration: task.completed ? 'line-through' : 'none',
-                        color: task.completed ? 'gray' : 'black'
-                      }}
-                    />
-                    <IconButton onClick={() => handleDeleteTask(task.id)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItem>
-                ))}
-              </List>
+      <KanbanBoard
+        buckets={bucketData?.items ?? []}
+        onTaskEdit={task => {
+          setSelectedTask(task);
+          setIsEditDrawerOpen(true);
+        }}
+        onTaskDelete={task => {
+          setSelectedTask(task);
+          setIsDeleteDialogOpen(true);
+        }}
+        onChecklistItemToggle={handleChecklistItemToggle}
+        onViewComments={task => {
+          setSelectedTask(task);
+          setIsCommentsDrawerOpen(true);
+        }}
+        onCreateTask={handleCreateTask}
+        onTaskMove={handleTaskMove}
+        onCreateBucket={handleCreateBucket}
+        onBucketMove={handleBucketMove}
+        onBucketEdit={handleBucketEdit}
+        onBucketDelete={handleBucketDelete}
+      />
 
-              {tasks.length === 0 && (
-                <Typography variant="body1" sx={{ marginTop: 2, color: 'gray' }}>
-                  No tasks available. Start adding some tasks to stay organized.
-                </Typography>
-              )}
-            </Paper>
-          </Box>
-        </Grid>
-      </Grid>
-    </>
+      <TaskCreate
+        open={isCreateDrawerOpen}
+        onClose={() => {
+          setIsCreateDrawerOpen(false);
+          setSelectedBucketId(null);
+        }}
+        onSubmit={handleTaskCreate}
+        onError={handleTaskCreateError}
+        userId={props.identity.id}
+        bucketId={selectedBucketId ?? undefined}
+      />
+
+      {selectedTask && (
+        <>
+          <TaskEdit
+            open={isEditDrawerOpen}
+            onClose={() => {
+              setIsEditDrawerOpen(false);
+              setSelectedTask(null);
+            }}
+            onSubmit={handleTaskEdit}
+            onError={handleTaskEditError}
+            task={selectedTask}
+          />
+          <TaskComments
+            open={isCommentsDrawerOpen}
+            onClose={() => {
+              setIsCommentsDrawerOpen(false);
+              setSelectedTask(null);
+            }}
+            task={selectedTask}
+          />
+          <ConfirmDialog
+            open={isDeleteDialogOpen}
+            onClose={() => {
+              setIsDeleteDialogOpen(false);
+              setSelectedTask(null);
+            }}
+            onConfirm={handleTaskDelete}
+            title="Delete Task"
+            message="Are you sure you want to delete this task? This action cannot be undone."
+          />
+        </>
+      )}
+      <ConfirmDialog
+        open={isCreateBucketDialogOpen}
+        onClose={() => setIsCreateBucketDialogOpen(false)}
+        title="Create New Bucket"
+        message="Are you sure you want to create a new bucket?"
+        onConfirm={() => handleCreateBucket('New Bucket')}
+      />
+      <SnackBarSuccess
+        open={success}
+        successMsg={successMessage}
+        setSuccess={value => setSuccess(value)}
+      />
+      <SnackbarError
+        mutationError={error}
+        setMutationError={value => setError(value)}
+        apolloErrors={[
+          bucketError,
+          deleteError,
+          checklistError,
+          moveError,
+          createBucketError,
+          editBucketError,
+          createTaskError,
+          deleteBucketError
+        ]}
+      />
+    </Box>
   );
 }

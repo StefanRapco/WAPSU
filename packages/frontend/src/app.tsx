@@ -1,6 +1,8 @@
 import { ApolloClient, ApolloProvider, ApolloQueryResult } from '@apollo/client';
 import { CircularProgress } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ReactNode } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { DarkModeLogo, LightModeLogo } from './components/logos';
@@ -33,22 +35,24 @@ export function App(props: AppProps) {
 
   return (
     <ThemeProvider theme={theme}>
-      <ApolloProvider client={props.apollo}>
-        <Router>
-          <ScrollToTop />
-          <Routes>
-            <Route
-              path="/sign-in"
-              element={
-                <RedirectHomeIfSignedIn>
-                  <SignIn />
-                </RedirectHomeIfSignedIn>
-              }
-            />
-            <Route path="/*" element={<ProtectedRoutesParent mode={mode} />} />
-          </Routes>
-        </Router>
-      </ApolloProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <ApolloProvider client={props.apollo}>
+          <Router>
+            <ScrollToTop />
+            <Routes>
+              <Route
+                path="/sign-in"
+                element={
+                  <RedirectHomeIfSignedIn>
+                    <SignIn />
+                  </RedirectHomeIfSignedIn>
+                }
+              />
+              <Route path="/*" element={<ProtectedRoutesParent mode={mode} />} />
+            </Routes>
+          </Router>
+        </ApolloProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }
@@ -95,7 +99,7 @@ function ProtectedRoutes(props: {
           path="/account-settings/*"
           element={<AccountSettingsIndex identity={props.identity} />}
         />
-        <Route path="/tasks/*" element={<TaskList />} />
+        <Route path="/tasks/*" element={<TaskList identity={props.identity} />} />
         <Route path="/teams/*" element={<TeamRoutes identity={props.identity} />} />
         <Route path="/analytics/*" element={<Analytics />} />
         <Route

@@ -1,0 +1,13 @@
+import { MutationTaskDeleteArgs } from '@app/frontend/src/gql-generated/graphql';
+import { InvocationContext } from '../invocationContext';
+import { prisma } from '../prisma';
+
+export async function taskDeleteResolver(
+  _,
+  { input }: MutationTaskDeleteArgs,
+  { identity }: InvocationContext
+): Promise<void> {
+  await prisma.task.delete({
+    where: { id: input.id }
+  });
+}

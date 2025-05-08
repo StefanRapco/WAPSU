@@ -7,11 +7,25 @@ import express, { Request, Response } from 'express';
 import fs from 'fs';
 import { gql } from 'graphql-tag';
 import { verifyToken } from './src/auth';
+import { bucketCreateResolver } from './src/graphql/bucketCreateResolver';
+import { bucketDeleteResolver } from './src/graphql/bucketDeleteResolver';
+import { bucketEditResolver } from './src/graphql/bucketEditResolver';
+import { bucketManyResolver } from './src/graphql/bucketManyResolver';
 import { identityResolver } from './src/graphql/identityResolver';
 import { identityUpdateResolver } from './src/graphql/identityUpdateResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
 import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
 import { signOutResolver } from './src/graphql/signOutResolver';
+import { taskChecklistCreateResolver } from './src/graphql/taskChecklistCreateResolver';
+import { taskChecklistDeleteResolver } from './src/graphql/taskChecklistDeleteResolver';
+import { taskChecklistEditResolver } from './src/graphql/taskChecklistEditResolver';
+import { taskCommentCreateResolver } from './src/graphql/taskCommentCreateResolver';
+import { taskCommentDeleteResolver } from './src/graphql/taskCommentDeleteResolver';
+import { taskCommentEditResolver } from './src/graphql/taskCommentEditResolver';
+import { taskCreateResolver } from './src/graphql/taskCreateResolver';
+import { taskDeleteResolver } from './src/graphql/taskDeleteResolver';
+import { taskEditResolver } from './src/graphql/taskEditResolver';
+import { taskManyResolver } from './src/graphql/taskManyResolver';
 import { teamCreateResolver } from './src/graphql/teamCreateResolver';
 import { teamEditResolver } from './src/graphql/teamEditResolver';
 import { teamManyResolver } from './src/graphql/teamManyResolver';
@@ -32,10 +46,15 @@ const queries = {
   teamOne: teamOneResolver,
   teamMany: teamManyResolver,
   userOne: userOneResolver,
-  userMany: userManyResolver
+  userMany: userManyResolver,
+  bucketMany: bucketManyResolver,
+  taskMany: taskManyResolver
 };
 
 const mutations = {
+  bucketCreate: bucketCreateResolver,
+  bucketEdit: bucketEditResolver,
+  bucketDelete: bucketDeleteResolver,
   identityUpdate: identityUpdateResolver,
   signInCodeRequest: signInCodeRequestResolver,
   signInCodeComplete: signInCodeCompleteResolver,
@@ -46,7 +65,16 @@ const mutations = {
   teamUserEdit: teamUserEditResolver,
   userUpdate: userUpdateResolver,
   userRoleUpdate: userRoleUpdateResolver,
-  userArchive: userArchiveResolver
+  userArchive: userArchiveResolver,
+  taskCreate: taskCreateResolver,
+  taskEdit: taskEditResolver,
+  taskDelete: taskDeleteResolver,
+  taskCommentCreate: taskCommentCreateResolver,
+  taskCommentEdit: taskCommentEditResolver,
+  taskCommentDelete: taskCommentDeleteResolver,
+  taskChecklistCreate: taskChecklistCreateResolver,
+  taskChecklistEdit: taskChecklistEditResolver,
+  taskChecklistDelete: taskChecklistDeleteResolver
 };
 
 const resolvers = {

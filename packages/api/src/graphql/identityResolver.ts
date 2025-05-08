@@ -2,7 +2,6 @@ import { User } from '@app/frontend/src/gql-generated/graphql';
 import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
 import { toUserSchema } from './mapping/toUserMapping';
-
 export async function identityResolver(
   _,
   __,

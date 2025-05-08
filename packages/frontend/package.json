@@ -12,6 +12,8 @@
     "@mui/material": "^5.16.4",
     "@mui/x-date-pickers": "^7.10.0",
     "@mui/x-tree-view": "^7.16.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "@types/react-beautiful-dnd": "^13.1.1",
     "@parcel/watcher": "2.5.0",
     "@types/react": "19.0.3",
     "@types/node": "22.10.5",

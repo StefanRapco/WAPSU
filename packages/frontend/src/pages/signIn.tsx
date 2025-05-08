@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
 import { Button } from '../components/button';
+import { LightModeLogo } from '../components/logos';
 import { SnackbarError } from '../components/snackbarError';
 import { TextField } from '../components/textField';
 import { Typography } from '../components/typography';
@@ -62,10 +63,7 @@ export function SignIn() {
           }}
           spacing={5}
         >
-          <Typography variant="h2" sx={{ mb: 2 }}>
-            DoSync
-          </Typography>
-
+          <LightModeLogo sx={{ width: '70px', marginRight: 10 }} />
           <Typography variant="h4" sx={{ mb: 2 }}>
             Welcome back!
           </Typography>

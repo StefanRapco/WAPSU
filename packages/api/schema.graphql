@@ -8,6 +8,11 @@ type Query {
   teamMany(input: TeamManyInput): TeamManyOutput!
   userOne(id: ID!): User!
   userMany(input: UserManyInput): UserManyOutput!
+  bucketOne(id: ID!): Bucket!
+  bucketMany(input: BucketManyInput): BucketManyOutput!
+  taskOne(id: ID!): Task!
+  taskMany(input: TaskManyInput): TaskManyOutput!
+  tagMany(input: TagManyInput): TagManyOutput!
 }
 
 type Mutation {
@@ -22,6 +27,21 @@ type Mutation {
   userUpdate(input: UserUpdateInput!): User!
   userRoleUpdate(input: UserRoleUpdateInput!): User!
   userArchive(input: UserArchiveInput!): User!
+  bucketCreate(input: BucketCreateInput!): Bucket!
+  bucketEdit(input: BucketEditInput!): Bucket!
+  bucketDelete(input: BucketDeleteInput!): Void
+  taskCreate(input: TaskCreateInput!): Task!
+  taskEdit(input: TaskEditInput!): Task!
+  taskDelete(input: TaskDeleteInput!): Void
+  taskCommentCreate(input: TaskCommentCreateInput!): TaskComment!
+  taskCommentEdit(input: TaskCommentEditInput!): TaskComment!
+  taskCommentDelete(input: TaskCommentDeleteInput!): Void
+  taskChecklistCreate(input: TaskChecklistCreateInput!): TaskChecklist!
+  taskChecklistEdit(input: TaskChecklistEditInput!): TaskChecklist!
+  taskChecklistDelete(input: TaskChecklistDeleteInput!): Void
+  tagCreate(input: TagCreateInput!): Tag!
+  tagEdit(input: TagEditInput!): Tag!
+  tagDelete(input: TagDeleteInput!): Void
 }
 
 type User {
@@ -173,4 +193,208 @@ enum SystemRole {
 
 input UserArchiveInput {
   userId: ID!
+}
+
+type Bucket {
+  id: ID!
+  name: String!
+  sortOrder: Int!
+  team: Team
+  user: User
+  tasks: [Task!]!
+}
+
+type Task {
+  id: ID!
+  name: String!
+  notes: String
+  createdAt: DateTime!
+  startDate: DateTime
+  dueDate: DateTime
+  sortOrder: Int!
+  assignees: [User!]!
+  progress: Option!
+  priority: Option!
+  comments: [TaskComment!]!
+  checklist: [TaskChecklist!]!
+  tags: [Tag!]!
+  bucket: Bucket!
+}
+
+type TaskComment {
+  id: ID!
+  content: String!
+  createdAt: DateTime!
+  isEdited: Boolean!
+  task: Task!
+}
+
+type TaskChecklist {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  completed: Boolean!
+  sortOrder: Int!
+  task: Task!
+}
+
+type Tag {
+  id: ID!
+  name: String!
+  team: Team
+  user: User
+  tasks: [Task!]!
+}
+
+type BucketManyOutput {
+  items: [Bucket!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+type TaskManyOutput {
+  items: [Task!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+type TagManyOutput {
+  items: [Tag!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+enum TaskProgress {
+  notStarted
+  inProgress
+  completed
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+input BucketManyInput {
+  page: PageInput
+  filter: BucketManyFilterInput
+}
+
+input TaskManyInput {
+  page: PageInput
+  filter: TaskManyFilterInput
+}
+
+input TagManyInput {
+  page: PageInput
+  filter: TagManyFilterInput
+}
+
+input BucketManyFilterInput {
+  teamId: ID
+  userId: ID
+}
+
+input TaskManyFilterInput {
+  bucketId: ID
+  assigneeId: ID
+  tagId: ID
+  progress: [TaskProgress!]
+  priority: [TaskPriority!]
+  term: String
+}
+
+input TagManyFilterInput {
+  teamId: ID
+  userId: ID
+  term: String
+}
+
+input BucketCreateInput {
+  name: String!
+  teamId: ID
+  userId: ID
+}
+
+input BucketEditInput {
+  id: ID!
+  name: String
+  sortOrder: Int
+}
+
+input BucketDeleteInput {
+  id: ID!
+}
+
+input TaskCreateInput {
+  name: String!
+  bucketId: ID!
+  userId: ID
+  teamId: ID
+}
+
+input TaskEditInput {
+  id: ID!
+  name: String
+  notes: String
+  startDate: DateTime
+  dueDate: DateTime
+  sortOrder: Int
+  assigneeIds: [ID!]
+  progress: TaskProgress
+  priority: TaskPriority
+  bucketId: ID
+  tagIds: [ID!]
+}
+
+input TaskDeleteInput {
+  id: ID!
+}
+
+input TaskCommentCreateInput {
+  content: String!
+  taskId: ID!
+}
+
+input TaskCommentEditInput {
+  id: ID!
+  content: String!
+}
+
+input TaskCommentDeleteInput {
+  id: ID!
+}
+
+input TaskChecklistCreateInput {
+  name: String!
+  sortOrder: Int!
+  taskId: ID!
+}
+
+input TaskChecklistEditInput {
+  id: ID!
+  name: String
+  completed: Boolean
+  sortOrder: Int
+}
+
+input TaskChecklistDeleteInput {
+  id: ID!
+}
+
+input TagCreateInput {
+  name: String!
+  teamId: ID
+  userId: ID
+}
+
+input TagEditInput {
+  id: ID!
+  name: String!
+}
+
+input TagDeleteInput {
+  id: ID!
 }
