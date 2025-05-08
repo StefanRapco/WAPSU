@@ -74,268 +74,259 @@ export function KanbanBoard(props: KanbanBoardProps) {
   };
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        bgcolor: theme.palette.grey[50],
-        borderRadius: 2,
-        overflow: 'hidden'
-      }}
-    >
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="COLUMN"
-          isDropDisabled={props.disabled}
-        >
-          {provided => (
-            <Box
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              sx={{
-                display: 'flex',
-                gap: 3,
-                p: 3,
-                overflowX: 'auto',
-                '&::-webkit-scrollbar': {
-                  height: '8px'
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: theme.palette.grey[100],
-                  borderRadius: '4px'
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: theme.palette.grey[300],
-                  borderRadius: '4px',
-                  '&:hover': {
-                    background: theme.palette.grey[400]
-                  }
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable
+        droppableId="all-columns"
+        direction="horizontal"
+        type="COLUMN"
+        isDropDisabled={props.disabled}
+      >
+        {provided => (
+          <Box
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            sx={{
+              display: 'flex',
+              gap: 6,
+              p: 3,
+              overflowX: 'auto',
+              '&::-webkit-scrollbar': {
+                height: '8px'
+              },
+              '&::-webkit-scrollbar-track': {
+                background: theme.palette.grey[100],
+                borderRadius: '4px'
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: theme.palette.grey[300],
+                borderRadius: '4px',
+                '&:hover': {
+                  background: theme.palette.grey[400]
                 }
-              }}
-            >
-              {props.buckets.map((bucket, index) => (
-                <Draggable
-                  key={bucket.id}
-                  draggableId={bucket.id}
-                  index={index}
-                  isDragDisabled={props.disabled}
-                >
-                  {(provided, snapshot) => (
-                    <Box
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      sx={{
-                        minWidth: 320,
-                        maxWidth: 320,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        transform: snapshot.isDragging
-                          ? provided.draggableProps?.style?.transform
-                          : 'none'
-                      }}
+              }
+            }}
+          >
+            {props.buckets.map((bucket, index) => (
+              <Draggable
+                key={bucket.id}
+                draggableId={bucket.id}
+                index={index}
+                isDragDisabled={props.disabled}
+              >
+                {(provided, snapshot) => (
+                  <Box
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    sx={{
+                      minWidth: 320,
+                      maxWidth: 320,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 2,
+                      transform: snapshot.isDragging
+                        ? provided.draggableProps?.style?.transform
+                        : 'none'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={3}
+                      {...provided.dragHandleProps}
+                      sx={{ width: '100%', justifyContent: 'space-between' }}
                     >
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        spacing={3}
-                        {...provided.dragHandleProps}
-                        sx={{ width: '100%', justifyContent: 'space-between' }}
-                      >
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          {editingBucketId === bucket.id ? (
-                            <TextField
-                              inputRef={textFieldRef}
-                              size="small"
-                              value={editingBucketName}
-                              onChange={e => setEditingBucketName(e.target.value)}
-                              onBlur={() => {
-                                if (editingBucketName.trim()) {
-                                  props.onBucketEdit(bucket.id, editingBucketName);
-                                }
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        {editingBucketId === bucket.id ? (
+                          <TextField
+                            inputRef={textFieldRef}
+                            size="small"
+                            value={editingBucketName}
+                            onChange={e => setEditingBucketName(e.target.value)}
+                            onBlur={() => {
+                              if (editingBucketName.trim()) {
+                                props.onBucketEdit(bucket.id, editingBucketName);
+                              }
+                              setEditingBucketId(null);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter' && editingBucketName.trim()) {
+                                props.onBucketEdit(bucket.id, editingBucketName);
                                 setEditingBucketId(null);
-                              }}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' && editingBucketName.trim()) {
-                                  props.onBucketEdit(bucket.id, editingBucketName);
-                                  setEditingBucketId(null);
-                                }
-                                if (e.key === 'Escape') {
-                                  setEditingBucketId(null);
-                                }
-                              }}
-                              placeholder="Enter bucket name..."
-                              autoFocus
-                            />
-                          ) : (
-                            <Typography
-                              variant="h6"
-                              fontWeight={600}
-                              onClick={() => handleBucketNameEdit(bucket.id, bucket.name)}
-                              sx={{
-                                cursor: 'pointer',
-                                '&:hover': { opacity: 0.7 },
-                                maxWidth: 200,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}
-                            >
-                              {bucket.name}
-                            </Typography>
-                          )}
-                          <Tooltip
-                            title={`${bucket.tasks.length < 9 ? bucket.tasks.length : '9+'} tasks`}
-                            placement="right"
+                              }
+                              if (e.key === 'Escape') {
+                                setEditingBucketId(null);
+                              }
+                            }}
+                            placeholder="Enter bucket name..."
+                            autoFocus
+                          />
+                        ) : (
+                          <Typography
+                            variant="h6"
+                            fontWeight={600}
+                            onClick={() => handleBucketNameEdit(bucket.id, bucket.name)}
+                            sx={{
+                              cursor: 'pointer',
+                              '&:hover': { opacity: 0.7 },
+                              maxWidth: 200,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}
                           >
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: theme.palette.grey[600],
-                                bgcolor: theme.palette.grey[100],
-                                px: 3,
-                                py: 0.5,
-                                borderRadius: 1
-                              }}
-                            >
-                              {bucket.tasks.length <= 9 ? bucket.tasks.length : '9+'}
-                            </Typography>
-                          </Tooltip>
-                        </Stack>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleBucketDelete(bucket)}
-                          sx={{
-                            color: theme.palette.error.main,
-                            '&:hover': {
-                              color: theme.palette.error.dark,
-                              bgcolor: theme.palette.error.light
-                            }
-                          }}
+                            {bucket.name}
+                          </Typography>
+                        )}
+                        <Tooltip
+                          title={`${bucket.tasks.length < 9 ? bucket.tasks.length : '9+'} tasks`}
+                          placement="right"
                         >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: theme.palette.grey[600],
+                              bgcolor: theme.palette.grey[100],
+                              px: 3,
+                              py: 0.5,
+                              borderRadius: 1
+                            }}
+                          >
+                            {bucket.tasks.length <= 9 ? bucket.tasks.length : '9+'}
+                          </Typography>
+                        </Tooltip>
                       </Stack>
-
-                      <Button
-                        buttonText="Add Task"
-                        onClick={() => setCreatingTaskInBucket(bucket.id)}
+                      <IconButton
                         size="small"
+                        onClick={() => handleBucketDelete(bucket)}
                         sx={{
-                          mb: 3,
-                          bgcolor: theme.palette.primary[50],
+                          color: theme.palette.error.main,
                           '&:hover': {
-                            bgcolor: theme.palette.primary[100]
+                            color: theme.palette.error.dark,
+                            bgcolor: theme.palette.error.light
                           }
                         }}
-                      />
-
-                      <Paper
-                        elevation={1}
-                        sx={{
-                          height: 1100,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          border: `1px solid ${theme.palette.grey[200]}`,
-                          borderRadius: 2,
-                          bgcolor: theme.palette.background.paper,
-                          overflow: 'hidden',
-                          boxShadow: `0 2px 4px ${theme.palette.grey[200]}`
-                        }}
                       >
-                        <Droppable
-                          droppableId={bucket.id}
-                          type="TASK"
-                          isDropDisabled={props.disabled}
-                        >
-                          {(provided, snapshot) => (
-                            <Box
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              sx={{
-                                height: '100%',
-                                overflowY: 'auto',
-                                p: 2,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                bgcolor: snapshot.isDraggingOver
-                                  ? theme.palette.grey[100]
-                                  : 'transparent',
-                                transition: 'background-color 0.2s ease',
-                                '&::-webkit-scrollbar': {
-                                  width: '8px'
-                                },
-                                '&::-webkit-scrollbar-track': {
-                                  background: 'transparent'
-                                },
-                                '&::-webkit-scrollbar-thumb': {
-                                  background: theme.palette.grey[300],
-                                  borderRadius: '4px',
-                                  '&:hover': {
-                                    background: theme.palette.grey[400]
-                                  }
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
+
+                    <Button
+                      buttonText="Add Task"
+                      onClick={() => setCreatingTaskInBucket(bucket.id)}
+                      size="small"
+                      sx={{
+                        mb: 3,
+                        bgcolor: theme.palette.primary[50],
+                        '&:hover': {
+                          bgcolor: theme.palette.primary[100]
+                        }
+                      }}
+                    />
+
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        height: 1100,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        border: `1px solid ${theme.palette.grey[200]}`,
+                        borderRadius: 2,
+                        bgcolor: theme.palette.background.paper,
+                        overflow: 'hidden',
+                        boxShadow: `0 2px 4px ${theme.palette.grey[200]}`
+                      }}
+                    >
+                      <Droppable
+                        droppableId={bucket.id}
+                        type="TASK"
+                        isDropDisabled={props.disabled}
+                      >
+                        {(provided, snapshot) => (
+                          <Box
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            sx={{
+                              height: '100%',
+                              overflowY: 'auto',
+                              p: 2,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 2,
+                              bgcolor: snapshot.isDraggingOver
+                                ? theme.palette.grey[100]
+                                : 'transparent',
+                              transition: 'background-color 0.2s ease',
+                              '&::-webkit-scrollbar': {
+                                width: '8px'
+                              },
+                              '&::-webkit-scrollbar-track': {
+                                background: 'transparent'
+                              },
+                              '&::-webkit-scrollbar-thumb': {
+                                background: theme.palette.grey[300],
+                                borderRadius: '4px',
+                                '&:hover': {
+                                  background: theme.palette.grey[400]
                                 }
-                              }}
-                            >
-                              {creatingTaskInBucket === bucket.id && (
-                                <CreateTaskCard
-                                  onCreateTask={name => {
-                                    props.onCreateTask(bucket.id, name);
-                                    setCreatingTaskInBucket(null);
-                                  }}
-                                  onCancel={() => setCreatingTaskInBucket(null)}
-                                />
-                              )}
-                              {bucket.tasks.map((task, index) => (
-                                <Draggable
-                                  key={task.id}
-                                  draggableId={task.id}
-                                  index={index}
-                                  isDragDisabled={props.disabled}
-                                >
-                                  {(provided, snapshot) => (
-                                    <Box
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      sx={{
-                                        transform: snapshot.isDragging
-                                          ? provided.draggableProps?.style?.transform
-                                          : 'none'
-                                      }}
-                                    >
-                                      <TaskCard
-                                        task={task}
-                                        onEdit={() => props.onTaskEdit(task)}
-                                        onDelete={() => props.onTaskDelete(task)}
-                                        onChecklistItemToggle={props.onChecklistItemToggle}
-                                        onViewComments={() => props.onViewComments(task)}
-                                      />
-                                    </Box>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </Box>
-                          )}
-                        </Droppable>
-                      </Paper>
-                    </Box>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-              {props.buckets.length > 0 && !props.disabled && (
-                <Box sx={{ minWidth: 320, maxWidth: 320, p: 2 }}>
-                  <CreateBucketButton onCreateBucket={props.onCreateBucket} />
-                </Box>
-              )}
-            </Box>
-          )}
-        </Droppable>
-      </DragDropContext>
+                              }
+                            }}
+                          >
+                            {creatingTaskInBucket === bucket.id && (
+                              <CreateTaskCard
+                                onCreateTask={name => {
+                                  props.onCreateTask(bucket.id, name);
+                                  setCreatingTaskInBucket(null);
+                                }}
+                                onCancel={() => setCreatingTaskInBucket(null)}
+                              />
+                            )}
+                            {bucket.tasks.map((task, index) => (
+                              <Draggable
+                                key={task.id}
+                                draggableId={task.id}
+                                index={index}
+                                isDragDisabled={props.disabled}
+                              >
+                                {(provided, snapshot) => (
+                                  <Box
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    sx={{
+                                      transform: snapshot.isDragging
+                                        ? provided.draggableProps?.style?.transform
+                                        : 'none'
+                                    }}
+                                  >
+                                    <TaskCard
+                                      task={task}
+                                      onEdit={() => props.onTaskEdit(task)}
+                                      onDelete={() => props.onTaskDelete(task)}
+                                      onChecklistItemToggle={props.onChecklistItemToggle}
+                                      onViewComments={() => props.onViewComments(task)}
+                                    />
+                                  </Box>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </Box>
+                        )}
+                      </Droppable>
+                    </Paper>
+                  </Box>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+            {props.buckets.length > 0 && !props.disabled && (
+              <Box sx={{ minWidth: 320, maxWidth: 320, p: 2 }}>
+                <CreateBucketButton onCreateBucket={props.onCreateBucket} />
+              </Box>
+            )}
+          </Box>
+        )}
+      </Droppable>
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onClose={() => {
@@ -346,6 +337,6 @@ export function KanbanBoard(props: KanbanBoardProps) {
         title="Delete Bucket"
         message={`Are you sure you want to delete the bucket "${bucketToDelete?.name}"? This will also delete all tasks in this bucket and their associated data (comments, checklists, etc.). This action cannot be undone.`}
       />
-    </Paper>
+    </DragDropContext>
   );
 }
