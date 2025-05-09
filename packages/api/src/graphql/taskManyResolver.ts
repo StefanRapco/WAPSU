@@ -8,7 +8,7 @@ export async function taskManyResolver(
   { input }: QueryTaskManyArgs,
   { identity }: InvocationContext
 ): Promise<TaskManyOutput> {
-  const where = toTaskWhere({ input: input?.filter, identity });
+  const where = await toTaskWhere({ input: input?.filter, identity });
 
   const tasks = await prisma.task.findMany({
     where: { AND: where },

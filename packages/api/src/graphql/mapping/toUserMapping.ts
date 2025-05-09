@@ -103,17 +103,15 @@ export function toUserWhere({
     });
   }
 
-  if (filter.systemRole != null && filter.systemRole.length > 0) {
+  if (filter.systemRole != null && filter.systemRole.length > 0)
     conditions.push({
       systemRole: { in: filter.systemRole.map(role => role as SystemRole) }
     });
-  }
 
-  if (filter.status != null && filter.status.length > 0) {
+  if (filter.status != null && filter.status.length > 0)
     conditions.push({
       status: { in: filter.status.map(status => status as UserStatus) }
     });
-  }
 
   return conditions;
 }

@@ -2,7 +2,33 @@ import { useState } from 'react';
 import { Cell, Pie, PieChart as PieChartRe, ResponsiveContainer, Sector, Tooltip } from 'recharts';
 import { fillColors } from './helpers/colors';
 
-export function PieChartBasic() {
+interface PieChartBasicProps {
+  data?: {
+    notStarted: number;
+    inProgress: number;
+    completed: number;
+    total: number;
+  };
+}
+
+interface PieChartEnhancedProps {
+  data?: {
+    notStarted: number;
+    inProgress: number;
+    completed: number;
+    total: number;
+  };
+}
+
+export function PieChartBasic({ data }: PieChartBasicProps) {
+  const chartData = data
+    ? [
+        { name: 'Not Started', value: data.notStarted },
+        { name: 'In Progress', value: data.inProgress },
+        { name: 'Completed', value: data.completed }
+      ]
+    : [];
+
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -10,14 +36,14 @@ export function PieChartBasic() {
           <Pie
             dataKey="value"
             isAnimationActive={false}
-            data={data}
+            data={chartData}
             cx="50%"
             cy="50%"
             outerRadius={80}
             fill="#8884d8"
             label
           >
-            {data.map((_, index) => (
+            {chartData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={fillColors[index % fillColors.length]} />
             ))}
           </Pie>
@@ -28,8 +54,16 @@ export function PieChartBasic() {
   );
 }
 
-export function PieChartEnhanced() {
+export function PieChartEnhanced({ data }: PieChartEnhancedProps) {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  const chartData = data
+    ? [
+        { name: 'Not Started', value: data.notStarted },
+        { name: 'In Progress', value: data.inProgress },
+        { name: 'Completed', value: data.completed }
+      ]
+    : [];
 
   return (
     <div style={{ width: '100%', height: 300 }}>
@@ -38,7 +72,7 @@ export function PieChartEnhanced() {
           <Pie
             activeIndex={activeIndex}
             activeShape={renderActiveShape}
-            data={data}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -47,7 +81,7 @@ export function PieChartEnhanced() {
             dataKey="value"
             onMouseEnter={(_, index) => setActiveIndex(index)}
           >
-            {data.map((_, index) => (
+            {chartData.map((_, index) => (
               <Cell key={`cell-${index}`} fill={fillColors[index % fillColors.length]} />
             ))}
           </Pie>
@@ -112,19 +146,10 @@ const renderActiveShape = props => {
         y={ey}
         textAnchor={textAnchor}
         fill="#333"
-      >{`PV ${value}`}</text>
+      >{`${value} tasks`}</text>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
+        {`(${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
   );
 };
-
-const data = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-  { name: 'Group E', value: 278 },
-  { name: 'Group F', value: 189 }
-];

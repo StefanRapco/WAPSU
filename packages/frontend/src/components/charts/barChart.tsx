@@ -11,19 +11,38 @@ import {
 } from 'recharts';
 import { fillColors } from './helpers/colors';
 
-export function BarChartStacked(): ReactNode {
+interface BarChartStackedProps {
+  data?: Array<{
+    priority: string;
+    notStarted: number;
+    inProgress: number;
+    completed: number;
+    total: number;
+  }>;
+}
+
+export function BarChartStacked({ data = [] }: BarChartStackedProps): ReactNode {
+  const chartData = data.map(item => ({
+    name: item.priority.charAt(0).toUpperCase() + item.priority.slice(1),
+    'Not Started': item.notStarted,
+    'In Progress': item.inProgress,
+    Completed: item.completed
+  }));
+
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChartRe data={data}>
+        <BarChartRe data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip contentStyle={{ color: 'black' }} />
           <Legend />
-          {Object.keys(data.map(({ name, ...rest }) => rest)[0]).map((item, index) => (
-            <Bar key={`${item}#${index}`} dataKey={item} stackId="a" fill={fillColors[index]} />
-          ))}
+          {Object.keys(chartData[0] || {})
+            .filter(key => key !== 'name')
+            .map((item, index) => (
+              <Bar key={`${item}#${index}`} dataKey={item} stackId="a" fill={fillColors[index]} />
+            ))}
         </BarChartRe>
       </ResponsiveContainer>
     </div>

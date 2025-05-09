@@ -12,6 +12,14 @@ type Query {
   bucketMany(input: BucketManyInput): BucketManyOutput!
   taskOne(id: ID!): Task!
   taskMany(input: TaskManyInput): TaskManyOutput!
+  analyticsTaskCompletion(input: AnalyticsTaskCompletionInput!): AnalyticsTaskCompletionOutput!
+  analyticsTaskDistribution(
+    input: AnalyticsTaskDistributionInput!
+  ): AnalyticsTaskDistributionOutput!
+  analyticsTaskPriority(input: AnalyticsTaskPriorityInput!): AnalyticsTaskPriorityOutput!
+  analyticsTeamPerformance(input: AnalyticsTeamPerformanceInput!): AnalyticsTeamPerformanceOutput!
+  analyticsTaskTimeline(input: AnalyticsTaskTimelineInput!): AnalyticsTaskTimelineOutput!
+  analyticsTaskHealth(input: AnalyticsTaskHealthInput!): AnalyticsTaskHealthOutput!
 }
 
 type Mutation {
@@ -287,6 +295,7 @@ input BucketManyFilterInput {
 input TaskManyFilterInput {
   bucketId: ID
   assigneeId: ID
+  allUserTeams: Boolean
   progress: [TaskProgress!]
   priority: [TaskPriority!]
   term: String
@@ -363,4 +372,121 @@ input TaskChecklistEditInput {
 
 input TaskChecklistDeleteInput {
   id: ID!
+}
+
+# Analytics Types
+type AnalyticsTaskCompletionOutput {
+  items: [AnalyticsTaskCompletionItem!]!
+  total: Int!
+  completed: Int!
+  completionRate: Float!
+}
+
+type AnalyticsTaskCompletionItem {
+  date: DateTime!
+  completed: Int!
+  total: Int!
+}
+
+type AnalyticsTaskDistributionOutput {
+  notStarted: Int!
+  inProgress: Int!
+  completed: Int!
+  total: Int!
+}
+
+type AnalyticsTaskPriorityOutput {
+  items: [AnalyticsTaskPriorityItem!]!
+}
+
+type AnalyticsTaskPriorityItem {
+  priority: TaskPriority!
+  notStarted: Int!
+  inProgress: Int!
+  completed: Int!
+  total: Int!
+}
+
+type AnalyticsTeamPerformanceOutput {
+  items: [AnalyticsTeamPerformanceItem!]!
+}
+
+type AnalyticsTeamPerformanceItem {
+  teamId: ID!
+  teamName: String!
+  completionRate: Float!
+  averageCompletionTime: Float!
+  onTimeDeliveryRate: Float!
+  priorityDistribution: JSONObject!
+  activeTasksRatio: Float!
+}
+
+type AnalyticsTaskTimelineOutput {
+  items: [AnalyticsTaskTimelineItem!]!
+}
+
+type AnalyticsTaskTimelineItem {
+  date: DateTime!
+  created: Int!
+  completed: Int!
+}
+
+type AnalyticsTaskHealthOutput {
+  overdueTasks: Int!
+  dueToday: Int!
+  dueThisWeek: Int!
+  completionRate: Float!
+}
+
+# Analytics Inputs
+input AnalyticsTaskCompletionInput {
+  teamId: ID
+  userId: ID
+  action: AnalyticsAction!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input AnalyticsTaskDistributionInput {
+  teamId: ID
+  userId: ID
+  action: AnalyticsAction!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input AnalyticsTaskPriorityInput {
+  teamId: ID
+  userId: ID
+  action: AnalyticsAction!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input AnalyticsTeamPerformanceInput {
+  teamIds: [ID!]!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input AnalyticsTaskTimelineInput {
+  teamId: ID
+  userId: ID
+  action: AnalyticsAction!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input AnalyticsTaskHealthInput {
+  teamId: ID
+  userId: ID
+  action: AnalyticsAction!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+enum AnalyticsAction {
+  all
+  team
+  individual
 }

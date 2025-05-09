@@ -7,6 +7,12 @@ import express, { Request, Response } from 'express';
 import fs from 'fs';
 import { gql } from 'graphql-tag';
 import { verifyToken } from './src/auth';
+import { analyticsTaskCompletionResolver } from './src/graphql/analyticsTaskCompletionResolver';
+import { analyticsTaskDistributionResolver } from './src/graphql/analyticsTaskDistributionResolver';
+import { analyticsTaskHealthResolver } from './src/graphql/analyticsTaskHealthResolver';
+import { analyticsTaskPriorityResolver } from './src/graphql/analyticsTaskPriorityResolver';
+import { analyticsTaskTimelineResolver } from './src/graphql/analyticsTaskTimelineResolver';
+import { analyticsTeamPerformanceResolver } from './src/graphql/analyticsTeamPerformanceResolver';
 import { bucketCreateResolver } from './src/graphql/bucketCreateResolver';
 import { bucketDeleteResolver } from './src/graphql/bucketDeleteResolver';
 import { bucketEditResolver } from './src/graphql/bucketEditResolver';
@@ -42,6 +48,12 @@ import { InvocationContext, protectResolvers } from './src/invocationContext';
 const typeDefs = gql(fs.readFileSync('./schema.graphql', 'utf8'));
 
 const queries = {
+  analyticsTaskCompletion: analyticsTaskCompletionResolver,
+  analyticsTaskDistribution: analyticsTaskDistributionResolver,
+  analyticsTaskPriority: analyticsTaskPriorityResolver,
+  analyticsTeamPerformance: analyticsTeamPerformanceResolver,
+  analyticsTaskTimeline: analyticsTaskTimelineResolver,
+  analyticsTaskHealth: analyticsTaskHealthResolver,
   identity: identityResolver,
   teamOne: teamOneResolver,
   teamMany: teamManyResolver,

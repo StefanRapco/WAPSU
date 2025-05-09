@@ -11,6 +11,7 @@ import { ToolCard } from '../components/dashboardCards';
 import { SectionHeader } from '../components/header';
 import { Typography as MyTypography } from '../components/typography';
 import { Identity } from '../hooks/useIdentity';
+import { useTaskMany } from '../hooks/useTaskMany';
 import analyticsImage from '../images/analytics.png';
 import settingsImage from '../images/settings.png';
 import tasksImage from '../images/tasks.png';
@@ -19,6 +20,8 @@ import teamsImage from '../images/teams.png';
 export function Dashboard(props: { identity: NonNullable<Identity> }) {
   const userName = props.identity.firstName;
   const navigate = useNavigate();
+
+  const taskMany = useTaskMany({ allUserTeams: true });
 
   return (
     <>
@@ -88,7 +91,10 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        12
+                        {
+                          taskMany.data?.items.filter(item => item.progress.value === 'completed')
+                            .length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Completed Tasks
@@ -134,7 +140,10 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        8
+                        {
+                          taskMany.data?.items.filter(item => item.progress.value === 'inProgress')
+                            .length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Pending Tasks
@@ -180,7 +189,13 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        3
+                        {
+                          taskMany.data?.items.filter(
+                            item =>
+                              new Date(item.dueDate) < new Date() &&
+                              item.progress.value !== 'completed'
+                          ).length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Overdue Tasks

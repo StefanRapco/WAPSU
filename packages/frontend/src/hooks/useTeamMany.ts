@@ -39,21 +39,21 @@ const query = gql(`
         description
         users {
           items {
-          id
-          firstName
-          lastName
-          email
-          teamRole {
-            label
-            value
+            id
+            firstName
+            lastName
+            email
+            teamRole {
+              label
+              value
+            }
           }
+          total
+          hasMore
         }
-        total
-        hasMore
       }
-    }
-    total
-    hasMore
+      total
+      hasMore
     }
   }
 `);

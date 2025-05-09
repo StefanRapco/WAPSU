@@ -18,6 +18,7 @@ interface UserSelectProps {
   readonly onlyIdentity?: boolean;
   readonly notTeamId?: string[];
   readonly initialSelectedUsers?: string[];
+  readonly systemRole?: string[];
 }
 
 export function UserSelect({
@@ -25,7 +26,8 @@ export function UserSelect({
   filterIdentity,
   onlyIdentity,
   notTeamId,
-  initialSelectedUsers = []
+  initialSelectedUsers = [],
+  systemRole
 }: UserSelectProps): ReactNode {
   const [selectedUsers, setSelectedUsers] = useState<string[]>(initialSelectedUsers);
   const [filterTerm, setFilterTerm] = useState<string>('');
@@ -34,7 +36,8 @@ export function UserSelect({
     term: filterTerm,
     filterIdentity,
     notTeamId,
-    onlyIdentity
+    onlyIdentity,
+    systemRole
   });
 
   const handleUserToggle = (userId: string) => {

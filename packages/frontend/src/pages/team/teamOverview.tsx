@@ -18,6 +18,7 @@ import { SnackbarError } from '../../components/snackbarError';
 import { SnackBarSuccess } from '../../components/snackbarSuccess';
 import { TextField } from '../../components/textField';
 import { Typography } from '../../components/typography';
+import { useTaskMany } from '../../hooks/useTaskMany';
 import { useTeamEdit } from '../../hooks/useTeamEdit';
 import { useTeamOne } from '../../hooks/useTeamOne';
 import analyticsImage from '../../images/analytics.png';
@@ -46,6 +47,8 @@ export function TeamOverview(): ReactNode {
 
   const { data: team, refetch } = useTeamOne(id);
   const { editTeam, loading, error } = useTeamEdit();
+
+  const taskMany = useTaskMany({ teamId: id });
 
   const handleSubmit = async (values: { name: string; description: string; avatar: string }) => {
     if (team == null) return;
@@ -163,7 +166,10 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        80
+                        {
+                          taskMany.data?.items.filter(item => item.progress.value === 'completed')
+                            .length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Completed Tasks
@@ -209,7 +215,10 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        40
+                        {
+                          taskMany.data?.items.filter(item => item.progress.value === 'inProgress')
+                            .length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Pending Tasks
@@ -255,7 +264,13 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        0
+                        {
+                          taskMany.data?.items.filter(
+                            item =>
+                              new Date(item.dueDate) > new Date() &&
+                              item.progress.value !== 'completed'
+                          ).length
+                        }
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Overdue Tasks

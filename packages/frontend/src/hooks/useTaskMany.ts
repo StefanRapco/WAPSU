@@ -5,6 +5,7 @@ interface TaskFilter {
   readonly term?: string;
   readonly teamId?: string;
   readonly userId?: string;
+  readonly allUserTeams?: boolean;
 }
 
 export function useTaskMany(filter?: TaskFilter) {
@@ -14,7 +15,8 @@ export function useTaskMany(filter?: TaskFilter) {
         filter: {
           term: filter?.term,
           teamId: filter?.teamId,
-          userId: filter?.userId
+          userId: filter?.userId,
+          allUserTeams: filter?.allUserTeams
         }
       }
     }

@@ -1,67 +1,72 @@
+import { ReactNode } from 'react';
 import {
   Area,
   Bar,
   CartesianGrid,
-  ComposedChart as ComposedChartRe,
   Legend,
   Line,
+  ComposedChart as RechartsComposedChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
 } from 'recharts';
-import { fillColors, strokeColors } from './helpers/colors';
+import { fillColors } from './helpers/colors';
 
-export function ComposedChart() {
+interface ComposedChartProps {
+  data?: {
+    overdueTasks: number;
+    dueToday: number;
+    dueThisWeek: number;
+    completionRate: number;
+  };
+}
+
+export function ComposedChart({ data }: ComposedChartProps): ReactNode {
+  if (!data) return null;
+
+  const chartData = [
+    {
+      date: 'Current',
+      overdue: data.overdueTasks,
+      dueToday: data.dueToday,
+      dueThisWeek: data.dueThisWeek,
+      completionRate: data.completionRate
+    }
+  ];
+
   return (
-    <div style={{ width: '100%', height: 300 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChartRe data={data} margin={{ top: 20, right: 80, bottom: 20, left: 20 }}>
-          <CartesianGrid stroke="#f5f5f5" />
-          <XAxis
-            dataKey="name"
-            label={{ value: 'Pages', position: 'insideBottomRight', offset: 0 }}
-            scale="band"
-          />
-          <YAxis label={{ value: 'Index', angle: -90, position: 'insideLeft' }} />
-          <Tooltip contentStyle={{ color: 'black' }} />
-          <Legend />
-
-          {Object.keys(data.map(({ name, ...rest }) => rest)[0]).map((item, index) => {
-            if (index === 0)
-              return (
-                <Area
-                  key={`${item}#${index}`}
-                  type="monotone"
-                  dataKey={item}
-                  fill={fillColors[index]}
-                  stroke={strokeColors[index]}
-                />
-              );
-            if (index === 1)
-              return (
-                <Bar
-                  key={`${item}#${index}`}
-                  dataKey={item}
-                  barSize={20}
-                  fill={fillColors[index]}
-                />
-              );
-            if (index === 2)
-              return (
-                <Line
-                  key={`${item}#${index}`}
-                  type="monotone"
-                  dataKey={item}
-                  stroke={strokeColors[index]}
-                />
-              );
-
-            throw new Error('Error! Composed Chart');
-          })}
-        </ComposedChartRe>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height={400}>
+      <RechartsComposedChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip
+          formatter={(value, name) => {
+            if (name === 'Completion Rate') {
+              return [((value as number) * 100).toFixed(2) + '%', name];
+            }
+            return [value, name];
+          }}
+        />
+        <Legend />
+        <Area
+          type="monotone"
+          dataKey="overdue"
+          fill={fillColors[0]}
+          stroke={fillColors[0]}
+          name="Overdue Tasks"
+        />
+        <Bar dataKey="dueToday" fill={fillColors[1]} name="Due Today" />
+        <Bar dataKey="dueThisWeek" fill={fillColors[2]} name="Due This Week" />
+        <Line
+          type="monotone"
+          dataKey="completionRate"
+          stroke={fillColors[3]}
+          name="Completion Rate"
+        />
+      </RechartsComposedChart>
+    </ResponsiveContainer>
   );
 }
 

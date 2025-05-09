@@ -327,7 +327,8 @@ export function TeamUserList(): ReactNode {
                                 user.id !== identity?.id) ||
                               (user.teamRole.value === 'owner' &&
                                 identity?.systemRole.value === 'admin' &&
-                                !hasAvailableAmbassadors())
+                                !hasAvailableAmbassadors()) ||
+                              (user.teamRole.value === 'owner' && user.id === identity?.id)
                             }
                           >
                             <ArrowDownwardIcon />
@@ -425,6 +426,7 @@ export function TeamUserList(): ReactNode {
             onUserChange={values => setSelectedUsers(values)}
             filterIdentity
             notTeamId={[id]}
+            systemRole={['user']}
           />
           <Box sx={{ mt: 3 }}>
             <Button

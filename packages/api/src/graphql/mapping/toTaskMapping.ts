@@ -66,13 +66,13 @@ export function toTaskSchema(props: Task): TaskSchema {
   };
 }
 
-export function toTaskWhere({
+export async function toTaskWhere({
   input: filter,
   identity
 }: {
   input: TaskManyFilterInput | undefined | null;
   identity: InvocationContext['identity'];
-}): Prisma.TaskWhereInput[] {
+}): Promise<Prisma.TaskWhereInput[]> {
   const conditions: Prisma.TaskWhereInput[] = new Array();
 
   if (filter == null) return conditions;
@@ -96,6 +96,19 @@ export function toTaskWhere({
 
   if (filter.teamId) conditions.push({ bucket: { teamId: filter.teamId } });
 
+  if (filter.allUserTeams) {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: identity.id },
+      select: { teams: true }
+    });
+
+    conditions.push({
+      OR: [
+        { bucket: { userId: filter.userId } },
+        { bucket: { teamId: { in: user.teams.map(t => t.teamId) } } }
+      ]
+    });
+  }
   return conditions;
 }
 
