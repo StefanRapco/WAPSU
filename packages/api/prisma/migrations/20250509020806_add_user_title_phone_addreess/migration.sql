@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `address` TINYTEXT NULL,
+    ADD COLUMN `phoneNumber` TINYTEXT NULL,
+    ADD COLUMN `title` TINYTEXT NULL;

@@ -10,7 +10,13 @@ export async function identityUpdateResolver(
 ): Promise<User> {
   const user = await prisma.user.update({
     where: { id: identity.id },
-    data: { firstName: input.firstName ?? undefined, lastName: input.lastName ?? undefined }
+    data: {
+      firstName: input.firstName ?? undefined,
+      lastName: input.lastName ?? undefined,
+      title: input.title ?? undefined,
+      phoneNumber: input.phoneNumber ?? undefined,
+      address: input.address ?? undefined
+    }
   });
 
   return toUserSchema(user);

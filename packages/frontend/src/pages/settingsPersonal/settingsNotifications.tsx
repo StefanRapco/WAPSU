@@ -29,7 +29,9 @@ export function SettingsNotifications(props: NotificationsProps) {
     <Stack spacing={9}>
       <SectionHeader breadcrumbs={[{ label: 'Account settings' }, { label: 'Notifications' }]}>
         <Box display="flex" flexDirection="column">
-          <Typography variant="h2Bold">Notifications</Typography>
+          <Typography variant="h2" fontWeight={700}>
+            Notifications
+          </Typography>
           <Typography>
             Stay updated with your latest tasks, mentions, and project updates. Never miss an
             important update!

@@ -50,6 +50,9 @@ type User {
   teams: [Team!]!
   systemRole: Option!
   status: Option!
+  title: String
+  phoneNumber: String
+  address: String
 }
 
 type Team {
@@ -135,12 +138,18 @@ input SignInCodeCompleteInput {
 input IdentityUpdateInput {
   firstName: String
   lastName: String
+  title: String
+  phoneNumber: String
+  address: String
 }
 
 input UserUpdateInput {
   id: ID!
   firstName: String
   lastName: String
+  title: String
+  phoneNumber: String
+  address: String
 }
 
 input TeamCreateInput {

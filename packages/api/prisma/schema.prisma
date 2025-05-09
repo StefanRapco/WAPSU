@@ -13,13 +13,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  email     String   @unique @db.VarChar(255)
-  firstName String   @db.TinyText
-  lastName  String   @db.TinyText
-  password  String?  @db.Text
-  createdAt DateTime @default(now())
-  mfa       String?  @db.TinyText
+  id          String   @id
+  email       String   @unique @db.VarChar(255)
+  firstName   String   @db.TinyText
+  lastName    String   @db.TinyText
+  password    String?  @db.Text
+  createdAt   DateTime @default(now())
+  mfa         String?  @db.TinyText
+  title       String?  @db.TinyText
+  phoneNumber String?  @db.TinyText
+  address     String?  @db.TinyText
 
   status UserStatus @default(active)
 

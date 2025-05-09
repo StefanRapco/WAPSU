@@ -17,7 +17,7 @@ import { Identity, identityQuery } from '../../hooks/useIdentity';
 interface PersonalDetailsProps {
   readonly identity: Pick<
     NonNullable<Identity>,
-    'id' | 'firstName' | 'lastName' | 'email' | 'fullName'
+    'id' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'title' | 'phoneNumber' | 'address'
   >;
 }
 
@@ -28,7 +28,10 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
       .string()
       .required('Last name is a required field')
       .max(128, 'Max. 128 characters'),
-    email: yup.string().required('Email is a required field.').max(128, 'Max. 128 characters')
+    email: yup.string().required('Email is a required field.').max(128, 'Max. 128 characters'),
+    title: yup.string().nullable().max(128, 'Max. 128 characters'),
+    phoneNumber: yup.string().nullable().max(128, 'Max. 128 characters'),
+    address: yup.string().nullable().max(128, 'Max. 128 characters')
   });
 
   const [error, setError] = useState<boolean>(false);
@@ -72,13 +75,24 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
         initialValues={{
           firstName: props.identity.firstName,
           lastName: props.identity.lastName,
-          email: props.identity.email
+          email: props.identity.email,
+          title: props.identity.title,
+          phoneNumber: props.identity.phoneNumber,
+          address: props.identity.address
         }}
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async values => {
           await update({
-            variables: { input: { firstName: values.firstName, lastName: values.lastName } }
+            variables: {
+              input: {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                title: values.title,
+                phoneNumber: values.phoneNumber,
+                address: values.address
+              }
+            }
           });
         }}
       >
@@ -115,6 +129,23 @@ export function SettingsPersonalDetails(props: PersonalDetailsProps) {
                       error={false}
                       helperText={false}
                     />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField name="title" label="Title" error={false} helperText={false} />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      name="phoneNumber"
+                      label="Phone number"
+                      error={false}
+                      helperText={false}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField name="address" label="Address" error={false} helperText={false} />
                   </Grid>
                 </Grid>
               </Stack>
@@ -153,6 +184,9 @@ const mutation = gql(`
       id
       firstName
       lastName
+      title
+      phoneNumber
+      address
     }
   }
 `);

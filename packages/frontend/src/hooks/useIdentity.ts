@@ -22,6 +22,9 @@ export const identityQuery = gql(`
       fullName
       email
       isPasswordNull
+      title
+      phoneNumber
+      address
       systemRole {
         label
         value

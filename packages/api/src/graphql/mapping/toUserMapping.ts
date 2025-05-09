@@ -14,6 +14,9 @@ export function toUserSchema(props: User): UserSchema {
     isPasswordNull: props.password == null,
     systemRole: { label: prettifySystemRole(props.systemRole), value: props.systemRole },
     status: { label: prettifyUserStatus(props.status), value: props.status },
+    title: props.title,
+    phoneNumber: props.phoneNumber,
+    address: props.address,
     // @ts-expect-error
     teams: async () => {
       const teamsDb = await prisma.team.findMany({
