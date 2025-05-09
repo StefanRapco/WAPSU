@@ -23,9 +23,9 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { Form, Formik } from 'formik';
-import gql from 'graphql-tag';
 import { useState } from 'react';
 import * as yup from 'yup';
+import { gql } from '../../gql-generated/gql';
 import { Task } from '../../gql-generated/graphql';
 import { useIdentity } from '../../hooks/useIdentity';
 import { useTaskCommentCreate } from '../../hooks/useTaskCommentCreate';
@@ -246,7 +246,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskE
 
   const [createChecklistItem] = useMutation(taskChecklistCreateMutation, {
     onCompleted: values => {
-      setChecklist(values.taskChecklistCreate.task.checklist);
+      setChecklist(values.taskChecklistCreate.task.checklist as any);
       setNewChecklistItem('');
       setSuccessMessage('Checklist item added successfully');
     }
@@ -254,7 +254,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskE
 
   const [editChecklistItem] = useMutation(taskChecklistEditMutation, {
     onCompleted: values => {
-      setChecklist(values.taskChecklistEdit.task.checklist);
+      setChecklist(values.taskChecklistEdit.task.checklist as any);
       setEditingChecklistId(null);
       setEditingChecklistContent('');
       setSuccessMessage('Checklist item updated successfully');
@@ -298,7 +298,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskE
         }
       });
       if (result.data?.taskCommentEdit?.comments) {
-        setComments(result.data.taskCommentEdit.comments);
+        setComments(result.data.taskCommentEdit.comments as any);
         setEditingCommentId(null);
         setEditingCommentContent('');
       }
@@ -440,8 +440,8 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskE
                       notes: values.notes ?? undefined,
                       startDate: values.startDate,
                       dueDate: values.dueDate,
-                      progress: values.progress,
-                      priority: values.priority
+                      progress: values.progress as any,
+                      priority: values.priority as any
                     }
                   }
                 });

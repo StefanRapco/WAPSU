@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import gql from 'graphql-tag';
+import { gql } from '../gql-generated/gql';
 
 const taskCommentDeleteMutation = gql(`
   mutation TaskCommentDelete($input: TaskCommentDeleteInput!) {

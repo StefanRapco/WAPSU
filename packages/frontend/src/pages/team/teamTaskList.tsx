@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client';
 import { Box, Stack, Typography } from '@mui/material';
-import gql from 'graphql-tag';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../../components/confirmDialog';
@@ -11,6 +10,7 @@ import { SnackBarSuccess, snackbarUseEffect } from '../../components/snackbarSuc
 import { KanbanBoard } from '../../components/task/kanbanBoard';
 import { TaskCreate } from '../../components/task/taskCreate';
 import { TaskEdit } from '../../components/task/taskEdit';
+import { gql } from '../../gql-generated/gql';
 import { Task } from '../../gql-generated/graphql';
 import { useBucketMany } from '../../hooks/useBucketMany';
 import { useTaskMany } from '../../hooks/useTaskMany';
@@ -71,7 +71,7 @@ const bucketEditMutation = gql(`
   }
 `);
 
-const taskCreateMutation = gql`
+const taskCreateMutation = gql(`
   mutation TaskCreateList($input: TaskCreateInput!) {
     taskCreate(input: $input) {
       id
@@ -83,7 +83,7 @@ const taskCreateMutation = gql`
       sortOrder
     }
   }
-`;
+`);
 
 const bucketDeleteMutation = gql(`
   mutation BucketDelete($input: BucketDeleteInput!) {
@@ -433,7 +433,7 @@ export function TeamTaskList() {
         onSubmit={handleTaskCreate}
         onError={handleTaskCreateError}
         teamId={id}
-        bucketId={selectedBucketId ?? undefined}
+        bucketId={selectedBucketId ?? ''}
       />
 
       {selectedTask && (

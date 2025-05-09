@@ -1,9 +1,9 @@
 import { useMutation } from '@apollo/client';
 import { Box, Stack } from '@mui/material';
 import { Form, Formik } from 'formik';
-import gql from 'graphql-tag';
 import { useState } from 'react';
 import * as yup from 'yup';
+import { gql } from '../../gql-generated/gql';
 import { Button } from '../button';
 import { Drawer } from '../drawer';
 import { SnackbarError } from '../snackbarError';
@@ -60,7 +60,7 @@ interface TaskCreateProps {
   readonly onError: (error: string) => void;
   readonly teamId?: string;
   readonly userId?: string;
-  readonly bucketId?: string;
+  readonly bucketId: string;
 }
 
 const validationSchema = yup.object({

@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
+import { gql } from '../gql-generated/gql';
 
 interface BucketFilter {
   readonly teamId?: string;

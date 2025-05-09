@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client';
 import { Box, Stack, Typography } from '@mui/material';
-import gql from 'graphql-tag';
 import { useState } from 'react';
 import { ConfirmDialog } from '../components/confirmDialog';
 import { SectionHeader } from '../components/header';
@@ -10,6 +9,7 @@ import { SnackBarSuccess, snackbarUseEffect } from '../components/snackbarSucces
 import { KanbanBoard } from '../components/task/kanbanBoard';
 import { TaskCreate } from '../components/task/taskCreate';
 import { TaskEdit } from '../components/task/taskEdit';
+import { gql } from '../gql-generated/gql';
 import { Task } from '../gql-generated/graphql';
 import { useBucketMany } from '../hooks/useBucketMany';
 import { Identity } from '../hooks/useIdentity';
@@ -70,7 +70,7 @@ const bucketEditMutation = gql(`
   }
 `);
 
-const taskCreateMutation = gql`
+const taskCreateMutation = gql(`
   mutation TaskCreateList($input: TaskCreateInput!) {
     taskCreate(input: $input) {
       id
@@ -82,7 +82,7 @@ const taskCreateMutation = gql`
       sortOrder
     }
   }
-`;
+`);
 
 const bucketDeleteMutation = gql(`
   mutation BucketDelete($input: BucketDeleteInput!) {
@@ -400,7 +400,7 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
         onSubmit={handleTaskCreate}
         onError={handleTaskCreateError}
         userId={props.identity.id}
-        bucketId={selectedBucketId ?? undefined}
+        bucketId={selectedBucketId ?? ''}
       />
 
       {selectedTask && (
