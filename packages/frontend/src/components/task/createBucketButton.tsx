@@ -49,7 +49,22 @@ export function CreateBucketButton({ onCreateBucket }: CreateBucketButtonProps) 
           onKeyDown={handleKeyDown}
           placeholder="Enter bucket name..."
           autoFocus
-          sx={{ mt: 6 }}
+          sx={{
+            mt: 6,
+            display: 'flex',
+            '& .MuiOutlinedInput-root': {
+              border: 'none',
+              '& fieldset': { borderColor: 'black' },
+              '&:hover fieldset': { borderColor: 'black' },
+              '&.Mui-focused fieldset': { borderColor: 'black' }
+            },
+            '& .MuiInputLabel-root': {
+              color: 'black'
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'black'
+            }
+          }}
         />
       </Box>
     );

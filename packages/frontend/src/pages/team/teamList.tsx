@@ -23,7 +23,7 @@ export function TeamList(props: { identity: NonNullable<Identity> }): ReactNode 
     page: page - 1,
     pageSize: ITEMS_PER_PAGE,
     term: searchTerm,
-    userId: [props.identity.id]
+    userId: props.identity.systemRole.value !== 'admin' ? [props.identity.id] : []
   });
 
   const handleTeamCreate = () => {

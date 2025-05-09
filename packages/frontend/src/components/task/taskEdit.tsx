@@ -160,6 +160,7 @@ interface TaskEditProps {
   readonly onSubmit: () => void;
   readonly onError: (error: string) => void;
   readonly task: Task;
+  readonly mode: 'user' | 'team';
 }
 
 const validationSchema = yup.object({
@@ -196,7 +197,7 @@ const priorityOptions = [
   { label: 'Urgent', value: 'urgent', icon: <PriorityHighIcon sx={{ color: 'red' }} /> }
 ];
 
-export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditProps) {
+export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskEditProps) {
   const { identity } = useIdentity();
   const [editTask] = useMutation(taskEditMutation);
   const [comments, setComments] = useState<Task['comments']>(task.comments);
@@ -526,7 +527,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                             onError('Failed to edit task');
                           }
                         }}
-                        onlyIdentity
+                        onlyIdentity={mode === 'user'}
                         initialSelectedUsers={task.assignees.map(assignee => assignee.id)}
                       />
                     </Box>

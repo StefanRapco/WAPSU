@@ -195,6 +195,21 @@ export function KanbanBoard(props: KanbanBoardProps) {
                             }}
                             placeholder="Enter bucket name..."
                             autoFocus
+                            sx={{
+                              display: 'flex',
+                              '& .MuiOutlinedInput-root': {
+                                border: 'none',
+                                '& fieldset': { borderColor: 'black' },
+                                '&:hover fieldset': { borderColor: 'black' },
+                                '&.Mui-focused fieldset': { borderColor: 'black' }
+                              },
+                              '& .MuiInputLabel-root': {
+                                color: 'black'
+                              },
+                              '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'black'
+                              }
+                            }}
                           />
                         ) : (
                           <Typography
@@ -373,7 +388,9 @@ export function KanbanBoard(props: KanbanBoardProps) {
         }}
         onConfirm={handleConfirmDelete}
         title="Delete Bucket"
-        message={`Are you sure you want to delete the bucket "${bucketToDelete?.name}"? This will also delete all tasks in this bucket and their associated data (comments, checklists, etc.). This action cannot be undone.`}
+        message={`Are you sure you want to delete bucket "${bucketToDelete?.name}"? 
+        This will also delete all tasks in this bucket and their associated data: (comments, checklists, et cetera). 
+        This action cannot be undone.`}
       />
     </DragDropContext>
   );

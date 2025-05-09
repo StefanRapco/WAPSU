@@ -37,14 +37,15 @@ export async function teamUserEditResolver(
       )
         throw new Error('Ambassadors can only upgrade members to ambassador role');
 
-      if (input.action === TeamUserEditAction.Downgrade)
-        throw new Error('Ambassadors cannot downgrade roles');
+      if (input.action === TeamUserEditAction.Downgrade && input.userId !== identity.id)
+        throw new Error('Ambassadors can only downgrade themselves');
 
       if (
         input.action === TeamUserEditAction.Remove &&
-        targetUserOnTeam.teamRole === TeamRole.owner
+        (targetUserOnTeam.teamRole === TeamRole.owner ||
+          (targetUserOnTeam.teamRole === TeamRole.ambassador && input.userId !== identity.id))
       )
-        throw new Error('Ambassadors cannot remove team owners');
+        throw new Error('Ambassadors can only remove themselves and members');
     }
 
     let newRole: TeamRole | undefined;

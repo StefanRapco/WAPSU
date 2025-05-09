@@ -25,7 +25,7 @@ import {
   Tooltip
 } from '@mui/material';
 import { ReactNode, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Drawer } from '../../components/drawer';
 import { SectionHeader } from '../../components/header';
@@ -51,6 +51,7 @@ const rolePriority: Record<'owner' | 'ambassador' | 'member', number> = {
 export function TeamUserList(): ReactNode {
   const { id } = useParams<{ id: string }>();
   const { identity } = useIdentity();
+  const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
     open: false,
     message: ''
@@ -85,6 +86,13 @@ export function TeamUserList(): ReactNode {
     pageSize: 1000
   });
 
+  // Helper function to check if there are any ambassadors available to become owner
+  const hasAvailableAmbassadors = () => {
+    return teamUsers?.users.items.some(
+      user => user.teamRole.value === 'ambassador' && user.id !== identity?.id
+    );
+  };
+
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
@@ -112,41 +120,67 @@ export function TeamUserList(): ReactNode {
     const targetUser = teamUsers?.users.items.find(u => u.id === userId);
     const currentUser = teamUsers?.users.items.find(u => u.id === identity?.id);
 
-    if (!targetUser || !currentUser) return;
+    // If current user is not found in team but is admin, we can proceed
+    if (!targetUser) {
+      return;
+    }
+
+    // If current user is not in team but is admin, we can proceed
+    if (!currentUser && identity?.systemRole.value === 'admin') {
+    } else if (!currentUser) {
+      return;
+    }
 
     // Check if this is an owner transfer
     if (
-      action === 'upgrade' &&
+      action === TeamUserEditAction.Upgrade &&
       targetUser.teamRole.value === 'ambassador' &&
-      currentUser.teamRole.value === 'owner'
+      currentUser?.teamRole.value === 'owner'
     ) {
       setConfirmDialog({
         open: true,
         title: 'Transfer Ownership',
         message: 'Are you sure you want to transfer ownership? You will lose your owner role.',
         onConfirm: async () => {
-          await editUser(id, userId, action as TeamUserEditAction);
-          refetch();
-          setConfirmDialog({ ...confirmDialog, open: false });
-          setSnackbar({ open: true, message: 'Ownership transferred successfully' });
+          try {
+            await editUser(id, userId, TeamUserEditAction.Upgrade);
+            refetch();
+            setConfirmDialog({ ...confirmDialog, open: false });
+            setSnackbar({ open: true, message: 'Ownership transferred successfully' });
+          } catch (error) {
+            setSnackbar({ open: true, message: 'Failed to transfer ownership' });
+          }
         }
       });
       return;
     }
 
-    await editUser(id, userId, action as TeamUserEditAction);
-    refetch();
+    try {
+      await editUser(id, userId, action);
+      await refetch();
 
-    switch (action) {
-      case 'upgrade':
-        setSnackbar({ open: true, message: 'User role upgraded successfully' });
-        break;
-      case 'downgrade':
-        setSnackbar({ open: true, message: 'User role downgraded successfully' });
-        break;
-      case 'remove':
-        setSnackbar({ open: true, message: 'User removed from team successfully' });
-        break;
+      // If user removes themselves, redirect to teams page
+      if (action === TeamUserEditAction.Remove && userId === identity?.id) {
+        navigate('/teams');
+        return;
+      }
+
+      switch (action) {
+        case TeamUserEditAction.Upgrade:
+          setSnackbar({ open: true, message: 'User role upgraded successfully' });
+          break;
+        case TeamUserEditAction.Downgrade:
+          setSnackbar({ open: true, message: 'User role downgraded successfully' });
+          break;
+        case TeamUserEditAction.Remove:
+          setSnackbar({ open: true, message: 'User removed from team successfully' });
+          break;
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: `Failed to ${action.toLowerCase()} user: ${error.message}`
+      });
     }
   };
 
@@ -165,6 +199,8 @@ export function TeamUserList(): ReactNode {
   // Apply pagination after sorting
   const paginatedUsers = sortedUsers.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
+  const currentUser = teamUsers?.users.items.find(u => u.id === identity?.id);
+
   return (
     <Grid container spacing={9}>
       <Grid item xs={12}>
@@ -174,7 +210,11 @@ export function TeamUserList(): ReactNode {
             { label: team.name, to: `/teams/${id}` },
             { label: 'Team users' }
           ]}
-          action={<Button buttonText="Add user" onClick={() => setIsDrawerOpen(true)} />}
+          action={
+            currentUser?.teamRole.value !== 'member' && (
+              <Button buttonText="Add user" onClick={() => setIsDrawerOpen(true)} />
+            )
+          }
         >
           Team users
         </SectionHeader>
@@ -217,9 +257,11 @@ export function TeamUserList(): ReactNode {
                 <TableCell>
                   <Typography>Role</Typography>
                 </TableCell>
-                <TableCell>
-                  <Typography>Role Management</Typography>
-                </TableCell>
+                {currentUser?.teamRole.value !== 'member' && (
+                  <TableCell>
+                    <Typography>Role Management</Typography>
+                  </TableCell>
+                )}
                 <TableCell>
                   <Typography>Remove User</Typography>
                 </TableCell>
@@ -240,55 +282,75 @@ export function TeamUserList(): ReactNode {
                   <TableCell>
                     <Typography>{user.teamRole.label}</Typography>
                   </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      <Tooltip
-                        title={
-                          user.teamRole.value === 'ambassador'
-                            ? 'Upgrade to owner'
-                            : 'Upgrade to ambassador'
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          aria-label="upgrade role"
-                          onClick={() => handleRoleChange(user.id, 'upgrade' as TeamUserEditAction)}
-                          disabled={loading || user.teamRole.value === 'owner'}
-                        >
-                          <ArrowUpwardIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip
-                        title={
-                          user.teamRole.value === 'owner'
-                            ? 'Downgrade to ambassador'
-                            : 'Downgrade to member'
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          aria-label="downgrade role"
-                          onClick={() =>
-                            handleRoleChange(user.id, 'downgrade' as TeamUserEditAction)
+                  {currentUser?.teamRole.value !== 'member' && (
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        <Tooltip
+                          title={
+                            user.teamRole.value === 'ambassador'
+                              ? 'Upgrade to owner'
+                              : 'Upgrade to ambassador'
                           }
-                          disabled={loading || user.teamRole.value === 'member'}
                         >
-                          <ArrowDownwardIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-                  </TableCell>
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            aria-label="upgrade role"
+                            onClick={() => handleRoleChange(user.id, TeamUserEditAction.Upgrade)}
+                            disabled={
+                              loading ||
+                              user.teamRole.value === 'owner' ||
+                              (currentUser?.teamRole.value === 'ambassador' &&
+                                user.teamRole.value !== 'member')
+                            }
+                          >
+                            <ArrowUpwardIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip
+                          title={
+                            user.teamRole.value === 'owner'
+                              ? 'Downgrade to ambassador'
+                              : 'Downgrade to member'
+                          }
+                        >
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            aria-label="downgrade role"
+                            onClick={() => handleRoleChange(user.id, TeamUserEditAction.Downgrade)}
+                            disabled={
+                              loading ||
+                              user.teamRole.value === 'member' ||
+                              (currentUser?.teamRole.value === 'ambassador' &&
+                                user.id !== identity?.id) ||
+                              (user.teamRole.value === 'owner' &&
+                                identity?.systemRole.value === 'admin' &&
+                                !hasAvailableAmbassadors())
+                            }
+                          >
+                            <ArrowDownwardIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Tooltip title="Remove user">
                       <IconButton
                         size="small"
                         color="error"
                         aria-label="remove user"
-                        onClick={() => handleRoleChange(user.id, 'remove' as TeamUserEditAction)}
-                        disabled={loading || user.teamRole.value === 'owner'}
+                        onClick={() => handleRoleChange(user.id, TeamUserEditAction.Remove)}
+                        disabled={
+                          loading ||
+                          user.teamRole.value === 'owner' ||
+                          (currentUser?.teamRole.value === 'ambassador' &&
+                            user.teamRole.value === 'ambassador' &&
+                            user.id !== identity?.id) ||
+                          (currentUser?.teamRole.value === 'member' && user.id !== identity?.id)
+                        }
                       >
                         <CloseIcon />
                       </IconButton>

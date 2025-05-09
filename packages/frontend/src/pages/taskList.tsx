@@ -413,6 +413,7 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
             onSubmit={handleTaskEdit}
             onError={handleTaskEditError}
             task={selectedTask}
+            mode="user"
           />
 
           <ConfirmDialog
