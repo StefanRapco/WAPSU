@@ -6,16 +6,20 @@ interface DateFieldProps {
   readonly label: string;
   readonly required?: boolean;
   readonly disabled?: boolean;
+  readonly onChange?: () => void;
 }
 
-export function DateField({ name, label, required, disabled }: DateFieldProps) {
+export function DateField({ name, label, required, disabled, onChange }: DateFieldProps) {
   return (
     <Field name={name}>
       {({ field, form }: FieldProps) => (
         <DatePicker
           label={label}
           value={field.value}
-          onChange={value => form.setFieldValue(name, value)}
+          onChange={value => {
+            form.setFieldValue(name, value);
+            if (onChange != null) onChange();
+          }}
           disabled={disabled}
           slotProps={{
             textField: {

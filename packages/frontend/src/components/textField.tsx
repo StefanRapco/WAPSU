@@ -46,7 +46,10 @@ export function TextField({
           {...field}
           {...props}
           value={value ?? field.value}
-          onChange={onChange ?? field.onChange}
+          onChange={e => {
+            field.onChange(e);
+            onChange?.(e as React.ChangeEvent<HTMLInputElement>);
+          }}
           autoFocus={autofocus}
           multiline={multiline}
           rows={rows}

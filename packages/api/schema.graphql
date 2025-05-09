@@ -37,7 +37,7 @@ type Mutation {
   taskCommentDelete(input: TaskCommentDeleteInput!): Task!
   taskChecklistCreate(input: TaskChecklistCreateInput!): TaskChecklist!
   taskChecklistEdit(input: TaskChecklistEditInput!): TaskChecklist!
-  taskChecklistDelete(input: TaskChecklistDeleteInput!): Void
+  taskChecklistDelete(input: TaskChecklistDeleteInput!): Task!
 }
 
 type User {
@@ -111,6 +111,7 @@ input UserManyFilterInput {
   filterIdentity: Boolean
   systemRole: [String!]
   status: [String!]
+  onlyIdentity: Boolean
 }
 
 input TeamManyFilterInput {

@@ -8,9 +8,17 @@ interface SelectFieldProps {
   readonly options: Array<{ label: string; value: string; icon?: ReactNode }>;
   readonly required?: boolean;
   readonly disabled?: boolean;
+  readonly onChange?: () => void;
 }
 
-export function SelectField({ name, label, options, required, disabled }: SelectFieldProps) {
+export function SelectField({
+  name,
+  label,
+  options,
+  required,
+  disabled,
+  onChange
+}: SelectFieldProps) {
   return (
     <Field name={name}>
       {({ field, form }: FieldProps) => (
@@ -20,6 +28,10 @@ export function SelectField({ name, label, options, required, disabled }: Select
             {...field}
             label={label}
             required={required}
+            onChange={e => {
+              field.onChange(e);
+              if (onChange != null) onChange();
+            }}
             disabled={disabled}
             sx={{
               '& .MuiOutlinedInput-notchedOutline': {

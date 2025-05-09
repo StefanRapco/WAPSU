@@ -1,5 +1,7 @@
 import { useMutation } from '@apollo/client';
 // import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,14 +12,13 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import {
   Box,
-  Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
   Divider,
   IconButton,
-  Snackbar,
   Stack,
+  TextField,
   Typography
 } from '@mui/material';
 import { format } from 'date-fns';
@@ -26,15 +27,78 @@ import gql from 'graphql-tag';
 import { useState } from 'react';
 import * as yup from 'yup';
 import { Task } from '../../gql-generated/graphql';
+import { useIdentity } from '../../hooks/useIdentity';
 import { useTaskCommentCreate } from '../../hooks/useTaskCommentCreate';
 import { useTaskCommentDelete } from '../../hooks/useTaskCommentDelete';
 import { useTaskCommentEdit } from '../../hooks/useTaskCommentEdit';
-import { Button } from '../button';
 import { DateField } from '../dateField';
 import { SelectField } from '../selectField';
 import { SnackbarError } from '../snackbarError';
-import { TextField } from '../textField';
+import { SnackBarSuccess, snackbarUseEffect } from '../snackbarSuccess';
+import { TextField as FormTextField } from '../textField';
 import { UserSelect } from '../userSelect';
+
+const taskChecklistCreateMutation = gql(`
+  mutation TaskChecklistCreate($input: TaskChecklistCreateInput!) {
+    taskChecklistCreate(input: $input) {
+      id
+      name
+      createdAt
+      completed
+      sortOrder
+      task {
+        id
+        checklist {
+          id
+          name
+          createdAt
+          completed
+          sortOrder
+        }
+      }
+    }
+  }
+`);
+
+const taskChecklistEditMutation = gql(`
+  mutation TaskChecklistEditEdit($input: TaskChecklistEditInput!) {
+    taskChecklistEdit(input: $input) {
+      id
+      name
+      createdAt
+      completed
+      sortOrder
+      task {
+        id
+        checklist {
+          id
+          name
+          createdAt
+          completed
+          sortOrder
+        }
+      }
+    }
+  }
+`);
+
+const taskChecklistDeleteMutation = gql(`
+  mutation TaskChecklistDelete($input: TaskChecklistDeleteInput!) {
+    taskChecklistDelete(input: $input) {
+      id
+      name
+      createdAt
+      sortOrder
+      checklist {
+        id
+        name
+        createdAt
+        completed
+        sortOrder
+      }
+    }
+  }
+`);
 
 const taskEditMutation = gql(`
   mutation TaskEdit($input: TaskEditInput!) {
@@ -133,9 +197,32 @@ const priorityOptions = [
 ];
 
 export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditProps) {
+  const { identity } = useIdentity();
   const [editTask] = useMutation(taskEditMutation);
   const [comments, setComments] = useState<Task['comments']>(task.comments);
+  // Checklist state and mutations
+  const [checklist, setChecklist] = useState<Task['checklist']>(task.checklist);
+  const [newChecklistItem, setNewChecklistItem] = useState('');
+  const [editingChecklistId, setEditingChecklistId] = useState<string | null>(null);
+  const [editingChecklistContent, setEditingChecklistContent] = useState('');
+
   const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
+  const [deleteChecklistItemId, setDeleteChecklistItemId] = useState<string | null>(null);
+
+  const [mutationError, setMutationError] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+
+  const [newComment, setNewComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
+
+  snackbarUseEffect({
+    success: Boolean(successMessage),
+    error: mutationError,
+    setSuccess: () => setSuccessMessage(''),
+    setError: setMutationError
+  });
+
   const { createComment } = useTaskCommentCreate({
     onCompleted: values => {
       setComments(values.taskCommentCreate.comments);
@@ -155,14 +242,31 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
       setSuccessMessage('Comment deleted successfully');
     }
   });
-  const [mutationError, setMutationError] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
-  const [selectedAssignees, setSelectedAssignees] = useState<string[]>(
-    task.assignees.map(assignee => assignee.id)
-  );
-  const [newComment, setNewComment] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [editingCommentContent, setEditingCommentContent] = useState('');
+
+  const [createChecklistItem] = useMutation(taskChecklistCreateMutation, {
+    onCompleted: values => {
+      setChecklist(values.taskChecklistCreate.task.checklist);
+      setNewChecklistItem('');
+      setSuccessMessage('Checklist item added successfully');
+    }
+  });
+
+  const [editChecklistItem] = useMutation(taskChecklistEditMutation, {
+    onCompleted: values => {
+      setChecklist(values.taskChecklistEdit.task.checklist);
+      setEditingChecklistId(null);
+      setEditingChecklistContent('');
+      setSuccessMessage('Checklist item updated successfully');
+    }
+  });
+
+  const [deleteChecklistItem] = useMutation(taskChecklistDeleteMutation, {
+    onCompleted: () => {
+      setChecklist(checklist.filter(item => item.id !== deleteChecklistItemId));
+      setDeleteChecklistItemId(null);
+      setSuccessMessage('Checklist item deleted successfully');
+    }
+  });
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
@@ -176,6 +280,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
         }
       });
       setNewComment('');
+      setSuccessMessage('Comment added successfully');
     } catch (error) {
       setMutationError(true);
     }
@@ -191,13 +296,15 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
           }
         }
       });
-      if (result.data?.taskCommentEdit?.task?.comments) {
-        setComments(result.data.taskCommentEdit.task.comments);
+      if (result.data?.taskCommentEdit?.comments) {
+        setComments(result.data.taskCommentEdit.comments);
+        setEditingCommentId(null);
+        setEditingCommentContent('');
       }
-      setEditingCommentId(null);
-      setEditingCommentContent('');
     } catch (error) {
       setMutationError(true);
+      setEditingCommentId(null);
+      setEditingCommentContent('');
     }
   };
 
@@ -214,6 +321,67 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
     } catch (error) {
       setMutationError(true);
       setDeleteCommentId(null);
+    }
+  };
+
+  const handleAddChecklistItem = async () => {
+    if (!newChecklistItem.trim()) return;
+    try {
+      await createChecklistItem({
+        variables: {
+          input: {
+            name: newChecklistItem,
+            taskId: task.id,
+            sortOrder: checklist.length
+          }
+        }
+      });
+    } catch (error) {
+      setMutationError(true);
+    }
+  };
+
+  const handleEditChecklistItem = async (itemId: string) => {
+    try {
+      await editChecklistItem({
+        variables: {
+          input: {
+            id: itemId,
+            name: editingChecklistContent
+          }
+        }
+      });
+    } catch (error) {
+      setMutationError(true);
+    }
+  };
+
+  const handleDeleteChecklistItem = async (itemId: string) => {
+    try {
+      await deleteChecklistItem({
+        variables: {
+          input: {
+            id: itemId
+          }
+        }
+      });
+    } catch (error) {
+      setMutationError(true);
+    }
+  };
+
+  const handleToggleChecklistItem = async (itemId: string, completed: boolean) => {
+    try {
+      await editChecklistItem({
+        variables: {
+          input: {
+            id: itemId,
+            completed
+          }
+        }
+      });
+    } catch (error) {
+      setMutationError(true);
     }
   };
 
@@ -272,8 +440,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                       startDate: values.startDate,
                       dueDate: values.dueDate,
                       progress: values.progress,
-                      priority: values.priority,
-                      assigneeIds: selectedAssignees
+                      priority: values.priority
                     }
                   }
                 });
@@ -284,26 +451,41 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
               }
             }}
           >
-            {({ handleSubmit, values, setFieldValue }) => (
+            {({ handleSubmit, values, setFieldValue, submitForm }) => (
               <Form onSubmit={handleSubmit} style={{ width: '100%' }}>
                 <Stack spacing={4} sx={{ width: '100%' }}>
                   <Box sx={{ width: '90%' }}>
-                    <TextField name="name" label="Task Name" fullWidth autofocus sx={{ mt: 3 }} />
+                    <FormTextField
+                      name="name"
+                      label="Task Name"
+                      fullWidth
+                      autofocus
+                      sx={{ mt: 3 }}
+                      onChange={() => submitForm()}
+                    />
                   </Box>
 
                   <Box sx={{ width: '90%' }}>
-                    <TextField name="notes" label="Notes" multiline rows={4} fullWidth />
+                    <FormTextField
+                      name="notes"
+                      label="Notes"
+                      multiline
+                      rows={2}
+                      fullWidth
+                      onChange={() => submitForm()}
+                    />
                   </Box>
 
                   <Stack direction="row" spacing={2} sx={{ width: '90%' }}>
-                    <DateField name="startDate" label="Start Date" />
-                    <DateField name="dueDate" label="Due Date" />
+                    <DateField name="startDate" label="Start Date" onChange={() => submitForm()} />
+                    <DateField name="dueDate" label="Due Date" onChange={() => submitForm()} />
                   </Stack>
 
                   <Stack direction="row" spacing={2} sx={{ width: '90%' }}>
                     <SelectField
                       name="progress"
                       label="Progress"
+                      onChange={() => submitForm()}
                       options={progressOptions.map(option => ({
                         label: option.label,
                         value: option.value,
@@ -313,6 +495,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                     <SelectField
                       name="priority"
                       label="Priority"
+                      onChange={() => submitForm()}
                       options={priorityOptions.map(option => ({
                         label: option.label,
                         value: option.value,
@@ -325,11 +508,28 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                     <Typography variant="subtitle1" sx={{ mb: 2 }}>
                       Assignees
                     </Typography>
-                    <UserSelect
-                      onUserChange={setSelectedAssignees}
-                      filterIdentity
-                      initialSelectedUsers={task.assignees.map(assignee => assignee.id)}
-                    />
+                    <Box sx={{ width: '100%', minHeight: '300px' }}>
+                      <UserSelect
+                        onUserChange={async (assigneeIds: string[]) => {
+                          try {
+                            await editTask({
+                              variables: {
+                                input: {
+                                  id: task.id,
+                                  assigneeIds
+                                }
+                              }
+                            });
+                            onSubmit();
+                          } catch (error) {
+                            setMutationError(true);
+                            onError('Failed to edit task');
+                          }
+                        }}
+                        onlyIdentity
+                        initialSelectedUsers={task.assignees.map(assignee => assignee.id)}
+                      />
+                    </Box>
                   </Box>
 
                   <Divider sx={{ my: 2 }} />
@@ -338,8 +538,8 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                     <Typography variant="subtitle1" sx={{ mb: 2 }}>
                       Checklist
                     </Typography>
-                    <Stack spacing={2}>
-                      {task.checklist.map(item => (
+                    <Stack spacing={2} sx={{ width: '90%' }}>
+                      {checklist.map(item => (
                         <Box
                           key={item.id}
                           sx={{
@@ -353,31 +553,163 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                             }
                           }}
                         >
-                          <Checkbox
-                            checked={item.completed}
-                            onChange={async e => {
-                              try {
-                                await editTask({
-                                  variables: {
-                                    input: {
-                                      id: task.id,
-                                      checklist: task.checklist.map(i => ({
-                                        id: i.id,
-                                        completed: i.id === item.id ? e.target.checked : i.completed
-                                      }))
-                                    }
-                                  }
-                                });
-                              } catch (error) {
-                                setMutationError(true);
-                                onError('Failed to update checklist item');
+                          <IconButton
+                            size="small"
+                            onClick={() => handleToggleChecklistItem(item.id, !item.completed)}
+                            sx={{
+                              color: item.completed ? 'success.main' : 'text.secondary',
+                              '&:hover': {
+                                color: item.completed ? 'success.dark' : 'primary.main',
+                                bgcolor: 'action.hover'
                               }
                             }}
-                          />
-                          <Typography>{item.name}</Typography>
+                          >
+                            {item.completed ? (
+                              <CheckCircleRoundedIcon fontSize="small" />
+                            ) : (
+                              <CheckCircleOutlineRoundedIcon fontSize="small" />
+                            )}
+                          </IconButton>
+                          {editingChecklistId === item.id ? (
+                            <Stack direction="row" spacing={1} sx={{ flex: 1 }}>
+                              <TextField
+                                name="editChecklistItem"
+                                label="Edit checklist item"
+                                value={editingChecklistContent}
+                                onChange={e => setEditingChecklistContent(e.target.value)}
+                                onBlur={() => {
+                                  if (editingChecklistContent.trim()) {
+                                    handleEditChecklistItem(item.id);
+                                  } else {
+                                    setEditingChecklistId(null);
+                                    setEditingChecklistContent('');
+                                  }
+                                }}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' && editingChecklistContent.trim()) {
+                                    handleEditChecklistItem(item.id);
+                                  } else if (e.key === 'Escape') {
+                                    setEditingChecklistId(null);
+                                    setEditingChecklistContent('');
+                                  }
+                                }}
+                                fullWidth
+                                autoFocus
+                                sx={{
+                                  display: 'flex',
+                                  '& .MuiOutlinedInput-root': {
+                                    border: 'none',
+                                    '& fieldset': { borderColor: 'black' },
+                                    '&:hover fieldset': { borderColor: 'black' },
+                                    '&.Mui-focused fieldset': { borderColor: 'black' }
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    color: 'black'
+                                  },
+                                  '& .MuiInputLabel-root.Mui-focused': {
+                                    color: 'black'
+                                  }
+                                }}
+                              />
+                            </Stack>
+                          ) : (
+                            <>
+                              <Typography sx={{ flex: 1 }}>{item.name}</Typography>
+                              <Stack direction="row" spacing={0.5}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    setEditingChecklistId(item.id);
+                                    setEditingChecklistContent(item.name);
+                                  }}
+                                  sx={{
+                                    color: 'text.secondary',
+                                    '&:hover': {
+                                      color: 'primary.main',
+                                      bgcolor: 'action.hover'
+                                    }
+                                  }}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    setDeleteChecklistItemId(item.id);
+                                    handleDeleteChecklistItem(item.id);
+                                  }}
+                                  sx={{
+                                    color: 'text.secondary',
+                                    '&:hover': {
+                                      color: 'error.main',
+                                      bgcolor: 'action.hover'
+                                    }
+                                  }}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Stack>
+                            </>
+                          )}
                         </Box>
                       ))}
                     </Stack>
+
+                    <Box sx={{ mt: 2, width: '90%', pl: 1 }}>
+                      {newChecklistItem ? (
+                        <TextField
+                          name="newChecklistItem"
+                          label="Add checklist item"
+                          value={newChecklistItem}
+                          onChange={e => setNewChecklistItem(e.target.value)}
+                          onBlur={() => {
+                            if (newChecklistItem.trim()) {
+                              handleAddChecklistItem();
+                            } else {
+                              setNewChecklistItem('');
+                            }
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && newChecklistItem.trim()) {
+                              handleAddChecklistItem();
+                            }
+                          }}
+                          fullWidth
+                          autoFocus
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            display: 'flex',
+                            '& .MuiOutlinedInput-root': {
+                              border: 'none',
+                              '& fieldset': { borderColor: 'black' },
+                              '&:hover fieldset': { borderColor: 'black' },
+                              '&.Mui-focused fieldset': { borderColor: 'black' }
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black'
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'black'
+                            }
+                          }}
+                        />
+                      ) : (
+                        <IconButton
+                          size="small"
+                          onClick={() => setNewChecklistItem(' ')}
+                          sx={{
+                            color: 'text.secondary',
+                            '&:hover': {
+                              color: 'primary.main',
+                              bgcolor: 'action.hover'
+                            }
+                          }}
+                        >
+                          <AddCircleOutlineRoundedIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
                   </Box>
 
                   <Divider sx={{ my: 2 }} />
@@ -409,23 +741,53 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                                 label="Edit comment"
                                 value={editingCommentContent}
                                 onChange={e => setEditingCommentContent(e.target.value)}
+                                onBlur={() => {
+                                  if (editingCommentContent.trim()) {
+                                    handleEditComment(comment.id);
+                                  } else {
+                                    setEditingCommentId(null);
+                                    setEditingCommentContent('');
+                                  }
+                                }}
+                                onKeyDown={e => {
+                                  if (
+                                    e.key === 'Enter' &&
+                                    !e.shiftKey &&
+                                    editingCommentContent.trim()
+                                  ) {
+                                    e.preventDefault();
+                                    handleEditComment(comment.id);
+                                  } else if (e.key === 'Escape') {
+                                    setEditingCommentId(null);
+                                    setEditingCommentContent('');
+                                  }
+                                }}
+                                inputRef={input => {
+                                  if (input) {
+                                    input.focus();
+                                    input.setSelectionRange(input.value.length, input.value.length);
+                                  }
+                                }}
+                                sx={{
+                                  display: 'flex',
+                                  '& .MuiOutlinedInput-root': {
+                                    border: 'none',
+                                    '& fieldset': { borderColor: 'black' },
+                                    '&:hover fieldset': { borderColor: 'black' },
+                                    '&.Mui-focused fieldset': { borderColor: 'black' }
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    color: 'black'
+                                  },
+                                  '& .MuiInputLabel-root.Mui-focused': {
+                                    color: 'black'
+                                  }
+                                }}
                                 multiline
                                 rows={2}
                                 fullWidth
+                                autoFocus
                               />
-                              <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                <Button
-                                  buttonText="Cancel"
-                                  onClick={() => {
-                                    setEditingCommentId(null);
-                                    setEditingCommentContent('');
-                                  }}
-                                />
-                                <Button
-                                  buttonText="Save"
-                                  onClick={() => handleEditComment(comment.id)}
-                                />
-                              </Stack>
                             </Stack>
                           ) : (
                             <>
@@ -474,37 +836,39 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                                     </Box>
                                   )}
                                 </Typography>
-                                <Stack direction="row" spacing={0.5}>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                      setEditingCommentId(comment.id);
-                                      setEditingCommentContent(comment.content);
-                                    }}
-                                    sx={{
-                                      color: 'text.secondary',
-                                      '&:hover': {
-                                        color: 'primary.main',
-                                        bgcolor: 'action.hover'
-                                      }
-                                    }}
-                                  >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleDeleteComment(comment.id)}
-                                    sx={{
-                                      color: 'text.secondary',
-                                      '&:hover': {
-                                        color: 'error.main',
-                                        bgcolor: 'action.hover'
-                                      }
-                                    }}
-                                  >
-                                    <DeleteIcon fontSize="small" />
-                                  </IconButton>
-                                </Stack>
+                                {identity != null && comment.author.id === identity.id && (
+                                  <Stack direction="row" spacing={0.5}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() => {
+                                        setEditingCommentId(comment.id);
+                                        setEditingCommentContent(comment.content);
+                                      }}
+                                      sx={{
+                                        color: 'text.secondary',
+                                        '&:hover': {
+                                          color: 'primary.main',
+                                          bgcolor: 'action.hover'
+                                        }
+                                      }}
+                                    >
+                                      <EditIcon fontSize="small" />
+                                    </IconButton>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() => handleDeleteComment(comment.id)}
+                                      sx={{
+                                        color: 'text.secondary',
+                                        '&:hover': {
+                                          color: 'error.main',
+                                          bgcolor: 'action.hover'
+                                        }
+                                      }}
+                                    >
+                                      <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                  </Stack>
+                                )}
                               </Stack>
                             </>
                           )}
@@ -522,25 +886,38 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
                           fullWidth
                           value={newComment}
                           onChange={e => setNewComment(e.target.value)}
-                        />
-                        <Button
-                          buttonText="Add Comment"
-                          onClick={handleAddComment}
-                          sx={{ mt: 1 }}
+                          onBlur={() => {
+                            if (newComment.trim()) {
+                              handleAddComment();
+                            } else {
+                              setNewComment('');
+                            }
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && !e.shiftKey && newComment.trim()) {
+                              e.preventDefault();
+                              handleAddComment();
+                            }
+                          }}
+                          sx={{
+                            display: 'flex',
+                            '& .MuiOutlinedInput-root': {
+                              border: 'none',
+                              '& fieldset': { borderColor: 'black' },
+                              '&:hover fieldset': { borderColor: 'black' },
+                              '&.Mui-focused fieldset': { borderColor: 'black' }
+                            },
+                            '& .MuiInputLabel-root': {
+                              color: 'black'
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color: 'black'
+                            }
+                          }}
                         />
                       </Stack>
                     </Box>
                   </Box>
-
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    justifyContent="flex-end"
-                    sx={{ width: '95%' }}
-                  >
-                    <Button buttonText="Cancel" onClick={onClose} />
-                    <Button buttonText="Save Changes" type="submit" />
-                  </Stack>
                 </Stack>
               </Form>
             )}
@@ -553,17 +930,10 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task }: TaskEditPro
         setMutationError={setMutationError}
         apolloErrors={[]}
       />
-      <Snackbar
+      <SnackBarSuccess
         open={Boolean(successMessage)}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMessage('')}
-        message={successMessage}
-        sx={{
-          '& .MuiSnackbarContent-root': {
-            bgcolor: 'success.main',
-            color: 'success.contrastText'
-          }
-        }}
+        successMsg={successMessage}
+        setSuccess={() => setSuccessMessage('')}
       />
     </Dialog>
   );

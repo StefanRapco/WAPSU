@@ -62,11 +62,15 @@ export function toUserWhere({
 
   if (filter == null) return conditions;
 
-  if (filter.filterIdentity) {
+  if (filter.filterIdentity)
     conditions.push({
       id: { not: identity.id }
     });
-  }
+
+  if (filter.onlyIdentity)
+    conditions.push({
+      id: { equals: identity.id }
+    });
 
   if (filter.term != null && filter.term.length > 0) {
     const or: { OR: Prisma.UserWhereInput['OR'] } = { OR: new Array() };

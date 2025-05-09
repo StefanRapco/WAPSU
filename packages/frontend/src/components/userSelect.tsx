@@ -15,6 +15,7 @@ import { CircularAvatar } from './navigation/circularAvatar';
 interface UserSelectProps {
   readonly onUserChange: (selectedUserIds: string[]) => void;
   readonly filterIdentity?: boolean;
+  readonly onlyIdentity?: boolean;
   readonly notTeamId?: string[];
   readonly initialSelectedUsers?: string[];
 }
@@ -22,6 +23,7 @@ interface UserSelectProps {
 export function UserSelect({
   onUserChange,
   filterIdentity,
+  onlyIdentity,
   notTeamId,
   initialSelectedUsers = []
 }: UserSelectProps): ReactNode {
@@ -31,7 +33,8 @@ export function UserSelect({
   const { data: filteredUsers } = useUserMany({
     term: filterTerm,
     filterIdentity,
-    notTeamId
+    notTeamId,
+    onlyIdentity
   });
 
   const handleUserToggle = (userId: string) => {

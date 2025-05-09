@@ -1,7 +1,13 @@
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CommentIcon from '@mui/icons-material/Comment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import FlagIcon from '@mui/icons-material/Flag';
+import NotStartedIcon from '@mui/icons-material/NotStarted';
 import PersonIcon from '@mui/icons-material/Person';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import {
   Avatar,
   AvatarGroup,
@@ -9,7 +15,6 @@ import {
   Card,
   CardContent,
   Checkbox,
-  Chip,
   IconButton,
   Stack,
   Tooltip,
@@ -20,7 +25,6 @@ import {
 import { format } from 'date-fns';
 import { ReactNode } from 'react';
 import { Task, TaskChecklist } from '../gql-generated/graphql';
-import { Badge } from './badge';
 import { getInitials } from './navigation/accountMenu';
 import { CircularAvatar } from './navigation/circularAvatar';
 
@@ -31,6 +35,7 @@ interface TaskCardProps {
   readonly onChecklistItemToggle?: (item: TaskChecklist) => void;
   readonly isEditing?: boolean;
   readonly customContent?: ReactNode;
+  readonly onSuccess?: (message: string) => void;
 }
 
 export function TaskCard({
@@ -39,10 +44,11 @@ export function TaskCard({
   onDelete,
   onChecklistItemToggle,
   isEditing = false,
-  customContent
+  customContent,
+  onSuccess
 }: TaskCardProps) {
   const theme = useTheme();
-  const remainingMembers = task.assignees.length - 2;
+  const remainingMembers = task.assignees.length - 4;
 
   if (isEditing) {
     return (
@@ -67,9 +73,9 @@ export function TaskCard({
       case 'urgent':
         return theme.palette.error.main;
       case 'high':
-        return theme.palette.warning.main;
+        return theme.palette.error.main;
       case 'medium':
-        return theme.palette.info.main;
+        return theme.palette.warning.main;
       default:
         return theme.palette.success.main;
     }
@@ -80,9 +86,33 @@ export function TaskCard({
       case 'completed':
         return theme.palette.success.main;
       case 'inProgress':
-        return theme.palette.warning.main;
+        return theme.palette.error.main;
       default:
-        return theme.palette.grey[500];
+        return theme.palette.warning.main;
+    }
+  };
+
+  const getProgressIcon = (progress: string) => {
+    switch (progress) {
+      case 'completed':
+        return <CheckCircleRoundedIcon sx={{ fontSize: 16 }} />;
+      case 'inProgress':
+        return <PlayCircleIcon sx={{ fontSize: 16 }} />;
+      default:
+        return <NotStartedIcon sx={{ fontSize: 16 }} />;
+    }
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case 'urgent':
+        return <PriorityHighIcon sx={{ fontSize: 16 }} />;
+      case 'high':
+      case 'medium':
+      case 'low':
+        return <FlagIcon sx={{ fontSize: 16 }} />;
+      default:
+        return <FlagIcon sx={{ fontSize: 16 }} />;
     }
   };
 
@@ -97,7 +127,6 @@ export function TaskCard({
         transition: 'all 0.3s ease',
         position: 'relative',
         overflow: 'visible',
-        height: 280,
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
@@ -119,7 +148,7 @@ export function TaskCard({
         }
       }}
     >
-      <CardContent sx={{ p: 2.5, pl: 3, height: '100%' }}>
+      <CardContent sx={{ pt: 2.5, pl: 3, mb: -5, height: '100%' }}>
         <Stack spacing={2.5} height="100%">
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
             <Typography
@@ -231,9 +260,12 @@ export function TaskCard({
                   <Checkbox
                     size="small"
                     checked={item.completed}
-                    onChange={() => onChecklistItemToggle?.(item)}
+                    onChange={() => {
+                      onChecklistItemToggle?.(item);
+                      onSuccess?.('Checklist item updated successfully');
+                    }}
                     sx={{
-                      color: theme.palette.primary.main,
+                      color: 'black',
                       '&.Mui-checked': {
                         color: theme.palette.success.main
                       }
@@ -245,7 +277,7 @@ export function TaskCard({
                       textDecoration: item.completed ? 'line-through' : 'none',
                       color: item.completed
                         ? theme.palette.text.disabled
-                        : theme.palette.text.primary,
+                        : theme.palette.text.secondary,
                       flex: 1,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -273,7 +305,7 @@ export function TaskCard({
 
           <Stack
             direction="row"
-            spacing={2}
+            spacing={0.5}
             alignItems="center"
             flexWrap="wrap"
             gap={1}
@@ -296,11 +328,12 @@ export function TaskCard({
                       '&:hover': {
                         transform: 'scale(1.1)',
                         zIndex: 2
-                      }
+                      },
+                      marginLeft: '-5px'
                     }
                   }}
                 >
-                  {task.assignees.slice(0, 2).map(assignee => (
+                  {task.assignees.slice(0, 4).map(assignee => (
                     <Tooltip
                       key={assignee.id}
                       title={
@@ -379,7 +412,13 @@ export function TaskCard({
                         }
                       }}
                     >
-                      <Avatar sx={{ width: 32, height: 32 }}>
+                      <Avatar
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          marginLeft: '-12px'
+                        }}
+                      >
                         <CircularAvatar size="s">
                           {remainingMembers <= 9 ? `+${remainingMembers}` : '9+'}
                         </CircularAvatar>
@@ -404,41 +443,63 @@ export function TaskCard({
             )}
 
             {task.dueDate ? (
-              <Chip
-                size="small"
-                label={`Due ${format(new Date(task.dueDate), 'MMM d, yyyy')}`}
+              <Box
                 sx={{
-                  bgcolor: alpha(theme.palette.grey[100], 0.8),
-                  '& .MuiChip-label': {
-                    color: theme.palette.text.secondary,
-                    fontWeight: 500,
-                    fontSize: '0.75rem'
-                  },
-                  height: 24
-                }}
-              />
-            ) : (
-              <Typography
-                variant="body2"
-                sx={{
-                  color: theme.palette.text.disabled,
-                  fontSize: '0.75rem'
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  bgcolor:
+                    new Date(task.dueDate) < new Date()
+                      ? alpha(theme.palette.error.main, 0.1)
+                      : alpha(theme.palette.grey[100], 0.8),
+                  color:
+                    new Date(task.dueDate) < new Date()
+                      ? theme.palette.error.main
+                      : theme.palette.text.secondary
                 }}
               >
-                No due date
-              </Typography>
+                <CalendarTodayIcon sx={{ fontSize: 16 }} />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  {format(new Date(task.dueDate), 'MMM d, yyyy')}
+                </Typography>
+              </Box>
+            ) : (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <CalendarTodayIcon sx={{ fontSize: 16, color: theme.palette.text.disabled }} />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: theme.palette.text.disabled,
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  No due date
+                </Typography>
+              </Stack>
             )}
 
             {task.comments.length > 0 ? (
-              <Typography
-                variant="body2"
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontSize: '0.75rem'
-                }}
-              >
-                {`${task.comments.length <= 9 ? task.comments.length : '9+'} comments`}
-              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'black',
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  {`${task.comments.length <= 9 ? task.comments.length : '9+'}`}
+                </Typography>
+                <CommentIcon sx={{ fontSize: 16, color: theme.palette.text.disabled }} />
+              </Stack>
             ) : (
               <Stack direction="row" spacing={1} alignItems="center">
                 <CommentIcon sx={{ fontSize: 16, color: theme.palette.text.disabled }} />
@@ -461,29 +522,73 @@ export function TaskCard({
             flexWrap="wrap"
             gap={1}
             sx={{
-              pt: 1,
+              pt: 2,
               borderTop: '1px solid',
               borderColor: alpha(theme.palette.divider, 0.1)
             }}
           >
-            <Badge
-              notification={task.progress.label}
+            <Box
               sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 1.5,
                 bgcolor: alpha(getProgressColor(task.progress.value), 0.1),
                 color: getProgressColor(task.progress.value),
-                fontSize: '0.75rem',
-                fontWeight: 500
+                border: '1px solid',
+                borderColor: alpha(getProgressColor(task.progress.value), 0.2),
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: alpha(getProgressColor(task.progress.value), 0.15),
+                  transform: 'translateY(-1px)'
+                }
               }}
-            />
-            <Badge
-              notification={task.priority.label}
+            >
+              {getProgressIcon(task.progress.value)}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.02em'
+                }}
+              >
+                {task.progress.label}
+              </Typography>
+            </Box>
+            <Box
               sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 1.5,
                 bgcolor: alpha(getPriorityColor(task.priority.value), 0.1),
                 color: getPriorityColor(task.priority.value),
-                fontSize: '0.75rem',
-                fontWeight: 500
+                border: '1px solid',
+                borderColor: alpha(getPriorityColor(task.priority.value), 0.2),
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: alpha(getPriorityColor(task.priority.value), 0.15),
+                  transform: 'translateY(-1px)'
+                }
               }}
-            />
+            >
+              {getPriorityIcon(task.priority.value)}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.02em'
+                }}
+              >
+                {task.priority.label}
+              </Typography>
+            </Box>
           </Stack>
         </Stack>
       </CardContent>

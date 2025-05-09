@@ -23,6 +23,7 @@ interface KanbanBoardProps {
   readonly onBucketMove: (bucketId: string, sortOrder: number) => void;
   readonly onBucketEdit: (bucketId: string, name: string) => void;
   readonly onBucketDelete: (bucketId: string) => void;
+  readonly onSuccess?: (message: string) => void;
 }
 
 function EmptyState({ onCreateBucket }: { onCreateBucket: (name: string) => void }) {
@@ -340,6 +341,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
                                       onEdit={() => props.onTaskEdit(task)}
                                       onDelete={() => props.onTaskDelete(task)}
                                       onChecklistItemToggle={props.onChecklistItemToggle}
+                                      onSuccess={props.onSuccess}
                                     />
                                   </Box>
                                 )}

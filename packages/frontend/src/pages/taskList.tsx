@@ -139,8 +139,6 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
   };
 
   const handleTaskEdit = async () => {
-    setIsEditDrawerOpen(false);
-    setSelectedTask(null);
     await bucketRefetch();
     setSuccessMessage('Task updated successfully');
     setSuccess(true);
@@ -182,6 +180,8 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
         }
       });
       await bucketRefetch();
+      setSuccessMessage('Checklist item updated successfully');
+      setSuccess(true);
     } catch (error) {
       setError(true);
     }
@@ -386,6 +386,7 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
           onBucketMove={handleBucketMove}
           onBucketEdit={handleBucketEdit}
           onBucketDelete={handleBucketDelete}
+          onSuccess={setSuccessMessage}
         />
       )}
 

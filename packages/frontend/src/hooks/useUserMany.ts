@@ -6,6 +6,7 @@ interface UserFilter {
   readonly teamId?: string[];
   readonly notTeamId?: string[];
   readonly filterIdentity?: boolean;
+  readonly onlyIdentity?: boolean;
   readonly page?: number;
   readonly pageSize?: number;
   readonly systemRole?: string[];
@@ -22,7 +23,8 @@ export function useUserMany(filter?: UserFilter) {
           term: filter?.term,
           filterIdentity: filter?.filterIdentity,
           systemRole: filter?.systemRole,
-          status: filter?.status
+          status: filter?.status,
+          onlyIdentity: filter?.onlyIdentity
         },
         page: {
           page: filter?.page ?? 0,

@@ -69,6 +69,21 @@ export function CreateTaskCard({ onCreateTask, onCancel }: CreateTaskCardProps) 
             onKeyDown={handleKeyDown}
             placeholder="Enter task name..."
             autoFocus
+            sx={{
+              display: 'flex',
+              '& .MuiOutlinedInput-root': {
+                border: 'none',
+                '& fieldset': { borderColor: 'black' },
+                '&:hover fieldset': { borderColor: 'black' },
+                '&.Mui-focused fieldset': { borderColor: 'black' }
+              },
+              '& .MuiInputLabel-root': {
+                color: 'black'
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'black'
+              }
+            }}
           />
         }
       />
