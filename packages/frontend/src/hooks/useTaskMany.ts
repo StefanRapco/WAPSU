@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 
 interface TaskFilter {
   readonly term?: string;
+  readonly teamId?: string;
+  readonly userId?: string;
 }
 
 export function useTaskMany(filter?: TaskFilter) {
@@ -10,7 +12,9 @@ export function useTaskMany(filter?: TaskFilter) {
     variables: {
       input: {
         filter: {
-          term: filter?.term
+          term: filter?.term,
+          teamId: filter?.teamId,
+          userId: filter?.userId
         }
       }
     }

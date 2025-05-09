@@ -108,7 +108,8 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
     error: bucketError
   } = useBucketMany({ userId: props.identity.id });
   const { data: taskData, error: taskError } = useTaskMany({
-    term: filterTerm
+    term: filterTerm,
+    userId: props.identity.id
   });
 
   const [deleteTask, { error: deleteError }] = useMutation(taskDeleteMutation);

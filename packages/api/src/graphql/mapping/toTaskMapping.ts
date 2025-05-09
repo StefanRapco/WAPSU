@@ -92,6 +92,10 @@ export function toTaskWhere({
       OR: [{ name: { contains: filter.term } }, { notes: { contains: filter.term } }]
     });
 
+  if (filter.userId) conditions.push({ bucket: { userId: filter.userId } });
+
+  if (filter.teamId) conditions.push({ bucket: { teamId: filter.teamId } });
+
   return conditions;
 }
 

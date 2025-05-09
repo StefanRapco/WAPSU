@@ -113,7 +113,8 @@ export function TeamTaskList() {
     error: bucketError
   } = useBucketMany({ teamId: id });
   const { data: taskData, error: taskError } = useTaskMany({
-    term: filterTerm
+    term: filterTerm,
+    teamId: id
   });
 
   const [deleteTask, { error: deleteError }] = useMutation(taskDeleteMutation);

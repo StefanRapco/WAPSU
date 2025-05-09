@@ -281,6 +281,8 @@ input TaskManyFilterInput {
   progress: [TaskProgress!]
   priority: [TaskPriority!]
   term: String
+  userId: ID
+  teamId: ID
 }
 
 input BucketCreateInput {
