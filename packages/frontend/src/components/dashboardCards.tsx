@@ -10,18 +10,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 interface CardProps {
-  to: string;
-  image: string;
-  title: string;
-  leadText: string;
+  readonly to: string;
+  readonly image: string;
+  readonly title: string;
+  readonly leadText: string;
+  readonly onClick?: () => void;
 }
 
-export function ToolCard({
-  to,
-  image,
-  title,
-  leadText
-}: Pick<CardProps, 'to' | 'image' | 'title' | 'leadText'>) {
+export function ToolCard({ to, image, title, leadText, onClick }: CardProps) {
   const sx: SxProps = {
     height: '100%',
     padding: 0,
@@ -58,8 +54,13 @@ export function ToolCard({
   const navigate = useNavigate();
 
   return (
-    <StyledCard sx={sx}>
-      <CardActionArea onClick={() => navigate(to)}>
+    <StyledCard sx={sx} onClick={onClick}>
+      <CardActionArea
+        onClick={() => {
+          if (to === '') return;
+          navigate(to);
+        }}
+      >
         <StyledCardContent image={image} title={title} leadText={leadText} />
       </CardActionArea>
     </StyledCard>
