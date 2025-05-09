@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { ConfirmDialog } from '../components/confirmDialog';
 import { SectionHeader } from '../components/header';
@@ -105,7 +105,8 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
   const {
     data: bucketData,
     refetch: bucketRefetch,
-    error: bucketError
+    error: bucketError,
+    loading: bucketLoading
   } = useBucketMany({ userId: props.identity.id });
   const { data: taskData, error: taskError } = useTaskMany({
     term: filterTerm,
@@ -298,6 +299,14 @@ export function TaskList(props: { identity: NonNullable<Identity> }) {
       setError(true);
     }
   };
+
+  if (bucketLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box>

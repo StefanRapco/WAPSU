@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../../components/confirmDialog';
@@ -110,7 +110,8 @@ export function TeamTaskList() {
   const {
     data: bucketData,
     refetch: bucketRefetch,
-    error: bucketError
+    error: bucketError,
+    loading: bucketLoading
   } = useBucketMany({ teamId: id });
   const { data: taskData, error: taskError } = useTaskMany({
     term: filterTerm,
@@ -325,6 +326,14 @@ export function TeamTaskList() {
   };
 
   if (teamData == null) return null;
+
+  if (bucketLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box>
