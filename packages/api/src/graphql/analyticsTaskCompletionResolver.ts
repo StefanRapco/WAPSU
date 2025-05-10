@@ -11,7 +11,7 @@ export async function analyticsTaskCompletionResolver(
   { input }: QueryAnalyticsTaskCompletionArgs,
   { identity }: InvocationContext
 ): Promise<AnalyticsTaskCompletionOutput> {
-  const { teamId, userId, startDate, endDate, action } = input;
+  const { teamId, startDate, endDate, action } = input;
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: identity.id },

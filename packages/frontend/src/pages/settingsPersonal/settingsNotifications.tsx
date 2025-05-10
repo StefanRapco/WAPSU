@@ -83,7 +83,7 @@ export function SettingsNotifications(props: NotificationsProps) {
           <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={2} key={'personal'}>
               <FormControlLabel
-                control={<Switch checked={true} color="primary" disabled />}
+                control={<Switch checked color="primary" disabled />}
                 label="Personal Account Notifications"
               />
             </Grid>

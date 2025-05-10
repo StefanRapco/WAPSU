@@ -217,8 +217,6 @@ export function Analytics(): ReactNode {
     );
   }
 
-  console.log('Team Performance Data:', teamPerformanceData);
-
   const FilterControls = ({
     filters,
     setFilters

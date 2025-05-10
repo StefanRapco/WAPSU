@@ -264,24 +264,24 @@ export function SettingsUserInvitedList(): ReactNode {
                     <TextField
                       label="First Name"
                       name="firstName"
-                      error={!!(touched.firstName && errors.firstName)}
-                      helperText={!!(touched.firstName && errors.firstName)}
+                      error={Boolean(touched.firstName && errors.firstName)}
+                      helperText={Boolean(touched.firstName && errors.firstName)}
                     />
                   </Grid>
                   <Grid item xs={6}>
                     <TextField
                       label="Last Name"
                       name="lastName"
-                      error={!!(touched.lastName && errors.lastName)}
-                      helperText={!!(touched.lastName && errors.lastName)}
+                      error={Boolean(touched.lastName && errors.lastName)}
+                      helperText={Boolean(touched.lastName && errors.lastName)}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField
                       label="Email"
                       name="email"
-                      error={!!(touched.email && errors.email)}
-                      helperText={!!(touched.email && errors.email)}
+                      error={Boolean(touched.email && errors.email)}
+                      helperText={Boolean(touched.email && errors.email)}
                     />
                   </Grid>
                   <Grid item xs={12}>

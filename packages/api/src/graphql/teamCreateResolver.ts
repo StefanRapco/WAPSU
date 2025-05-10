@@ -11,8 +11,6 @@ export async function teamCreateResolver(
   { input }: MutationTeamCreateArgs,
   { identity }: InvocationContext
 ): Promise<Team> {
-  console.log(identity);
-
   const team = await prisma.team.create({
     data: {
       id: uuid(),

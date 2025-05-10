@@ -18,8 +18,6 @@ export async function signInCodeRequestResolver(
   const code = generateNumericCode(6);
   const mfa = await hashPassword(code);
 
-  console.info(code);
-
   await prisma.user.update({ where: { id }, data: { mfa } });
 
   await sendEmail({

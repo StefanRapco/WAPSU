@@ -10,7 +10,7 @@ export async function analyticsTaskTimelineResolver(
   { input }: QueryAnalyticsTaskTimelineArgs,
   { identity }: InvocationContext
 ): Promise<AnalyticsTaskTimelineOutput> {
-  const { teamId, userId, startDate, endDate, action } = input;
+  const { teamId, startDate, endDate, action } = input;
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: identity.id },

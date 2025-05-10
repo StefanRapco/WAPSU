@@ -137,7 +137,7 @@ export async function teamUserEditResolver(
           htmlContent: teamRoleChangedEmail({
             userFirstName: targetUserOnTeam.user.firstName,
             teamName: team.name,
-            newRole: newRole,
+            newRole,
             rolePermissions
           }),
           subject: `Your role in team "${team.name}" has been updated`,
@@ -265,7 +265,7 @@ export async function teamUserEditResolver(
         htmlContent: teamRoleChangedEmail({
           userFirstName: targetUserOnTeam.user.firstName,
           teamName: team.name,
-          newRole: newRole,
+          newRole,
           rolePermissions
         }),
         subject: `Your role in team "${team.name}" has been updated`,
