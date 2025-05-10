@@ -3,6 +3,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Box, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { gql } from '../gql-generated/gql';
 import { TeamAvatar, teamAvatarsArray } from '../images/images';
@@ -23,10 +24,14 @@ const validationSchema = yup.object({
 });
 
 export function TeamCreate({ open, onClose, onSubmit, onError }: TeamFormProps) {
+  const navigate = useNavigate();
   const [selectedAvatar, setSelectedAvatar] = useState<TeamAvatar>(teamAvatarsArray[0]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [createTeam, { loading }] = useMutation(mutation, {
-    onCompleted: () => onSubmit(),
+    onCompleted: values => {
+      onSubmit();
+      navigate(`/teams/${values.teamCreate.id}`);
+    },
     onError: () => onError()
   });
 
@@ -89,7 +94,11 @@ export function TeamCreate({ open, onClose, onSubmit, onError }: TeamFormProps) 
                   </Tooltip>
                 </Box>
 
-                <UserSelect onUserChange={users => setSelectedUsers(users)} filterIdentity />
+                <UserSelect
+                  onUserChange={users => setSelectedUsers(users)}
+                  filterIdentity
+                  status={['active']}
+                />
 
                 <Button
                   type="submit"

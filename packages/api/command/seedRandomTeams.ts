@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { uuid } from '../src/helpers';
-import { Prisma, prisma } from '../src/prisma';
+import { Prisma, prisma, TeamRole } from '../src/prisma';
 
 const teamAvatars = [
   'adrian',
@@ -50,7 +50,7 @@ export async function seedRandomTeams(count = 10) {
         create: teamMembers.map((user, index) => ({
           userId: user.id,
           isOwner: index === 0,
-          teamRole: index === 0 ? 'owner' : 'member',
+          teamRole: index === 0 ? TeamRole.owner : TeamRole.member,
           joinedAt: new Date()
         }))
       }

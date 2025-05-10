@@ -5,7 +5,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GroupIcon from '@mui/icons-material/Group';
 import SettingsIcon from '@mui/icons-material/Settings';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ToolCard } from '../components/dashboardCards';
 import { SectionHeader } from '../components/header';
@@ -21,7 +21,7 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
   const userName = props.identity.firstName;
   const navigate = useNavigate();
 
-  const taskMany = useTaskMany({ allUserTeams: true });
+  const { data: taskMany, loading: taskManyLoading } = useTaskMany({ allUserTeams: true });
 
   return (
     <>
@@ -91,10 +91,11 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(item => item.progress.value === 'completed')
-                            .length
-                        }
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(item => item.progress.value === 'completed').length
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Completed Tasks
@@ -140,10 +141,12 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(item => item.progress.value === 'inProgress')
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(item => item.progress.value === 'inProgress')
                             .length
-                        }
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Pending Tasks
@@ -189,13 +192,15 @@ export function Dashboard(props: { identity: NonNullable<Identity> }) {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(
                             item =>
                               new Date(item.dueDate) < new Date() &&
                               item.progress.value !== 'completed'
                           ).length
-                        }
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Overdue Tasks

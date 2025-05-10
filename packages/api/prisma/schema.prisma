@@ -31,6 +31,9 @@ model User {
   buckets       Bucket[]
   tasksAssignee Task[]
   taskComment   TaskComment[]
+
+  individualNotifications Boolean @default(true)
+  teamNotifications       Boolean @default(true)
 }
 
 model Team {

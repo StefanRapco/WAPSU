@@ -82,6 +82,9 @@ export function SettingsUserArchivedList(): ReactNode {
                 <TableCell>
                   <Typography>Email</Typography>
                 </TableCell>
+                <TableCell>
+                  <Typography>Status</Typography>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -92,6 +95,9 @@ export function SettingsUserArchivedList(): ReactNode {
                   </TableCell>
                   <TableCell>
                     <Typography>{user.email}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{user.status.label}</Typography>
                   </TableCell>
                 </TableRow>
               ))}

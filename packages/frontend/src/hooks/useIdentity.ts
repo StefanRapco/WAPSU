@@ -25,6 +25,8 @@ export const identityQuery = gql(`
       title
       phoneNumber
       address
+      individualNotifications
+      teamNotifications
       systemRole {
         label
         value

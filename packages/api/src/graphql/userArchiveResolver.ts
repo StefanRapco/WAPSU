@@ -1,4 +1,6 @@
 import { MutationUserArchiveArgs, User } from '@app/frontend/src/gql-generated/graphql';
+import { sendEmail } from '../email/email';
+import { userArchivedEmail } from '../email/userArchived';
 import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
 import { toUserSchema } from './mapping/toUserMapping';
@@ -31,6 +33,12 @@ export async function userArchiveResolver(
   const user = await prisma.user.update({
     where: { id: input.userId },
     data: { status: 'archived' }
+  });
+
+  await sendEmail({
+    htmlContent: userArchivedEmail({ userFirstName: user.firstName }),
+    subject: 'Your DoSync account has been archived',
+    to: [user.email]
   });
 
   return toUserSchema(user);

@@ -46,6 +46,8 @@ type Mutation {
   taskChecklistCreate(input: TaskChecklistCreateInput!): TaskChecklist!
   taskChecklistEdit(input: TaskChecklistEditInput!): TaskChecklist!
   taskChecklistDelete(input: TaskChecklistDeleteInput!): Task!
+  userInvite(input: UserInviteInput!): User!
+  userInviteResend(input: UserInviteResendInput!): Void
 }
 
 type User {
@@ -61,6 +63,8 @@ type User {
   title: String
   phoneNumber: String
   address: String
+  individualNotifications: Boolean!
+  teamNotifications: Boolean!
 }
 
 type Team {
@@ -158,6 +162,8 @@ input UserUpdateInput {
   title: String
   phoneNumber: String
   address: String
+  individualNotifications: Boolean
+  teamNotifications: Boolean
 }
 
 input TeamCreateInput {
@@ -489,4 +495,14 @@ enum AnalyticsAction {
   all
   team
   individual
+}
+
+input UserInviteInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+}
+
+input UserInviteResendInput {
+  userId: ID!
 }

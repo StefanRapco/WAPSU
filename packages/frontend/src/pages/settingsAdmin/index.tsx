@@ -1,3 +1,5 @@
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import GroupsIcon from '@mui/icons-material/Groups';
 import { Box } from '@mui/material';
 import { ReactNode } from 'react';
@@ -7,6 +9,7 @@ import { isDarkMode } from '../../theme';
 import { SettingsUserArchivedList } from './settingsUserArchivedList';
 import { SettingsUserInvitedList } from './settingsUserInvitedList';
 import { SettingsUserList } from './settingsUserList';
+
 export function SettingsIndex(): ReactNode {
   const isModeDark = isDarkMode();
 
@@ -22,12 +25,12 @@ export function SettingsIndex(): ReactNode {
           {
             label: 'Invited users',
             to: '/settings/invited-users',
-            icon: <GroupsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
+            icon: <GroupAddIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
           },
           {
             label: 'Archived users',
             to: '/settings/archived-users',
-            icon: <GroupsIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
+            icon: <GroupRemoveIcon sx={{ color: isModeDark ? 'white' : 'black' }} />
           }
         ]}
       />

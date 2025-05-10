@@ -1,5 +1,7 @@
 import { MutationSignInCodeRequestArgs } from '@app/frontend/src/gql-generated/graphql';
 import { generateNumericCode, getUserIdByEmail, hashPassword } from '../auth';
+import { codeSignInEmail } from '../email/codeSignIn';
+import { sendEmail } from '../email/email';
 import { prisma } from '../prisma';
 
 export async function signInCodeRequestResolver(
@@ -20,9 +22,9 @@ export async function signInCodeRequestResolver(
 
   await prisma.user.update({ where: { id }, data: { mfa } });
 
-  // await sendEmail({
-  //   htmlContent: codeSignInEmail({ code }),
-  //   subject: 'DoSync sign in request',
-  //   to: [email]
-  // });
+  await sendEmail({
+    htmlContent: codeSignInEmail({ code }),
+    subject: 'DoSync sign in request',
+    to: [email]
+  });
 }

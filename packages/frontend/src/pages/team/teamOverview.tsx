@@ -5,7 +5,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GroupIcon from '@mui/icons-material/Group';
 import SettingsIcon from '@mui/icons-material/Settings';
 import WarningIcon from '@mui/icons-material/Warning';
-import { Box, Grid, Paper, Stack } from '@mui/material';
+import { Box, CircularProgress, Grid, Paper, Stack } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { ReactNode, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -48,7 +48,7 @@ export function TeamOverview(): ReactNode {
   const { data: team, refetch } = useTeamOne(id);
   const { editTeam, loading, error } = useTeamEdit();
 
-  const taskMany = useTaskMany({ teamId: id });
+  const { data: taskMany, loading: taskManyLoading } = useTaskMany({ teamId: id });
 
   const handleSubmit = async (values: { name: string; description: string; avatar: string }) => {
     if (team == null) return;
@@ -166,10 +166,11 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(item => item.progress.value === 'completed')
-                            .length
-                        }
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(item => item.progress.value === 'completed').length
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Completed Tasks
@@ -215,10 +216,12 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(item => item.progress.value === 'inProgress')
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(item => item.progress.value === 'inProgress')
                             .length
-                        }
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Pending Tasks
@@ -264,13 +267,15 @@ export function TeamOverview(): ReactNode {
                     </Box>
                     <Stack spacing={2}>
                       <Typography variant="h3" fontWeight="700">
-                        {
-                          taskMany.data?.items.filter(
+                        {taskManyLoading ? (
+                          <CircularProgress />
+                        ) : (
+                          taskMany?.items.filter(
                             item =>
                               new Date(item.dueDate) > new Date() &&
                               item.progress.value !== 'completed'
                           ).length
-                        }
+                        )}
                       </Typography>
                       <Typography variant="h6" fontWeight="500">
                         Overdue Tasks

@@ -13,7 +13,14 @@ import { SettingsPersonalDetails } from './settingsPersonalDetails';
 interface AccountSettingsProps {
   readonly identity: Pick<
     NonNullable<Identity>,
-    'id' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'isPasswordNull'
+    | 'id'
+    | 'firstName'
+    | 'lastName'
+    | 'email'
+    | 'fullName'
+    | 'isPasswordNull'
+    | 'individualNotifications'
+    | 'teamNotifications'
   >;
 }
 

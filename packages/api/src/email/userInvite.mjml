@@ -1,0 +1,124 @@
+<mjml owa="desktop" version="4.3.0">
+  <mj-head>
+    <mj-font href="https://fonts.googleapis.com/css?family=Open%20Sans" name="Open Sans"></mj-font>
+    <mj-preview></mj-preview>
+    <mj-style>
+      .container { width: 536px; padding: 40px; border-radius: 16px; border: 1px solid #EDEDF2; }
+      .bb { border-bottom: 1px solid #DCDCE6; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#ffffff">
+    <mj-wrapper css-class="container" padding="0">
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="40px"
+            font-style="normal"
+            font-weight="500"
+            line-height="28px"
+            letter-spacing="0.6px"
+            padding="40px 0 0 0"
+            align="left"
+            >Hello #USER_FIRST_NAME#!</mj-text
+          >
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="20px"
+            font-style="normal"
+            font-weight="500"
+            line-height="28px"
+            letter-spacing="0.6px"
+            padding="40px 0 0 0"
+            align="left"
+            >You've been invited to join DoSync!</mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="14px"
+            font-style="normal"
+            font-weight="400"
+            line-height="20px"
+            letter-spacing="0.42px"
+            padding="24px 0 0 0"
+            >Your account has been created and you have been invited to join DoSync. Please follow the instructions in the app to complete your registration.</mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="14px"
+            font-style="normal"
+            font-weight="400"
+            line-height="20px"
+            letter-spacing="0.42px"
+            padding="24px 0 0 0"
+            >If you have any questions, please contact the support team:</mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="14px"
+            font-style="normal"
+            font-weight="400"
+            line-height="20px"
+            letter-spacing="0.42px"
+            padding="0"
+            ><a
+              ses:no-track
+              target="_blank"
+              rel="noopener noreferrer"
+              href="mailto:#SUPPORT_EMAIL_ADDRESS#"
+              style="color: #007df4"
+              >#SUPPORT_EMAIL_ADDRESS#</a
+            ></mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="14px"
+            font-style="normal"
+            font-weight="500"
+            line-height="20px"
+            letter-spacing="0.42px"
+            padding="24px 0 0 0"
+            >Thanks,</mj-text
+          >
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-text
+            color="#000000"
+            font-family="PP Neue Montreal, Open Sans, Helvetica, Arial, sans-serif"
+            font-size="14px"
+            font-style="normal"
+            font-weight="500"
+            line-height="20px"
+            letter-spacing="0.42px"
+            padding="0"
+            >DoSync Team</mj-text
+          >
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml> 

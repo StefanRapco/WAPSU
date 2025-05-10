@@ -39,6 +39,8 @@ import { teamOneResolver } from './src/graphql/teamOneResolver';
 import { teamUserAddResolver } from './src/graphql/teamUserAddResolver';
 import { teamUserEditResolver } from './src/graphql/teamUserEditResolver';
 import { userArchiveResolver } from './src/graphql/userArchiveResolver';
+import { userInviteResendResolver } from './src/graphql/userInviteResendResolver';
+import { userInviteResolver } from './src/graphql/userInviteResolver';
 import { userManyResolver } from './src/graphql/userManyResolver';
 import { userOneResolver } from './src/graphql/userOneResolver';
 import { userRoleUpdateResolver } from './src/graphql/userRoleUpdateResolver';
@@ -78,6 +80,8 @@ const mutations = {
   userUpdate: userUpdateResolver,
   userRoleUpdate: userRoleUpdateResolver,
   userArchive: userArchiveResolver,
+  userInvite: userInviteResolver,
+  userInviteResend: userInviteResendResolver,
   taskCreate: taskCreateResolver,
   taskEdit: taskEditResolver,
   taskDelete: taskDeleteResolver,

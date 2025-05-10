@@ -17,6 +17,8 @@ export function toUserSchema(props: User): UserSchema {
     title: props.title,
     phoneNumber: props.phoneNumber,
     address: props.address,
+    individualNotifications: props.individualNotifications,
+    teamNotifications: props.teamNotifications,
     // @ts-expect-error
     teams: async () => {
       const teamsDb = await prisma.team.findMany({

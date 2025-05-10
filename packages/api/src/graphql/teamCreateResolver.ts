@@ -1,7 +1,9 @@
 import { MutationTeamCreateArgs, Team } from '@app/frontend/src/gql-generated/graphql';
+import { sendEmail } from '../email/email';
+import { teamInviteEmail } from '../email/teamInvite';
 import { uuid } from '../helpers';
 import { InvocationContext } from '../invocationContext';
-import { prisma } from '../prisma';
+import { prisma, TeamRole } from '../prisma';
 import { toTeamSchema } from './mapping/toTeamMapping';
 
 export async function teamCreateResolver(
@@ -9,6 +11,8 @@ export async function teamCreateResolver(
   { input }: MutationTeamCreateArgs,
   { identity }: InvocationContext
 ): Promise<Team> {
+  console.log(identity);
+
   const team = await prisma.team.create({
     data: {
       id: uuid(),
@@ -18,7 +22,8 @@ export async function teamCreateResolver(
         create: [
           {
             userId: identity.id,
-            isOwner: true
+            isOwner: true,
+            teamRole: TeamRole.owner
           },
           ...(input.userIds?.map(userId => ({
             userId
@@ -34,6 +39,32 @@ export async function teamCreateResolver(
       }
     }
   });
+
+  const users = await prisma.user.findMany({
+    where: {
+      id: {
+        in: input.userIds ?? []
+      }
+    },
+    select: {
+      teamNotifications: true,
+      email: true,
+      firstName: true
+    }
+  });
+
+  const toNotify = users.filter(user => user.teamNotifications);
+
+  for (const user of toNotify) {
+    await sendEmail({
+      to: [user.email],
+      subject: 'You have been added to a team',
+      htmlContent: teamInviteEmail({
+        userFirstName: user.firstName,
+        teamName: team.name
+      })
+    });
+  }
 
   return toTeamSchema(team);
 }

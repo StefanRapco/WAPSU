@@ -1,5 +1,7 @@
 import { MutationTeamUserAddArgs, Team } from '@app/frontend/src/gql-generated/graphql';
 import { TeamRole } from '@prisma/client';
+import { sendEmail } from '../email/email';
+import { teamInviteEmail } from '../email/teamInvite';
 import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
 import { toTeamSchema } from './mapping/toTeamMapping';
@@ -40,6 +42,34 @@ export async function teamUserAddResolver(
       }
     }
   });
+
+  // Send notifications to users who have team notifications enabled
+  const usersToNotify = await prisma.user.findMany({
+    where: {
+      id: {
+        in: input.userIds
+      },
+      teamNotifications: true
+    },
+    select: {
+      email: true,
+      firstName: true,
+      teamNotifications: true
+    }
+  });
+
+  const toNotify = usersToNotify.filter(user => user.teamNotifications);
+
+  for (const user of toNotify) {
+    await sendEmail({
+      to: [user.email],
+      subject: 'You have been added to a team',
+      htmlContent: teamInviteEmail({
+        userFirstName: user.firstName,
+        teamName: team.name
+      })
+    });
+  }
 
   return toTeamSchema(team);
 }

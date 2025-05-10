@@ -529,6 +529,7 @@ export function TaskEdit({ open, onClose, onSubmit, onError, task, mode }: TaskE
                         }}
                         onlyIdentity={mode === 'user'}
                         initialSelectedUsers={task.assignees.map(assignee => assignee.id)}
+                        status={['active']}
                       />
                     </Box>
                   </Box>

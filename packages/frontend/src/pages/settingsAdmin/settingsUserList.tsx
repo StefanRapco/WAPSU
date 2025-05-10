@@ -213,6 +213,12 @@ export function SettingsUserList(): ReactNode {
                   <Typography>Email</Typography>
                 </TableCell>
                 <TableCell>
+                  <Typography>System Role</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>Status</Typography>
+                </TableCell>
+                <TableCell>
                   <Typography>Actions</Typography>
                 </TableCell>
               </TableRow>
@@ -225,6 +231,12 @@ export function SettingsUserList(): ReactNode {
                   </TableCell>
                   <TableCell>
                     <Typography>{user.email}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{user.systemRole.label}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{user.status.label}</Typography>
                   </TableCell>
                   <TableCell>
                     {user.id !== identity?.id && (
@@ -303,6 +315,12 @@ export function SettingsUserList(): ReactNode {
                   <Typography>Email</Typography>
                 </TableCell>
                 <TableCell>
+                  <Typography>System Role</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>Status</Typography>
+                </TableCell>
+                <TableCell>
                   <Typography>Actions</Typography>
                 </TableCell>
                 <TableCell>
@@ -318,6 +336,12 @@ export function SettingsUserList(): ReactNode {
                   </TableCell>
                   <TableCell>
                     <Typography>{user.email}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{user.systemRole.label}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{user.status.label}</Typography>
                   </TableCell>
                   <TableCell>
                     <Tooltip title="Upgrade to admin">

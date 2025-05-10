@@ -4,6 +4,9 @@ import {
   TeamUserEditAction
 } from '@app/frontend/src/gql-generated/graphql';
 import { TeamRole } from '@prisma/client';
+import { sendEmail } from '../email/email';
+import { teamRemovedEmail } from '../email/teamRemoved';
+import { teamRoleChangedEmail } from '../email/teamRoleChanged';
 import { InvocationContext } from '../invocationContext';
 import { prisma } from '../prisma';
 import { toTeamSchema } from './mapping/toTeamMapping';
@@ -24,7 +27,16 @@ export async function teamUserEditResolver(
     });
 
     const targetUserOnTeam = await prisma.userOnTeam.findUniqueOrThrow({
-      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } }
+      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            email: true,
+            teamNotifications: true
+          }
+        }
+      }
     });
 
     if (currentUserOnTeam.teamRole === TeamRole.member)
@@ -99,6 +111,41 @@ export async function teamUserEditResolver(
       }
     });
 
+    // Send teamRemoved notification if user was removed
+    if (input.action === TeamUserEditAction.Remove && targetUserOnTeam.user.teamNotifications) {
+      await sendEmail({
+        htmlContent: teamRemovedEmail({
+          userFirstName: targetUserOnTeam.user.firstName,
+          teamName: team.name
+        }),
+        subject: `You have been removed from team "${team.name}"`,
+        to: [targetUserOnTeam.user.email]
+      });
+    }
+
+    // Only send notification if role is actually changing
+    if (newRole && targetUserOnTeam.teamRole !== newRole) {
+      // Send notification if user has team notifications enabled
+      if (targetUserOnTeam.user.teamNotifications) {
+        const rolePermissions = {
+          [TeamRole.owner]: 'Full control over the team, including managing members and settings',
+          [TeamRole.ambassador]: 'Can manage tasks and members, but cannot change team settings',
+          [TeamRole.member]: 'Can view and work on team tasks'
+        }[newRole];
+
+        await sendEmail({
+          htmlContent: teamRoleChangedEmail({
+            userFirstName: targetUserOnTeam.user.firstName,
+            teamName: team.name,
+            newRole: newRole,
+            rolePermissions
+          }),
+          subject: `Your role in team "${team.name}" has been updated`,
+          to: [targetUserOnTeam.user.email]
+        });
+      }
+    }
+
     return toTeamSchema(team);
   }
 
@@ -106,13 +153,31 @@ export async function teamUserEditResolver(
 
   if (input.action === TeamUserEditAction.Upgrade) {
     const targetUserOnTeam = await prisma.userOnTeam.findUniqueOrThrow({
-      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } }
+      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            email: true,
+            teamNotifications: true
+          }
+        }
+      }
     });
     if (targetUserOnTeam.teamRole === TeamRole.member) newRole = TeamRole.ambassador;
     else if (targetUserOnTeam.teamRole === TeamRole.ambassador) newRole = TeamRole.owner;
   } else if (input.action === TeamUserEditAction.Downgrade) {
     const targetUserOnTeam = await prisma.userOnTeam.findUniqueOrThrow({
-      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } }
+      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            email: true,
+            teamNotifications: true
+          }
+        }
+      }
     });
     if (targetUserOnTeam.teamRole === TeamRole.ambassador) newRole = TeamRole.member;
     else if (targetUserOnTeam.teamRole === TeamRole.owner) newRole = TeamRole.ambassador;
@@ -154,6 +219,60 @@ export async function teamUserEditResolver(
       }
     }
   });
+
+  // Send teamRemoved notification if user was removed
+  if (input.action === TeamUserEditAction.Remove) {
+    // Fetch the removed user's info before deletion
+    const removedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: input.userId },
+      select: { firstName: true, email: true, teamNotifications: true }
+    });
+    if (removedUser.teamNotifications) {
+      await sendEmail({
+        htmlContent: teamRemovedEmail({
+          userFirstName: removedUser.firstName,
+          teamName: team.name
+        }),
+        subject: `You have been removed from team "${team.name}"`,
+        to: [removedUser.email]
+      });
+    }
+  }
+
+  // Only send notification if role is actually changing
+  if (newRole) {
+    const targetUserOnTeam = await prisma.userOnTeam.findUniqueOrThrow({
+      where: { userId_teamId: { userId: input.userId, teamId: input.teamId } },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            email: true,
+            teamNotifications: true
+          }
+        }
+      }
+    });
+
+    if (targetUserOnTeam.teamRole !== newRole && targetUserOnTeam.user.teamNotifications) {
+      const rolePermissions = {
+        [TeamRole.owner]: 'Full control over the team, including managing members and settings',
+        [TeamRole.ambassador]: 'Can manage tasks and members, but cannot change team settings',
+        [TeamRole.member]: 'Can view and work on team tasks'
+      }[newRole];
+
+      await sendEmail({
+        htmlContent: teamRoleChangedEmail({
+          userFirstName: targetUserOnTeam.user.firstName,
+          teamName: team.name,
+          newRole: newRole,
+          rolePermissions
+        }),
+        subject: `Your role in team "${team.name}" has been updated`,
+        to: [targetUserOnTeam.user.email]
+      });
+    }
+  }
 
   return toTeamSchema(team);
 }

@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client';
 import {
   Box,
   Card,
@@ -10,20 +11,55 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { SectionHeader } from '../../components/header';
+import { SnackbarError } from '../../components/snackbarError';
+import { SnackBarSuccess, snackbarUseEffect } from '../../components/snackbarSuccess';
+import { gql } from '../../gql-generated/gql';
 import { Identity } from '../../hooks/useIdentity';
 
 interface NotificationsProps {
-  readonly identity: Pick<NonNullable<Identity>, 'id' | 'isPasswordNull'>;
+  readonly identity: Pick<
+    NonNullable<Identity>,
+    'id' | 'isPasswordNull' | 'individualNotifications' | 'teamNotifications'
+  >;
 }
 
-export function SettingsNotifications(props: NotificationsProps) {
-  const [settings, setSettings] = useState<Record<string, boolean>>(
-    Object.fromEntries(notificationOptions.map(({ id }, index) => [id, index % 2 === 0]))
-  );
+const userUpdateMutation = gql(`
+  mutation UserUpdate($input: UserUpdateInput!) {
+    userUpdate(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      individualNotifications
+      teamNotifications
+      title
+      phoneNumber
+      address
+    }
+  }
+`);
 
-  const handleToggle = (id: string) => {
-    setSettings(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+export function SettingsNotifications(props: NotificationsProps) {
+  const [mutationError, setMutationError] = useState(false);
+  const [mutationSuccess, setMutationSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const [userUpdate, { error, loading }] = useMutation(userUpdateMutation, {
+    onCompleted: () => {
+      setSuccessMessage('Notification preferences updated successfully');
+      setMutationSuccess(true);
+    },
+    onError: () => {
+      setMutationError(true);
+    }
+  });
+
+  snackbarUseEffect({
+    success: mutationSuccess,
+    error: mutationError,
+    setSuccess: setMutationSuccess,
+    setError: setMutationError
+  });
 
   return (
     <Stack spacing={9}>
@@ -45,37 +81,71 @@ export function SettingsNotifications(props: NotificationsProps) {
             Notification preferences:
           </Typography>
           <Grid container spacing={2} columns={{ xs: 1, sm: 2, md: 3 }}>
-            {notificationOptions.map(option => (
-              <Grid item xs={1} key={option.id}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings[option.id]}
-                      onChange={() => handleToggle(option.id)}
-                      color="primary"
-                    />
-                  }
-                  label={option.label}
-                />
-              </Grid>
-            ))}
+            <Grid item xs={2} key={'personal'}>
+              <FormControlLabel
+                control={<Switch checked={true} color="primary" disabled />}
+                label="Personal Account Notifications"
+              />
+            </Grid>
+            <Grid item xs={2} key={'individual'}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={props.identity.individualNotifications}
+                    disabled={loading}
+                    onChange={() =>
+                      userUpdate({
+                        variables: {
+                          input: {
+                            id: props.identity.id,
+                            individualNotifications: !props.identity.individualNotifications
+                          }
+                        }
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label="Tasks Notifications"
+              />
+            </Grid>
+            <Grid item xs={2} key={'team'}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={props.identity.teamNotifications}
+                    disabled={loading}
+                    onChange={() =>
+                      userUpdate({
+                        variables: {
+                          input: {
+                            id: props.identity.id,
+                            teamNotifications: !props.identity.teamNotifications
+                          }
+                        }
+                      })
+                    }
+                    color="primary"
+                  />
+                }
+                label="Team Notifications"
+              />
+            </Grid>
           </Grid>
         </CardContent>
       </Card>
+
+      <SnackBarSuccess
+        open={mutationSuccess}
+        successMsg={successMessage}
+        setSuccess={setMutationSuccess}
+      />
+
+      <SnackbarError
+        mutationError={mutationError}
+        setMutationError={setMutationError}
+        apolloErrors={[error]}
+      />
     </Stack>
   );
 }
-
-const notificationOptions = [
-  { id: 'email', label: 'Email Notifications' },
-  { id: 'sms', label: 'SMS Notifications' },
-  { id: 'push', label: 'Push Notifications' },
-  { id: 'news', label: 'Newsletter Updates' },
-  { id: 'security', label: 'Security Alerts' },
-  { id: 'promotions', label: 'Promotional Offers' },
-  { id: 'updates', label: 'App Updates' },
-  { id: 'feedback', label: 'Feedback Requests' },
-  { id: 'social', label: 'Social Mentions' },
-  { id: 'system', label: 'System Warnings' },
-  { id: 'test', label: 'System Testing' }
-];

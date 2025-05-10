@@ -427,6 +427,7 @@ export function TeamUserList(): ReactNode {
             filterIdentity
             notTeamId={[id]}
             systemRole={['user']}
+            status={['active']}
           />
           <Box sx={{ mt: 3 }}>
             <Button
