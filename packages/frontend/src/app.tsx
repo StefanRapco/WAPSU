@@ -133,35 +133,3 @@ function EnsureRouteRole(props: {
 
   return <Navigate to="/" replace />;
 }
-
-// function UserOne() {
-//   const { identity } = useIdentity();
-//   const { data } = useQuery(query, { variables: { id: identity?.id ?? '' } });
-
-//   if (data == null) return <>loading</>;
-
-//   return (
-//     <>
-//       <Typography>
-//         ID: {data.userOne.id} &nbsp; FirstName: {data.userOne.firstName} &nbsp; LastName:{' '}
-//         {data.userOne.lastName}
-//       </Typography>
-//     </>
-//   );
-// }
-
-// const query = gql(`
-//   query GetUser($id: ID!) {
-//     userOne(id: $id) {
-//       id
-//       firstName
-//       lastName
-//       email
-//     }
-//   }
-// `);
-
-// {((): string => {
-//   if (screen.type === 'signInCode') return 'Send a code';
-//   return isSubmitting ? 'Signing In...' : 'Sign In';
-// })()}
