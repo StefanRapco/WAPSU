@@ -40,7 +40,7 @@ function PasswordForm(props: PasswordProps) {
   const [successMessage, setSuccessMessage] = useState('');
   const [mutationSuccess, setMutationSuccess] = useState(false);
   const [mutationError, setMutationError] = useState(false);
-  const [userUpdatePassword, { error, loading }] = useMutation(userUpdateMutation, {
+  const [userUpdatePassword, { error }] = useMutation(userUpdateMutation, {
     onCompleted: () => {
       setSuccessMessage('Password updated successfully');
       setMutationSuccess(true);

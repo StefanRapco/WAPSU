@@ -27,8 +27,6 @@ export async function userUpdateResolver(
     }
   });
 
-  console.log(input);
-
   const user = await prisma.user.update({
     where: { id: input.id },
     data: {
