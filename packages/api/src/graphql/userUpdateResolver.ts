@@ -1,4 +1,5 @@
 import { MutationUserUpdateArgs, User } from '@app/frontend/src/gql-generated/graphql';
+import { hashPassword } from '../auth';
 import { sendEmail } from '../email/email';
 import { userProfileUpdatedEmail } from '../email/userProfileUpdated';
 import { InvocationContext } from '../invocationContext';
@@ -21,9 +22,12 @@ export async function userUpdateResolver(
       address: true,
       individualNotifications: true,
       teamNotifications: true,
-      email: true
+      email: true,
+      password: true
     }
   });
+
+  console.log(input);
 
   const user = await prisma.user.update({
     where: { id: input.id },
@@ -34,7 +38,8 @@ export async function userUpdateResolver(
       phoneNumber: input.phoneNumber ?? undefined,
       address: input.address ?? undefined,
       individualNotifications: input.individualNotifications ?? undefined,
-      teamNotifications: input.teamNotifications ?? undefined
+      teamNotifications: input.teamNotifications ?? undefined,
+      password: input.password != null ? await hashPassword(input.password) : undefined
     }
   });
 
@@ -62,6 +67,17 @@ export async function userUpdateResolver(
     input.teamNotifications !== oldUser.teamNotifications
   ) {
     changes.push(`Team notifications ${input.teamNotifications ? 'enabled' : 'disabled'}`);
+  }
+
+  const isPasswordChanged = await (async () => {
+    if (input.password == null) return false;
+
+    const newPassword = await hashPassword(input.password);
+    return newPassword !== oldUser.password;
+  })();
+
+  if (isPasswordChanged) {
+    changes.push('Password updated');
   }
 
   // Send notification if there are changes

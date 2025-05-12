@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client';
 import CheckIcon from '@mui/icons-material/Check';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import { Form, Formik } from 'formik';
@@ -5,7 +6,10 @@ import { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import { Button } from '../../components/button';
 import { SectionHeader } from '../../components/header';
+import { SnackbarError } from '../../components/snackbarError';
+import { SnackBarSuccess } from '../../components/snackbarSuccess';
 import { TextField } from '../../components/textField';
+import { gql } from '../../gql-generated/gql';
 import { Identity } from '../../hooks/useIdentity';
 
 interface PasswordProps {
@@ -33,6 +37,19 @@ function PasswordForm(props: PasswordProps) {
   const [isValid, setIsValid] = useState<boolean>(false);
   const requireCurrentPassword = !props.identity.isPasswordNull;
 
+  const [successMessage, setSuccessMessage] = useState('');
+  const [mutationSuccess, setMutationSuccess] = useState(false);
+  const [mutationError, setMutationError] = useState(false);
+  const [userUpdatePassword, { error, loading }] = useMutation(userUpdateMutation, {
+    onCompleted: () => {
+      setSuccessMessage('Password updated successfully');
+      setMutationSuccess(true);
+    },
+    onError: () => {
+      setMutationError(true);
+    }
+  });
+
   const validationSchema = yup.object({
     currentPassword: requireCurrentPassword
       ? yup.string().required('Current password is a required field.')
@@ -57,8 +74,10 @@ function PasswordForm(props: PasswordProps) {
         enableReinitialize
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
-          //   await props.onSubmit(values);
-          //   resetForm();
+          await userUpdatePassword({
+            variables: { input: { id: props.identity.id, password: values.newPassword } }
+          });
+          resetForm();
         }}
       >
         {({ values, isSubmitting }) => {
@@ -130,6 +149,18 @@ function PasswordForm(props: PasswordProps) {
           );
         }}
       </Formik>
+
+      <SnackBarSuccess
+        open={mutationSuccess}
+        setSuccess={value => setMutationSuccess(value)}
+        successMsg={successMessage}
+      />
+
+      <SnackbarError
+        mutationError={mutationError}
+        setMutationError={value => setMutationError(value)}
+        apolloErrors={[error]}
+      />
     </Stack>
   );
 }
@@ -270,3 +301,19 @@ function passwordMeetsPolicy(password: string, additionalPolicies: boolean[] = [
     ...additionalPolicies
   ].every(value => value === true);
 }
+
+const userUpdateMutation = gql(`
+  mutation UserUpdatePassword($input: UserUpdateInput!) {
+    userUpdate(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      individualNotifications
+      teamNotifications
+      title
+      phoneNumber
+      address
+    }
+  }
+`);

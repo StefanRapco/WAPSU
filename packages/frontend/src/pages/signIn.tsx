@@ -15,7 +15,9 @@ export function SignIn() {
   const client = useApolloClient();
   const matches = useMediaQuery('(min-width:600px)');
   const [error, setError] = useState<boolean>(false);
-  const [screen, setScreen] = useState<{ type: 'signInCode' | 'signInCodeComplete' }>({
+  const [screen, setScreen] = useState<{
+    type: 'signInCode' | 'signInCodeComplete' | 'signInPassword';
+  }>({
     type: 'signInCode'
   });
 
@@ -35,11 +37,22 @@ export function SignIn() {
     }
   );
 
+  const [signInPassword, { error: signInPasswordError }] = useMutation(signInPasswordMutation, {
+    onError: () => setError(true),
+    onCompleted: async () => {
+      await client.refetchQueries({ include: [identityQuery] });
+    }
+  });
+
   const validationSchema = yup.object({
     email: yup.string().email('Invalid email format').required('Email is required'),
     code:
       screen.type === 'signInCodeComplete'
         ? yup.string().required('Code is a required field')
+        : yup.string().nullable(),
+    password:
+      screen.type === 'signInPassword'
+        ? yup.string().required('Password is a required field')
         : yup.string().nullable()
   });
 
@@ -71,12 +84,19 @@ export function SignIn() {
           <Typography sx={{ mb: 2 }}>Sign in to DoSync.</Typography>
 
           <Formik
-            initialValues={{ email: '', code: '' }}
+            initialValues={{ email: '', code: '', password: '' }}
             enableReinitialize
             validationSchema={validationSchema}
             onSubmit={async values => {
               if (screen.type === 'signInCode') {
                 await signInCode({ variables: { input: { email: values.email } } });
+                return;
+              }
+
+              if (screen.type === 'signInPassword') {
+                await signInPassword({
+                  variables: { input: { email: values.email, password: values.password } }
+                });
                 return;
               }
 
@@ -106,18 +126,39 @@ export function SignIn() {
                       error={touched.code && errors.code != null}
                     />
                   )}
+                  {screen.type === 'signInPassword' && (
+                    <TextField
+                      name="password"
+                      label="Password"
+                      type="password"
+                      placeholder="Enter your password here"
+                      helperText={touched.password}
+                      error={touched.password && errors.password != null}
+                    />
+                  )}
                 </Stack>
-
-                <Button
-                  fullWidth
-                  type="submit"
-                  sx={{ mt: 5 }}
-                  disabled={isSubmitting}
-                  buttonText={((): string => {
-                    if (screen.type === 'signInCode') return 'Send a code';
-                    return isSubmitting ? 'Signing In...' : 'Sign In';
-                  })()}
-                />
+                <Stack marginTop={4} spacing={3} alignItems="center">
+                  <Button
+                    fullWidth
+                    type="submit"
+                    disabled={isSubmitting}
+                    buttonText={((): string => {
+                      if (screen.type === 'signInCode') return 'Send a code';
+                      return isSubmitting ? 'Signing In...' : 'Sign In';
+                    })()}
+                  />
+                  <Button
+                    fullWidth
+                    disabled={isSubmitting}
+                    buttonText={
+                      screen.type === 'signInCode' ? 'Sign in by password' : 'Sign in by code'
+                    }
+                    onClick={() => {
+                      if (screen.type === 'signInCode') setScreen({ type: 'signInPassword' });
+                      if (screen.type === 'signInPassword') setScreen({ type: 'signInCode' });
+                    }}
+                  />
+                </Stack>
               </Form>
             )}
           </Formik>
@@ -127,7 +168,7 @@ export function SignIn() {
       <SnackbarError
         mutationError={error}
         setMutationError={value => setError(value)}
-        apolloErrors={[signInError, signInCompleteError]}
+        apolloErrors={[signInError, signInCompleteError, signInPasswordError]}
       />
     </Container>
   );
@@ -142,5 +183,11 @@ const signInCodeMutation = gql(`
 const signInCodeCompleteMutation = gql(`
   mutation SignInCodeComplete($input: SignInCodeCompleteInput!) {
     signInCodeComplete(input: $input)
+  }
+`);
+
+const signInPasswordMutation = gql(`
+  mutation SignInPassword($input: SignInPasswordInput!) {
+    signInPassword(input: $input)
   }
 `);

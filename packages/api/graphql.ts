@@ -21,6 +21,7 @@ import { identityResolver } from './src/graphql/identityResolver';
 import { identityUpdateResolver } from './src/graphql/identityUpdateResolver';
 import { signInCodeCompleteResolver } from './src/graphql/signInCodeCompleteResolver';
 import { signInCodeRequestResolver } from './src/graphql/signInCodeRequestResolver';
+import { signInPasswordResolver } from './src/graphql/signInPasswordResolver';
 import { signOutResolver } from './src/graphql/signOutResolver';
 import { taskChecklistCreateResolver } from './src/graphql/taskChecklistCreateResolver';
 import { taskChecklistDeleteResolver } from './src/graphql/taskChecklistDeleteResolver';
@@ -72,6 +73,7 @@ const mutations = {
   identityUpdate: identityUpdateResolver,
   signInCodeRequest: signInCodeRequestResolver,
   signInCodeComplete: signInCodeCompleteResolver,
+  signInPassword: signInPasswordResolver,
   signOut: signOutResolver,
   teamCreate: teamCreateResolver,
   teamEdit: teamEditResolver,
@@ -95,7 +97,11 @@ const mutations = {
 
 const resolvers = {
   Query: protectResolvers(queries, []),
-  Mutation: protectResolvers(mutations, ['signInCodeRequest', 'signInCodeComplete'])
+  Mutation: protectResolvers(mutations, [
+    'signInCodeRequest',
+    'signInCodeComplete',
+    'signInPassword'
+  ])
 };
 
 const server = new ApolloServer({

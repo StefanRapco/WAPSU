@@ -25,6 +25,7 @@ type Query {
 type Mutation {
   identityUpdate(input: IdentityUpdateInput!): User!
   signInCodeComplete(input: SignInCodeCompleteInput!): Void
+  signInPassword(input: SignInPasswordInput!): Void
   signInCodeRequest(input: SignInCodeRequestInput!): Void
   signOut(input: SignOutInput!): Void
   teamCreate(input: TeamCreateInput!): Team!
@@ -164,6 +165,7 @@ input UserUpdateInput {
   address: String
   individualNotifications: Boolean
   teamNotifications: Boolean
+  password: String
 }
 
 input TeamCreateInput {
@@ -505,4 +507,9 @@ input UserInviteInput {
 
 input UserInviteResendInput {
   userId: ID!
+}
+
+input SignInPasswordInput {
+  email: String!
+  password: String!
 }
