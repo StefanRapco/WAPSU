@@ -151,7 +151,9 @@ export function SignIn() {
                     fullWidth
                     disabled={isSubmitting}
                     buttonText={
-                      screen.type === 'signInCode' ? 'Sign in by password' : 'Sign in by code'
+                      screen.type === 'signInCode' || screen.type === 'signInCodeComplete'
+                        ? 'Sign in by password'
+                        : 'Sign in by code'
                     }
                     onClick={() => {
                       if (screen.type === 'signInCode') setScreen({ type: 'signInPassword' });
