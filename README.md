@@ -56,3 +56,14 @@ Moderná webová aplikácia na správu úloh určená pre jednotlivcov aj menši
 ## 🎓 Bakalárska práca
 
 Túto aplikáciu vyvinul **Štefan Rapčo** v rámci bakalárskej práce. Práca obsahuje analýzu technológií, návrh architektúry, implementáciu a testovanie v reálnych scenároch.
+
+## ❗️ Upozornenie – Nekopírovať kód
+
+Tento repozitár slúži výlučne na prezentačné a študijné účely ako súčasť bakalárskej práce.
+
+🔐 **Bez výslovného súhlasu autora nie je dovolené:**
+- kopírovať, sťahovať ani zverejňovať časti kódu
+- používať kód v komerčných alebo nekomerčných projektoch
+- upravovať alebo šíriť kód ako vlastné dielo
+
+**Kód je chránený autorským zákonom. Jeho neoprávnené použitie môže byť právne postihnuteľné** v súlade so zákonom č. 185/2015 Z. z. (Autorský zákon Slovenskej republiky).
